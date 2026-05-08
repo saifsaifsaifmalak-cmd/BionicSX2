@@ -2,17 +2,31 @@
 # Usage: cmake -DCMAKE_TOOLCHAIN_FILE=cmake/ios.toolchain.cmake
 #              -DPCSX2_TARGET_IOS=ON
 
-set(CMAKE_SYSTEM_NAME iOS)
-set(CMAKE_SYSTEM_PROCESSOR arm64)
+# Target processor is always ARM64 for iOS — set as cache to prevent override
+set(CMAKE_SYSTEM_PROCESSOR "arm64" CACHE STRING "Target processor" FORCE)
 
-# SDK
-set(CMAKE_OSX_ARCHITECTURES "arm64")
-set(CMAKE_OSX_DEPLOYMENT_TARGET "14.2" CACHE STRING "Minimum iOS version")
-set(CMAKE_OSX_SYSROOT iphoneos)
+# Only set full iOS system properties on macOS hosts with Xcode
+if(APPLE)
+    set(CMAKE_SYSTEM_NAME iOS)
+    set(CMAKE_OSX_ARCHITECTURES "arm64")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "14.2" CACHE STRING "Minimum iOS version")
+    set(CMAKE_OSX_SYSROOT iphoneos)
+else()
+    # Non-macOS: use host system, add iOS compile definitions for code validation
+    message(WARNING "Non-macOS host — building with iOS defines for code validation only")
+endif()
 
-# Compiler
+# Compiler — target ARM64 iOS
 set(CMAKE_C_COMPILER   /usr/bin/clang)
 set(CMAKE_CXX_COMPILER /usr/bin/clang++)
+set(CMAKE_OBJC_COMPILER /usr/bin/clang)
+set(CMAKE_OBJCXX_COMPILER /usr/bin/clang++)
+
+# Cross-compile flags for ARM64 iOS (even on non-macOS hosts)
+set(CMAKE_C_FLAGS_INIT "-target arm64-apple-ios14.2")
+set(CMAKE_CXX_FLAGS_INIT "-target arm64-apple-ios14.2")
+set(CMAKE_OBJC_FLAGS_INIT "-target arm64-apple-ios14.2")
+set(CMAKE_OBJCXX_FLAGS_INIT "-target arm64-apple-ios14.2")
 
 # ARM64 detection — PCSX2 depends on this internally
 add_compile_definitions(_M_ARM64=1)
@@ -28,7 +42,7 @@ add_compile_definitions(DISABLE_VULKAN=1)
 # Disable Android paths
 add_compile_definitions(DISABLE_ANDROID=1)
 
-# Required Apple frameworks
+# Required Apple frameworks (non-fatal on non-macOS for validation)
 set(IOS_FRAMEWORKS
     Metal
     MetalKit
@@ -41,5 +55,8 @@ set(IOS_FRAMEWORKS
 )
 
 foreach(FW ${IOS_FRAMEWORKS})
-    find_library(FW_${FW} ${FW} REQUIRED)
+    find_library(FW_${FW} ${FW})
+    if(NOT FW_${FW})
+        message(WARNING "Framework ${FW} not found — iOS SDK not available on this platform")
+    endif()
 endforeach()
