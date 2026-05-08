@@ -6,6 +6,7 @@
 #include <mach/mach.h>
 #include <mach/vm_map.h>
 #include <pthread.h>
+#include <sys/mman.h>
 
 // TODO Phase 2: Implement using vm_allocate()
 // Replaces: mmap(MAP_ANON) from Android fork
@@ -21,8 +22,29 @@ void* HostSys_Alloc(size_t size) {
 // JIT pages: call pthread_jit_write_protect_np(false) before write
 //            call pthread_jit_write_protect_np(true)  before execute
 void HostSys_MemProtect(void* base, size_t size, int prot) {
-    // TODO Phase 2: map prot flags → mach vm_prot_t
-    // pthread_jit_write_protect_np() for W^X on iOS 14.2+
+    vm_prot_t vm_prot = VM_PROT_NONE;
+
+    if (prot & PROT_READ) {
+        vm_prot |= VM_PROT_READ;
+    }
+
+    bool needs_write = (prot & PROT_WRITE) != 0;
+    bool needs_exec = (prot & PROT_EXEC) != 0;
+
+    if (needs_write) {
+        pthread_jit_write_protect_np(false);
+        vm_prot |= VM_PROT_WRITE;
+    }
+
+    if (needs_exec) {
+        vm_prot |= VM_PROT_EXECUTE;
+    }
+
+    vm_protect(mach_task_self(), (vm_address_t)base, size, FALSE, vm_prot);
+
+    if (needs_exec) {
+        pthread_jit_write_protect_np(true);
+    }
 }
 
 // TODO Phase 2: Implement using vm_deallocate()

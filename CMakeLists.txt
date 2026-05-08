@@ -46,23 +46,13 @@ find_library(FW_FOUNDATION     Foundation     REQUIRED)
 find_library(FW_QUARTZCORE     QuartzCore     REQUIRED)
 find_library(FW_COREGRAPHICS   CoreGraphics   REQUIRED)
 
-set(APPLE_FRAMEWORKS
-    ${FW_METAL}
-    ${FW_METALKIT}
-    ${FW_AVFOUNDATION}
-    ${FW_AUDIOTOOLBOX}
-    ${FW_UIKIT}
-    ${FW_FOUNDATION}
-    ${FW_QUARTZCORE}
-    ${FW_COREGRAPHICS}
-)
 
 # ─── iOS Platform Layer ────────────────────────────────────────────────────
 set(IOS_PLATFORM_SOURCES
     ios/platform/HostSys_iOS.cpp
     ios/platform/CocoaTools.mm
-    ios/platform/AudioStream_iOS.cpp
-    ios/platform/Filesystem_iOS.cpp
+    ios/platform/AudioStream_iOS.mm
+    ios/platform/Filesystem_iOS.mm
 )
 
 # ─── Main Executable ───────────────────────────────────────────────────────
@@ -76,7 +66,14 @@ target_include_directories(BionicSX2 PRIVATE
 )
 
 target_link_libraries(BionicSX2 PRIVATE
-    ${APPLE_FRAMEWORKS}
+    ${FW_METAL}
+    ${FW_METALKIT}
+    ${FW_AVFOUNDATION}
+    ${FW_AUDIOTOOLBOX}
+    ${FW_UIKIT}
+    ${FW_FOUNDATION}
+    ${FW_QUARTZCORE}
+    ${FW_COREGRAPHICS}
 )
 
 # ─── iOS Bundle Properties ─────────────────────────────────────────────────
