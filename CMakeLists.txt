@@ -102,7 +102,7 @@ set(PCSX2_COMMON_SOURCES
     pcsx2/common/Timer.cpp
     pcsx2/common/WAVWriter.cpp
     pcsx2/common/WindowInfo.cpp
-    pcsx2/common/YAML.cpp
+    # pcsx2/common/YAML.cpp        (requires ryml — not available)
 
     # iOS platform layer (replaces HostSys.cpp and CocoaTools.mm)
     ios/platform/HostSys_iOS.cpp
