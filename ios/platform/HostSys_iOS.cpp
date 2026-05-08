@@ -32,7 +32,9 @@ void HostSys_MemProtect(void* base, size_t size, int prot) {
     bool needs_exec = (prot & PROT_EXEC) != 0;
 
     if (needs_write) {
+#if !defined(DISABLE_PCSX2_RECOMPILER) && defined(__APPLE__)
         pthread_jit_write_protect_np(false);
+#endif
         vm_prot |= VM_PROT_WRITE;
     }
 
@@ -43,7 +45,9 @@ void HostSys_MemProtect(void* base, size_t size, int prot) {
     vm_protect(mach_task_self(), (vm_address_t)base, size, FALSE, vm_prot);
 
     if (needs_exec) {
+#if !defined(DISABLE_PCSX2_RECOMPILER) && defined(__APPLE__)
         pthread_jit_write_protect_np(true);
+#endif
     }
 }
 
