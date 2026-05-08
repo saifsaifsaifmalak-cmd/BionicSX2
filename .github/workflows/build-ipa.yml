@@ -60,11 +60,11 @@ jobs:
 
       # ─── 6. Build ──────────────────────────────────────────────────
       - name: Build
-        run: xcodebuild build -target BionicSX2 -sdk iphoneos -configuration Release -verbose ONLY_ACTIVE_ARCH=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+        run: xcodebuild build -project build/BionicSX2.xcodeproj -target BionicSX2 -sdk iphoneos -configuration Release -verbose ONLY_ACTIVE_ARCH=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
       # ─── 7. Archive (unsigned IPA) ─────────────────────────────────
       - name: Archive IPA
-        run: xcodebuild archive -target BionicSX2 -sdk iphoneos -archivePath build/BionicSX2.xcarchive ONLY_ACTIVE_ARCH=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+        run: xcodebuild archive -project build/BionicSX2.xcodeproj -target BionicSX2 -sdk iphoneos -archivePath build/BionicSX2.xcarchive ONLY_ACTIVE_ARCH=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
       # ─── 8. Export unsigned IPA ────────────────────────────────────
       - name: Export IPA
