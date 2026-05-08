@@ -57,6 +57,10 @@ jobs:
             -DDISABLE_VULKAN=ON \
             -DDISABLE_ANDROID=ON \
             -D_M_ARM64=ON
+      - name: Debug build directory
+        run: |
+          ls -la build/
+          find build -name "*.xcodeproj" 2>/dev/null || echo "No xcodeproj found"
 
       # ─── 5. Build ──────────────────────────────────────────────────
       - name: Build
