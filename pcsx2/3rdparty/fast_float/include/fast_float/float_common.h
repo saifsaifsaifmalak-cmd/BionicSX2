@@ -401,11 +401,11 @@ full_multiplication(uint64_t a, uint64_t b) {
     return answer;
   }
   value128 answer;
-#if defined(_M_ARM64) && !defined(__MINGW32__)
-  // ARM64 has native support for 64-bit multiplications, no need to emulate
-  // But MinGW on ARM64 doesn't have native support for 64-bit multiplications
-  answer.high = __umulh(a, b);
-  answer.low = a * b;
+#if defined(_M_ARM64) && !defined(__MINGW32__) && !defined(__clang__)
+  // ARM64/clang: use __uint128_t for 64-bit multiplication
+  __uint128_t r = ((__uint128_t)a) * b;
+  answer.low = uint64_t(r);
+  answer.high = uint64_t(r >> 64);
 #elif defined(FASTFLOAT_32BIT) ||                                              \
     (defined(_WIN64) && !defined(__clang__) && !defined(_M_ARM64))
   answer.low = _umul128(a, b, &answer.high); // _umul128 not available on ARM64
