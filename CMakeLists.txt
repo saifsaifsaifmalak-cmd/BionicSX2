@@ -21,15 +21,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # ─── ARM64 Verification ────────────────────────────────────────────────────
 if(NOT CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
-    if(APPLE)
-        message(FATAL_ERROR
-            "BionicSX2 requires ARM64. Got: ${CMAKE_SYSTEM_PROCESSOR}"
-        )
-    else()
-        message(WARNING
-            "Non-ARM64 host (${CMAKE_SYSTEM_PROCESSOR}) — cross-compile validation only"
-        )
-    endif()
+    message(FATAL_ERROR
+        "BionicSX2 requires ARM64. Got: ${CMAKE_SYSTEM_PROCESSOR}"
+    )
 endif()
 
 # ─── Global Compile Definitions ────────────────────────────────────────────
@@ -60,21 +54,18 @@ add_subdirectory(pcsx2/3rdparty/fast_float EXCLUDE_FROM_ALL)
 find_package(PNG QUIET)
 if(NOT PNG_FOUND)
   # add_subdirectory(pcsx2/3rdparty/libpng EXCLUDE_FROM_ALL)  # Directory does not exist
-  message(WARNING "libpng not found in 3rdparty and not installed on system")
 endif()
 
 # libjpeg — use system if available
 find_package(JPEG QUIET)
 if(NOT JPEG_FOUND)
   # add_subdirectory(pcsx2/3rdparty/libjpeg EXCLUDE_FROM_ALL)  # Directory does not exist
-  message(WARNING "libjpeg not found in 3rdparty and not installed on system")
 endif()
 
 # libwebp — use system if available
 find_package(WebP QUIET)
 if(NOT WebP_FOUND)
   # add_subdirectory(pcsx2/3rdparty/libwebp EXCLUDE_FROM_ALL)  # Directory does not exist
-  message(WARNING "libwebp not found in 3rdparty and not installed on system")
 endif()
 
 # cpuinfo — ARM64 CPU feature detection
@@ -165,19 +156,14 @@ if(TARGET WebP::libwebp)
 endif()
 
 # ─── Apple Frameworks ──────────────────────────────────────────────────────
-find_library(FW_METAL          Metal)
-find_library(FW_METALKIT       MetalKit)
-find_library(FW_AVFOUNDATION   AVFoundation)
-find_library(FW_AUDIOTOOLBOX   AudioToolbox)
-find_library(FW_UIKIT          UIKit)
-find_library(FW_FOUNDATION     Foundation)
-find_library(FW_QUARTZCORE     QuartzCore)
-find_library(FW_COREGRAPHICS   CoreGraphics)
-
-# Warn if frameworks are missing (expected on non-macOS)
-if(NOT FW_METAL)
-    message(WARNING "Metal framework not found — iOS SDK required for full build")
-endif()
+find_library(FW_METAL          Metal REQUIRED)
+find_library(FW_METALKIT       MetalKit REQUIRED)
+find_library(FW_AVFOUNDATION   AVFoundation REQUIRED)
+find_library(FW_AUDIOTOOLBOX   AudioToolbox REQUIRED)
+find_library(FW_UIKIT          UIKit REQUIRED)
+find_library(FW_FOUNDATION     Foundation REQUIRED)
+find_library(FW_QUARTZCORE     QuartzCore REQUIRED)
+find_library(FW_COREGRAPHICS   CoreGraphics REQUIRED)
 
 
 # ─── iOS Platform Layer ────────────────────────────────────────────────────
@@ -201,14 +187,15 @@ target_include_directories(BionicSX2 PRIVATE
 
 target_link_libraries(BionicSX2 PRIVATE
     pcsx2_common
+    ${FW_METAL}
+    ${FW_METALKIT}
+    ${FW_AVFOUNDATION}
+    ${FW_AUDIOTOOLBOX}
+    ${FW_UIKIT}
+    ${FW_FOUNDATION}
+    ${FW_QUARTZCORE}
+    ${FW_COREGRAPHICS}
 )
-
-# Conditionally link Apple frameworks (only available on macOS/iOS)
-foreach(fw FW_METAL FW_METALKIT FW_AVFOUNDATION FW_AUDIOTOOLBOX FW_UIKIT FW_FOUNDATION FW_QUARTZCORE FW_COREGRAPHICS)
-    if(${fw})
-        target_link_libraries(BionicSX2 PRIVATE ${${fw}})
-    endif()
-endforeach()
 
 # ─── iOS Bundle Properties ─────────────────────────────────────────────────
 set_target_properties(BionicSX2 PROPERTIES

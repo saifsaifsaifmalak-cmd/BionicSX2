@@ -20,7 +20,21 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      # ─── 2. Xcode version ──────────────────────────────────────────
+      # ─── 2. Verify submodules ────────────────────────────────────
+      - name: Verify submodules
+        run: |
+          git submodule status
+          echo "--- Checking critical 3rdparty deps ---"
+          for dep in fmt fast_float cpuinfo; do
+            if [ -d "pcsx2/3rdparty/$dep" ]; then
+              echo "OK: $dep"
+            else
+              echo "MISSING: $dep — build will fail"
+              exit 1
+            fi
+          done
+
+      # ─── 3. Xcode version ──────────────────────────────────────────
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_15.4.app
 
@@ -29,13 +43,13 @@ jobs:
 
       # ─── 3. CMake ──────────────────────────────────────────────────
       - name: Install CMake
-        run: brew install cmake ninja
+        run: brew install cmake
 
       # ─── 4. Configure ──────────────────────────────────────────────
       - name: Configure CMake for iOS
         run: |
           cmake -B build \
-            -G Ninja \
+            -G Xcode \
             -DCMAKE_TOOLCHAIN_FILE=cmake/ios.toolchain.cmake \
             -DPCSX2_TARGET_IOS=ON \
             -DCMAKE_BUILD_TYPE=Release \
