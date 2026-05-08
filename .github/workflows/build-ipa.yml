@@ -60,7 +60,15 @@ jobs:
 
       # ─── 5. Build ──────────────────────────────────────────────────
       - name: Build
-        run: cmake --build build --config Release --parallel
+        run: xcodebuild build \
+          -scheme BionicSX2 \
+          -sdk iphoneos \
+          -configuration Release \
+          -verbose \
+          ONLY_ACTIVE_ARCH=NO \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO
 
       # ─── 6. Archive (unsigned IPA) ─────────────────────────────────
       - name: Archive IPA
