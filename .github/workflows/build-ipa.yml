@@ -41,11 +41,11 @@ jobs:
       - name: Xcode version
         run: xcodebuild -version
 
-      # ─── 3. CMake ──────────────────────────────────────────────────
+      # ─── 4. CMake ──────────────────────────────────────────────────
       - name: Install CMake
         run: brew install cmake
 
-      # ─── 4. Configure ──────────────────────────────────────────────
+      # ─── 5. Configure ──────────────────────────────────────────────
       - name: Configure CMake for iOS
         run: |
           cmake -B build \
@@ -57,36 +57,16 @@ jobs:
             -DDISABLE_VULKAN=ON \
             -DDISABLE_ANDROID=ON \
             -D_M_ARM64=ON
-      - name: Debug build directory
-        run: |
-          ls -la build/
-          find build -name "*.xcodeproj" 2>/dev/null || echo "No xcodeproj found"
 
-      # ─── 5. Build ──────────────────────────────────────────────────
+      # ─── 6. Build ──────────────────────────────────────────────────
       - name: Build
-        run: xcodebuild build \
-          -target BionicSX2 \
-          -sdk iphoneos \
-          -configuration Release \
-          -verbose \
-          ONLY_ACTIVE_ARCH=NO \
-          CODE_SIGN_IDENTITY="" \
-          CODE_SIGNING_REQUIRED=NO \
-          CODE_SIGNING_ALLOWED=NO
+        run: xcodebuild build -target BionicSX2 -sdk iphoneos -configuration Release -verbose ONLY_ACTIVE_ARCH=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
-      # ─── 6. Archive (unsigned IPA) ─────────────────────────────────
+      # ─── 7. Archive (unsigned IPA) ─────────────────────────────────
       - name: Archive IPA
-        run: |
-          xcodebuild archive \
-            -target BionicSX2 \
-            -sdk iphoneos \
-            -archivePath build/BionicSX2.xcarchive \
-            ONLY_ACTIVE_ARCH=NO \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+        run: xcodebuild archive -target BionicSX2 -sdk iphoneos -archivePath build/BionicSX2.xcarchive ONLY_ACTIVE_ARCH=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
-      # ─── 7. Export unsigned IPA ────────────────────────────────────
+      # ─── 8. Export unsigned IPA ────────────────────────────────────
       - name: Export IPA
         run: |
           mkdir -p build/ipa
@@ -97,7 +77,7 @@ jobs:
           cp -r BionicSX2.app Payload/
           zip -r BionicSX2.ipa Payload/
 
-      # ─── 8. Upload artifact ────────────────────────────────────────
+      # ─── 9. Upload artifact ────────────────────────────────────────
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
