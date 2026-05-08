@@ -44,8 +44,8 @@ add_subdirectory(pcsx2/3rdparty/fmt EXCLUDE_FROM_ALL)
 # fast_float — header-only
 add_subdirectory(pcsx2/3rdparty/fast_float EXCLUDE_FROM_ALL)
 
-# rapidyaml / ryml — NOT FOUND in pcsx2/3rdparty
-# add_subdirectory(pcsx2/3rdparty/ryml EXCLUDE_FROM_ALL)  # Directory does not exist
+# rapidyaml / ryml
+add_subdirectory(pcsx2/3rdparty/ryml EXCLUDE_FROM_ALL)
 
 # zlib — NOT FOUND in pcsx2/3rdparty
 # add_subdirectory(pcsx2/3rdparty/zlib EXCLUDE_FROM_ALL)  # Directory does not exist
@@ -102,7 +102,7 @@ set(PCSX2_COMMON_SOURCES
     pcsx2/common/Timer.cpp
     pcsx2/common/WAVWriter.cpp
     pcsx2/common/WindowInfo.cpp
-    # pcsx2/common/YAML.cpp        (requires ryml — not available)
+    pcsx2/common/YAML.cpp
 
     # iOS platform layer (replaces HostSys.cpp and CocoaTools.mm)
     ios/platform/HostSys_iOS.cpp
@@ -142,6 +142,12 @@ target_link_libraries(pcsx2_common PUBLIC
     fmt::fmt
     fast_float
     cpuinfo
+)
+
+# fast_float: disable __umulh usage on ARM64/clang (not available)
+# This tells fast_float to use __uint128_t path instead
+target_compile_definitions(pcsx2_common PUBLIC
+    FASTFLOAT_ALLOWS_LEADING_PLUS=1
 )
 
 # Link image libs if found

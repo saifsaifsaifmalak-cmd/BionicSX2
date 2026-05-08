@@ -20,35 +20,41 @@ void* HostSys_Alloc(size_t size) {
 
 // TODO Phase 2: Implement using vm_protect()
 // JIT pages: call pthread_jit_write_protect_np(false) before write
-//            call pthread_jit_write_protect_np(true)  before execute
+//            call pthread_jit_write_protect_np(true) before execute
 void HostSys_MemProtect(void* base, size_t size, int prot) {
+#if defined(__APPLE__) && defined(__arm64__)
+    // pthread_jit_write_protect_np available on iOS 14.2+ ARM64
+    // with com.apple.security.cs.allow-jit entitlement
+    if (prot & PROT_EXEC) {
+        pthread_jit_write_protect_np(1); // switch to exec mode
+    } else if (prot & PROT_WRITE) {
+        pthread_jit_write_protect_np(0); // switch to write mode
+    }
+    // vm_protect handles the actual mach-level permission
+    vm_protect(
+        mach_task_self(),
+        (vm_address_t)base,
+        size,
+        FALSE,
+        prot
+    );
+#else
     vm_prot_t vm_prot = VM_PROT_NONE;
 
     if (prot & PROT_READ) {
         vm_prot |= VM_PROT_READ;
     }
 
-    bool needs_write = (prot & PROT_WRITE) != 0;
-    bool needs_exec = (prot & PROT_EXEC) != 0;
-
-    if (needs_write) {
-#if !defined(DISABLE_PCSX2_RECOMPILER) && defined(__APPLE__)
-        pthread_jit_write_protect_np(false);
-#endif
+    if (prot & PROT_WRITE) {
         vm_prot |= VM_PROT_WRITE;
     }
 
-    if (needs_exec) {
+    if (prot & PROT_EXEC) {
         vm_prot |= VM_PROT_EXECUTE;
     }
 
     vm_protect(mach_task_self(), (vm_address_t)base, size, FALSE, vm_prot);
-
-    if (needs_exec) {
-#if !defined(DISABLE_PCSX2_RECOMPILER) && defined(__APPLE__)
-        pthread_jit_write_protect_np(true);
 #endif
-    }
 }
 
 // TODO Phase 2: Implement using vm_deallocate()

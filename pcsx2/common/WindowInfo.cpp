@@ -6,7 +6,11 @@
 #include "Error.h"
 #include "HeapArray.h"
 
-#if defined(_WIN32)
+#if defined(PCSX2_TARGET_IOS)
+// iOS implementation — platform-specific sections excluded
+// WindowInfo on iOS uses CAMetalLayer via CocoaTools.mm
+
+#elif defined(_WIN32)
 
 #include "RedtapeWindows.h"
 #include <dwmapi.h>
@@ -32,7 +36,7 @@ static std::optional<float> GetRefreshRateFromDisplayConfig(HWND hwnd)
 	DynamicHeapArray<DISPLAYCONFIG_PATH_INFO> path_info;
 	DynamicHeapArray<DISPLAYCONFIG_MODE_INFO> mode_info;
 
-	// I guess this could fail if it changes inbetween two calls... unlikely.
+	// I guess this could fail if it changes between two calls... unlikely.
 	for (;;)
 	{
 		UINT32 path_size = 0, mode_size = 0;
@@ -59,9 +63,9 @@ static std::optional<float> GetRefreshRateFromDisplayConfig(HWND hwnd)
 	for (const DISPLAYCONFIG_PATH_INFO& pi : path_info)
 	{
 		DISPLAYCONFIG_SOURCE_DEVICE_NAME sdn = {.header = {.type = DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME,
-													.size = sizeof(DISPLAYCONFIG_SOURCE_DEVICE_NAME),
-													.adapterId = pi.sourceInfo.adapterId,
-													.id = pi.sourceInfo.id}};
+														.size = sizeof(DISPLAYCONFIG_SOURCE_DEVICE_NAME),
+														.adapterId = pi.sourceInfo.adapterId,
+														.id = pi.sourceInfo.id}};
 		LONG res = DisplayConfigGetDeviceInfo(&sdn.header);
 		if (res != ERROR_SUCCESS)
 		{
@@ -73,7 +77,7 @@ static std::optional<float> GetRefreshRateFromDisplayConfig(HWND hwnd)
 		{
 			// Found the monitor!
 			return static_cast<float>(static_cast<double>(pi.targetInfo.refreshRate.Numerator) /
-									  static_cast<double>(pi.targetInfo.refreshRate.Denominator));
+												  static_cast<double>(pi.targetInfo.refreshRate.Denominator));
 		}
 	}
 
