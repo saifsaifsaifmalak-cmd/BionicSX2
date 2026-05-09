@@ -359,15 +359,22 @@ set(IOS_PLATFORM_SOURCES
     ios/platform/Filesystem_iOS.mm
 )
 
+# ─── iOS UI Layer ──────────────────────────────────────────────────────────
+set(IOS_UI_SOURCES
+    ios/ui/AppDelegate.mm
+    ios/ui/MetalViewController.mm
+)
+
 # ─── Main Executable ───────────────────────────────────────────────────────
 add_executable(BionicSX2
-    # Entry point placeholder — will be replaced with proper UIKit app entry in Phase 2
-    ios/main_placeholder.mm
+    ios/main.mm
+    ${IOS_UI_SOURCES}
 )
 
 target_include_directories(BionicSX2 PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/ios/platform
+    ${CMAKE_SOURCE_DIR}/ios/ui
 )
 
 target_link_libraries(BionicSX2 PRIVATE
