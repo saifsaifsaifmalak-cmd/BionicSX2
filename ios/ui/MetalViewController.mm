@@ -3,7 +3,7 @@
 
 @interface MetalViewController ()
 @property (nonatomic, strong) AVAudioEngine*     audioEngine;
-@property (nonatomic, assign) BOOL               emulatorRunning;
+@property (nonatomic, assign) BOOL               emulatorInitialized;
 @end
 
 @implementation MetalViewController
@@ -29,7 +29,7 @@
     [self.view insertSubview:self.metalView atIndex:0];
 
     [self setupAudioEngine];
-    [self startEmulatorLoop];
+    [self initializeEmulator];
 }
 
 - (void)setupAudioEngine {
@@ -50,20 +50,61 @@
     }
 }
 
+- (void)initializeEmulator {
+    if (!EmulatorBridge_Init()) {
+        NSLog(@"[BionicSX2] ERROR: EmulatorBridge_Init failed");
+        return;
+    }
+
+    NSString* docsPath = NSSearchPathForDirectoriesInDomains(
+        NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+    NSString* biosDir = [docsPath stringByAppendingPathComponent:@"bios"];
+
+    NSFileManager* fm = [NSFileManager defaultManager];
+    NSArray* files = [fm contentsOfDirectoryAtPath:biosDir error:nil];
+    NSString* biosFile = nil;
+
+    for (NSString* f in files) {
+        if ([f.pathExtension.lowercaseString isEqualToString:@"bin"]) {
+            biosFile = [biosDir stringByAppendingPathComponent:f];
+            break;
+        }
+    }
+
+    if (!biosFile) {
+        NSLog(@"[BionicSX2] No BIOS found in %@ — check Documents/bios/ folder",
+              biosDir);
+        return;
+    }
+
+    NSLog(@"[BionicSX2] Found BIOS: %@", biosFile);
+
+    if (EmulatorBridge_BootBIOS(biosFile.UTF8String)) {
+        NSLog(@"[BionicSX2] BIOS boot started");
+        self.emulatorInitialized = YES;
+    } else {
+        NSLog(@"[BionicSX2] BIOS boot failed");
+    }
+}
+
 - (void)startEmulatorLoop {
-    self.emulatorRunning = YES;
-    NSLog(@"[BionicSX2] Emulator loop started (Phase 3 — no game loaded)");
+    NSLog(@"[BionicSX2] Emulator loop started");
 }
 
 - (void)stopEmulatorLoop {
-    self.emulatorRunning = NO;
+    if (self.emulatorInitialized) {
+        EmulatorBridge_Shutdown();
+    }
     NSLog(@"[BionicSX2] Emulator loop stopped");
 }
 
 - (void)drawInMTKView:(MTKView*)view {
+    if (self.emulatorInitialized) {
+        EmulatorBridge_RunFrame();
+    }
+
     id<MTLCommandBuffer> commandBuffer = [self.commandQueue commandBuffer];
     MTLRenderPassDescriptor* rpd = view.currentRenderPassDescriptor;
-
     if (rpd) {
         id<MTLRenderCommandEncoder> encoder =
             [commandBuffer renderCommandEncoderWithDescriptor:rpd];
@@ -76,6 +117,12 @@
 - (void)mtkView:(MTKView*)view drawableSizeWillChange:(CGSize)size {
     NSLog(@"[BionicSX2] Metal view size: %.0fx%.0f",
           size.width, size.height);
+}
+
+- (void)dealloc {
+    if (self.emulatorInitialized) {
+        EmulatorBridge_Shutdown();
+    }
 }
 
 @end

@@ -357,6 +357,8 @@ set(IOS_PLATFORM_SOURCES
     ios/platform/CocoaTools.mm
     ios/platform/AudioStream_iOS.mm
     ios/platform/Filesystem_iOS.mm
+    ios/platform/Host_iOS.mm
+    ios/platform/EmulatorBridge.cpp
 )
 
 # ─── iOS UI Layer ──────────────────────────────────────────────────────────
@@ -369,10 +371,15 @@ set(IOS_UI_SOURCES
 add_executable(BionicSX2
     ios/main.mm
     ${IOS_UI_SOURCES}
+    ${IOS_PLATFORM_SOURCES}
 )
 
 target_include_directories(BionicSX2 PRIVATE
     ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/pcsx2
+    ${CMAKE_SOURCE_DIR}/pcsx2/pcsx2
+    ${CMAKE_SOURCE_DIR}/pcsx2/common
+    ${CMAKE_SOURCE_DIR}/ios
     ${CMAKE_SOURCE_DIR}/ios/platform
     ${CMAKE_SOURCE_DIR}/ios/ui
 )
