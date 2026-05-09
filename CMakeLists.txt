@@ -214,7 +214,6 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/vtlb.cpp
 
     # BIOS / ELF
-    pcsx2/pcsx2/BIOS.cpp
     pcsx2/pcsx2/Elfheader.cpp
     pcsx2/pcsx2/SaveState.cpp
 
