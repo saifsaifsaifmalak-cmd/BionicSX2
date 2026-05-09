@@ -52,6 +52,17 @@ jobs:
         run: |
           brew install cmake ninja pkg-config nasm
 
+      # ─── 5. Patch libjpeg-turbo for add_subdirectory ───────────────
+      # libjpeg-turbo refuses add_subdirectory() unless CMAKE_SOURCE_DIR matches.
+      # Patch the guard so we can build it as part of BionicSX2's CMake.
+      - name: Patch libjpeg-turbo CMake guard
+        run: |
+          # Replace the FATAL_ERROR guard with a comment so add_subdirectory() works
+          sed -i '' 's/if(NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)/if(FALSE)/' \
+            3rdparty/libjpeg-turbo/CMakeLists.txt
+          echo "Patched libjpeg-turbo CMakeLists.txt"
+          grep "if(FALSE)" 3rdparty/libjpeg-turbo/CMakeLists.txt
+
       # ─── 5. Patch c4core fast_float for iOS ─────────────────────────
       # Must run AFTER submodule init so the file exists with correct content
       - name: Patch c4core fast_float for iOS
