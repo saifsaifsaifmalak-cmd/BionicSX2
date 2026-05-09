@@ -50,7 +50,19 @@ jobs:
             jpeg-turbo libpng webp \
             pkg-config
 
-      # ─── 5. Configure ──────────────────────────────────────────────
+      # ─── 5. Patch c4core fast_float for iOS ─────────────────────────
+      # Must run AFTER submodule init so the file exists with correct content
+      - name: Patch c4core fast_float for iOS
+        run: |
+          # c4core fast_float_all.h uses _M_ARM64 to include <intrin.h>,
+          # but intrin.h is Windows-only and doesn't exist on iOS SDK.
+          # Add __APPLE__ exclusion to prevent this on Apple cross-compile.
+          sed -i '' 's/defined(_M_ARM64) \&\& !defined(__MINGW32__)/defined(_M_ARM64) \&\& !defined(__MINGW32__) \&\& !defined(__APPLE__)/' \
+            pcsx2/3rdparty/ryml/ext/c4core/src/c4/ext/fast_float_all.h
+          echo "Patched fast_float_all.h intrin.h guard"
+          grep "defined(_M_ARM64)" pcsx2/3rdparty/ryml/ext/c4core/src/c4/ext/fast_float_all.h | head -5
+
+      # ─── 6. Configure ──────────────────────────────────────────────
       - name: Configure CMake for iOS
         run: |
           cmake -B build \
@@ -63,15 +75,15 @@ jobs:
             -DDISABLE_ANDROID=ON \
             -D_M_ARM64=ON
 
-      # ─── 6. Build ──────────────────────────────────────────────────
+      # ─── 7. Build ──────────────────────────────────────────────────
       - name: Build
         run: cmake --build build --config Release --parallel
 
-      # ─── 7. Archive (unsigned IPA) ─────────────────────────────────
+      # ─── 8. Archive (unsigned IPA) ─────────────────────────────────
       - name: Archive IPA
         run: xcodebuild archive -project build/BionicSX2.xcodeproj -target BionicSX2 -sdk iphoneos -archivePath build/BionicSX2.xcarchive ONLY_ACTIVE_ARCH=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
-      # ─── 8. Export unsigned IPA ────────────────────────────────────
+      # ─── 9. Export unsigned IPA ────────────────────────────────────
       - name: Export IPA
         run: |
           mkdir -p build/ipa
