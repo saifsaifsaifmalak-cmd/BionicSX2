@@ -7,7 +7,6 @@
 #include "GS.h"
 #include "VMManager.h"
 #include "Input/InputManager.h"
-#include "Pcsx2Config.h"
 #include "common/ProgressCallback.h"
 #include "common/SettingsInterface.h"
 #include <cstring>

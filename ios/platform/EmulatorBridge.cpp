@@ -3,16 +3,14 @@
 // Phase 4: BIOS boot via interpreter
 
 #include "EmulatorBridge.h"
-#include "pcsx2/VMManager.h"
-#include "pcsx2/Host.h"
-#include "pcsx2/Config.h"
-#include "pcsx2/Pcsx2Config.h"
+#include "VMManager.h"
+#include "Host.h"
+#include "Config.h"
 #include "common/Console.h"
 #include "common/FileSystem.h"
 #include "common/Error.h"
 #include "common/SettingsInterface.h"
 #include "common/MemorySettingsInterface.h"
-#include "pcsx2/VMManager.h"
 
 static MemorySettingsInterface s_settings_interface;
 
