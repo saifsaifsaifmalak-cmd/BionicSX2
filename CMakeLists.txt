@@ -205,7 +205,6 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/FiFo.cpp
     pcsx2/pcsx2/FW.cpp
     pcsx2/pcsx2/GIF.cpp
-    pcsx2/pcsx2/GIFdump.cpp
     pcsx2/pcsx2/Hardware.cpp
     pcsx2/pcsx2/Hw.cpp
     pcsx2/pcsx2/HwRead.cpp
