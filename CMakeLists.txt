@@ -321,6 +321,7 @@ target_include_directories(pcsx2_core PUBLIC
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/include
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/libzip/lib
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/libzip/msvc
+    ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/vixl/include
     ${CMAKE_SOURCE_DIR}/ios/platform
 )
 
