@@ -216,7 +216,11 @@ target_link_libraries(common PUBLIC
 
 fixup_file_properties(common)
 target_compile_features(common PUBLIC cxx_std_17)
-target_include_directories(common PUBLIC ../3rdparty/include ../ ../3rdparty/ryml/src)
+target_include_directories(common PUBLIC
+	${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/ryml/src
+	${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/include
+	${CMAKE_SOURCE_DIR}/pcsx2
+)
 
 target_compile_definitions(common PUBLIC "${PCSX2_DEFS}")
 target_compile_options(common PRIVATE "${PCSX2_WARNINGS}")
