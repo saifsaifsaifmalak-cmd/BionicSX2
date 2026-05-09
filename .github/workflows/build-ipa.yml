@@ -61,8 +61,7 @@ jobs:
             -DDISABLE_PCSX2_RECOMPILER=ON \
             -DDISABLE_VULKAN=ON \
             -DDISABLE_ANDROID=ON \
-            -D_M_ARM64=ON \
-            -DCMAKE_INCLUDE_PATH="pcsx2/3rdparty/ryml/src"
+            -D_M_ARM64=ON
 
       # ─── 6. Build ──────────────────────────────────────────────────
       - name: Build

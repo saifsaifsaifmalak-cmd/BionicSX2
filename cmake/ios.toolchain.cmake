@@ -60,3 +60,8 @@ foreach(FW ${IOS_FRAMEWORKS})
         message(WARNING "Framework ${FW} not found — iOS SDK not available on this platform")
     endif()
 endforeach()
+
+# Include paths for 3rdparty sources (must be set early, before project())
+# ryml must be findable for #include "ryml.hpp"
+set(CMAKE_INCLUDE_PATH "${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/ryml/src"
+    CACHE STRING "Include search path for 3rdparty sources")
