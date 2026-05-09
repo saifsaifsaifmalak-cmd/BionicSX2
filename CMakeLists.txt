@@ -44,7 +44,9 @@ add_subdirectory(pcsx2/3rdparty/fmt EXCLUDE_FROM_ALL)
 # fast_float — header-only
 add_subdirectory(pcsx2/3rdparty/fast_float EXCLUDE_FROM_ALL)
 
-# rapidyaml / ryml
+# rapidyaml / ryml — configure c4core to use our fast_float (ARM64-compatible)
+set(C4CORE_USE_EXTERNAL_FASTFLOAT ON CACHE BOOL "" FORCE)
+set(C4CORE_FASTFLOAT_SOURCE_DIR "${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/fast_float" CACHE PATH "" FORCE)
 add_subdirectory(pcsx2/3rdparty/ryml EXCLUDE_FROM_ALL)
 
 # zlib — NOT FOUND in pcsx2/3rdparty
