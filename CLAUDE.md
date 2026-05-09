@@ -419,6 +419,29 @@ The blueprint must cover all of the following:
         - AudioStream stubs only (Phase 3)
         - CHD/CSO disc formats guarded (Phase 4)
 
+        ## Phase 3 — COMPLETED ✅ (2026-05-09)
+
+        ### Status: BUILD GREEN — IPA 7.9KB
+
+        ### What was built:
+        - ios/main.mm — real UIKit entry point
+        - ios/ui/AppDelegate.mm — app lifecycle
+        - ios/ui/MetalViewController.mm — MTKView 60fps + AVAudioEngine
+
+        ### Architecture established:
+          UIKit App
+            └── MetalViewController
+                    ├── MTKView (60fps Metal loop) ← Phase 5: GSDeviceMTL
+                    ├── AVAudioEngine (silent)      ← Phase 5: SPU2 output
+                    └── PCSX2 Core (hooked)        ← Phase 4: VMManager init
+
+        ### Constraints entering Phase 4:
+        - No BIOS loading yet
+        - No game file loading yet
+        - VMManager::Init() not called
+        - CHD/CSO disc formats still guarded
+        - No input handling (Phase 6)
+
         Phase 2 — Platform Layer
           Deliverable: All platform stubs replaced with real iOS implementations.
           HostSys, CocoaTools, AudioStream, Filesystem all functional.
