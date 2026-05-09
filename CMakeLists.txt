@@ -194,7 +194,7 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/COP0.cpp
     pcsx2/pcsx2/COP2.cpp
     pcsx2/pcsx2/FPU.cpp
-    pcsx2/pcsx2/VU.cpp
+    pcsx2/pcsx2/VU0.cpp
     pcsx2/pcsx2/VUmicro.cpp
     pcsx2/pcsx2/VUops.cpp
 
