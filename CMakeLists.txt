@@ -128,6 +128,7 @@ target_include_directories(pcsx2_common PUBLIC
     ${CMAKE_SOURCE_DIR}/pcsx2
     ${CMAKE_SOURCE_DIR}/pcsx2/common
     ${CMAKE_SOURCE_DIR}/ios/platform
+    ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/ryml/src
 )
 
 target_compile_definitions(pcsx2_common PUBLIC
@@ -142,6 +143,7 @@ target_link_libraries(pcsx2_common PUBLIC
     fmt::fmt
     fast_float
     cpuinfo
+    ryml
 )
 
 # fast_float: disable __umulh usage on ARM64/clang (not available)
