@@ -67,6 +67,7 @@ set(CMAKE_INSTALL_DOXYDIR "share/doc" CACHE STRING "" FORCE)
 add_subdirectory(3rdparty/libjpeg-turbo EXCLUDE_FROM_ALL)
 target_include_directories(jpeg-static PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libjpeg-turbo/src>
+    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/3rdparty/libjpeg-turbo>
 )
 add_library(JPEG::JPEG ALIAS jpeg-static)
 
