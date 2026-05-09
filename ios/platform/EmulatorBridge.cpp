@@ -59,7 +59,7 @@ bool EmulatorBridge_BootBIOS(const char* biosPath) {
         return true;
     } else {
         Console.WriteLn("[BionicSX2] VM boot failed: %s",
-            error.HasError() ? error.GetMessage().c_str() : "unknown error");
+            error.IsValid() ? error.GetDescription().c_str() : "unknown error");
         return false;
     }
 }
