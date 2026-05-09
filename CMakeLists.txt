@@ -65,7 +65,12 @@ set(CMAKE_INSTALL_DOCDIR "share/doc/libjpeg-turbo" CACHE STRING "" FORCE)
 set(CMAKE_INSTALL_MANDIR "share/man" CACHE STRING "" FORCE)
 set(CMAKE_INSTALL_DOXYDIR "share/doc" CACHE STRING "" FORCE)
 add_subdirectory(3rdparty/libjpeg-turbo EXCLUDE_FROM_ALL)
-add_library(JPEG::JPEG ALIAS jpeg-static)
+add_library(jpeg_include INTERFACE)
+target_include_directories(jpeg_include INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libjpeg-turbo/src
+)
+add_library(JPEG::JPEG INTERFACE)
+target_link_libraries(JPEG::JPEG INTERFACE jpeg-static jpeg_include)
 
 # libpng — zlib is part of iOS SDK
 find_package(ZLIB QUIET)
