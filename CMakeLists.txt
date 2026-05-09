@@ -44,9 +44,10 @@ add_subdirectory(pcsx2/3rdparty/fmt EXCLUDE_FROM_ALL)
 # fast_float — header-only
 add_subdirectory(pcsx2/3rdparty/fast_float EXCLUDE_FROM_ALL)
 
-# rapidyaml / ryml — configure c4core to use our fast_float (ARM64-compatible)
-set(C4CORE_USE_EXTERNAL_FASTFLOAT ON CACHE BOOL "" FORCE)
-set(C4CORE_FASTFLOAT_SOURCE_DIR "${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/fast_float" CACHE PATH "" FORCE)
+# rapidyaml / ryml — disable c4core fast_float (uses Windows x86 intrinsics incompatible with iOS/clang)
+# c4core's nested fast_float uses _M_ARM64 to detect ARM64 but then includes <intrin.h> which is Windows-only.
+# This is a known incompatibility in c4core's fast_float when cross-compiling.
+set(C4CORE_WITH_FASTFLOAT OFF CACHE BOOL "" FORCE)
 add_subdirectory(pcsx2/3rdparty/ryml EXCLUDE_FROM_ALL)
 
 # zlib — NOT FOUND in pcsx2/3rdparty
