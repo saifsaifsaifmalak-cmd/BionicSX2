@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: 2002-2026 PCSX2 Dev Team
 // SPDX-License-Identifier: GPL-3.0+
 
+#if !defined(PCSX2_TARGET_IOS)
+// CSO compressed disc format requires lz4 library.
+// TODO Phase 4: add lz4 submodule and enable CSO support on iOS.
+
 #include "CDVD/CsoFileReader.h"
 
 #include "common/Assertions.h"
@@ -308,3 +312,5 @@ int CsoFileReader::ReadChunk(void* dst, s64 chunkID)
 		return success ? m_frameSize : 0;
 	}
 }
+
+#endif // !PCSX2_TARGET_IOS
