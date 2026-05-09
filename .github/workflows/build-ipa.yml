@@ -92,11 +92,27 @@ jobs:
       - name: Build
         run: cmake --build build --config Release --parallel
 
-      # ─── 8. Archive (unsigned IPA) ─────────────────────────────────
-      - name: Archive IPA
-        run: xcodebuild archive -project build/BionicSX2.xcodeproj -target BionicSX2 -sdk iphoneos -archivePath build/BionicSX2.xcarchive ONLY_ACTIVE_ARCH=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+      # ─── 8. List Xcode schemes ──────────────────────────────────────
+      - name: List Xcode schemes
+        run: |
+          xcodebuild \
+            -project build/BionicSX2.xcodeproj \
+            -list 2>&1
 
-      # ─── 9. Export unsigned IPA ────────────────────────────────────
+      # ─── 9. Archive (unsigned IPA) ─────────────────────────────────
+      - name: Archive IPA
+        run: |
+          xcodebuild archive \
+            -project build/BionicSX2.xcodeproj \
+            -scheme BionicSX2 \
+            -sdk iphoneos \
+            -archivePath build/BionicSX2.xcarchive \
+            ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      # ─── 10. Export unsigned IPA ───────────────────────────────────
       - name: Export IPA
         run: |
           mkdir -p build/ipa
@@ -107,7 +123,7 @@ jobs:
           cp -r BionicSX2.app Payload/
           zip -r BionicSX2.ipa Payload/
 
-      # ─── 10. Upload artifact ──────────────────────────────────────
+      # ─── 11. Upload artifact ──────────────────────────────────────
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
