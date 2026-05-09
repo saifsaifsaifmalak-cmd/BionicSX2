@@ -49,7 +49,6 @@ add_subdirectory(pcsx2/3rdparty/fast_float EXCLUDE_FROM_ALL)
 # This is a known incompatibility in c4core's fast_float when cross-compiling.
 set(C4CORE_WITH_FASTFLOAT OFF CACHE BOOL "" FORCE)
 add_subdirectory(pcsx2/3rdparty/ryml EXCLUDE_FROM_ALL)
-add_subdirectory(pcsx2/3rdparty/libchdr EXCLUDE_FROM_ALL)
 
 # zlib — NOT FOUND in pcsx2/3rdparty
 # add_subdirectory(pcsx2/3rdparty/zlib EXCLUDE_FROM_ALL)  # Directory does not exist
@@ -324,7 +323,6 @@ target_include_directories(pcsx2_core PUBLIC
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/libzip/msvc
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/vixl/include
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/imgui/include
-    ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/libchdr/include
     ${CMAKE_SOURCE_DIR}/ios/platform
 )
 
@@ -340,7 +338,6 @@ target_compile_definitions(pcsx2_core PUBLIC
 
 target_link_libraries(pcsx2_core PUBLIC
     pcsx2_common
-    libchdr
 )
 
 # ─── Apple Frameworks ──────────────────────────────────────────────────────

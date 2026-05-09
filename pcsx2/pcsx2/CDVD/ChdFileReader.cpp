@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: 2002-2026 PCSX2 Dev Team
 // SPDX-License-Identifier: GPL-3.0+
 
+#if !defined(PCSX2_TARGET_IOS)
+// CHD format requires libchdr (zlib, lzma, zstd).
+// TODO Phase 4: add libchdr deps and enable CHD support on iOS.
+
 #include "ChdFileReader.h"
 
 #include "common/Assertions.h"
@@ -520,3 +524,5 @@ bool ChdFileReader::ParseTOC(u64* out_frame_count)
 	*out_frame_count = total_frames;
 	return true;
 }
+
+#endif // !PCSX2_TARGET_IOS
