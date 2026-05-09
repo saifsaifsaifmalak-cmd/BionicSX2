@@ -209,7 +209,6 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/HwRead.cpp
     pcsx2/pcsx2/HwWrite.cpp
     pcsx2/pcsx2/Memory.cpp
-    pcsx2/pcsx2/MemoryTypes.cpp
     pcsx2/pcsx2/Patch.cpp
     pcsx2/pcsx2/Sif.cpp
     pcsx2/pcsx2/vtlb.cpp
