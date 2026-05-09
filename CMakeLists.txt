@@ -184,7 +184,7 @@ target_compile_definitions(pcsx2_common PUBLIC
 # ── pcsx2_core — PS2 interpreter ─────────────────────────────────────────
 
 set(PCSX2_CORE_SOURCES
-    # EE / IOP interpreters
+    # EE / IOP Interpreters
     pcsx2/pcsx2/R3000A.cpp
     pcsx2/pcsx2/R3000AInterpreter.cpp
     pcsx2/pcsx2/R3000AOpcodeTables.cpp
@@ -194,8 +194,18 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/COP0.cpp
     pcsx2/pcsx2/COP2.cpp
     pcsx2/pcsx2/FPU.cpp
+    pcsx2/pcsx2/MMI.cpp
+    pcsx2/pcsx2/Interpreter.cpp
+
+    # VU
     pcsx2/pcsx2/VU0.cpp
+    pcsx2/pcsx2/VU0micro.cpp
+    pcsx2/pcsx2/VU0microInterp.cpp
+    pcsx2/pcsx2/VU1micro.cpp
+    pcsx2/pcsx2/VU1microInterp.cpp
+    pcsx2/pcsx2/VUflags.cpp
     pcsx2/pcsx2/VUmicro.cpp
+    pcsx2/pcsx2/VUmicroMem.cpp
     pcsx2/pcsx2/VUops.cpp
 
     # Hardware
@@ -204,41 +214,61 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/Dmac.cpp
     pcsx2/pcsx2/FiFo.cpp
     pcsx2/pcsx2/FW.cpp
-    pcsx2/pcsx2/GIF.cpp
+    pcsx2/pcsx2/Gif.cpp
+    pcsx2/pcsx2/Gif_Logger.cpp
+    pcsx2/pcsx2/Gif_Unit.cpp
     pcsx2/pcsx2/Hw.cpp
     pcsx2/pcsx2/HwRead.cpp
     pcsx2/pcsx2/HwWrite.cpp
     pcsx2/pcsx2/Memory.cpp
+    pcsx2/pcsx2/MTGS.cpp
+    pcsx2/pcsx2/MTVU.cpp
     pcsx2/pcsx2/Patch.cpp
-    pcsx2/pcsx2/Sif.cpp
-    pcsx2/pcsx2/vtlb.cpp
-
-    # BIOS / ELF
-    pcsx2/pcsx2/Elfheader.cpp
+    pcsx2/pcsx2/PINE.cpp
     pcsx2/pcsx2/SaveState.cpp
+    pcsx2/pcsx2/Sif.cpp
+    pcsx2/pcsx2/Sif0.cpp
+    pcsx2/pcsx2/Sif1.cpp
+    pcsx2/pcsx2/sif2.cpp
+    pcsx2/pcsx2/SPR.cpp
+    pcsx2/pcsx2/StateWrapper.cpp
+    pcsx2/pcsx2/Vif.cpp
+    pcsx2/pcsx2/Vif_Codes.cpp
+    pcsx2/pcsx2/Vif_Transfer.cpp
+    pcsx2/pcsx2/Vif_Unpack.cpp
+    pcsx2/pcsx2/Vif0_Dma.cpp
+    pcsx2/pcsx2/Vif1_Dma.cpp
+    pcsx2/pcsx2/Vif1_MFIFO.cpp
+    pcsx2/pcsx2/vtlb.cpp
+    pcsx2/pcsx2/Elfheader.cpp
 
     # IOP
     pcsx2/pcsx2/IopBios.cpp
     pcsx2/pcsx2/IopCounters.cpp
     pcsx2/pcsx2/IopDma.cpp
+    pcsx2/pcsx2/IopGte.cpp
     pcsx2/pcsx2/IopHw.cpp
     pcsx2/pcsx2/IopIrq.cpp
     pcsx2/pcsx2/IopMem.cpp
-    pcsx2/pcsx2/IopSio2.cpp
     pcsx2/pcsx2/Mdec.cpp
 
     # IPU
     pcsx2/pcsx2/IPU/IPU.cpp
     pcsx2/pcsx2/IPU/IPUdma.cpp
-    pcsx2/pcsx2/IPU/mpeg2_vlc.cpp
     pcsx2/pcsx2/IPU/yuv2rgb.cpp
 
     # CDVD
-    pcsx2/pcsx2/CDVD/CDVDaccess.cpp
     pcsx2/pcsx2/CDVD/CDVDcommon.cpp
     pcsx2/pcsx2/CDVD/CDVDisoReader.cpp
-    pcsx2/pcsx2/CDVD/IsoFS/IsoFS.cpp
-    pcsx2/pcsx2/CDVD/IsoFS/IsoFSCDVD.cpp
+    pcsx2/pcsx2/CDVD/InputIsoFile.cpp
+    pcsx2/pcsx2/CDVD/OutputIsoFile.cpp
+    pcsx2/pcsx2/CDVD/ThreadedFileReader.cpp
+    pcsx2/pcsx2/CDVD/BlockdumpFileReader.cpp
+    pcsx2/pcsx2/CDVD/ChdFileReader.cpp
+    pcsx2/pcsx2/CDVD/CsoFileReader.cpp
+    pcsx2/pcsx2/CDVD/GzippedFileReader.cpp
+    pcsx2/pcsx2/CDVD/FlatFileReader.cpp
+    pcsx2/pcsx2/CDVD/Ps1CD.cpp
 
     # SIO / Pad
     pcsx2/pcsx2/SIO/Pad/Pad.cpp
@@ -246,24 +276,22 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/SIO/Pad/PadNotConnected.cpp
     pcsx2/pcsx2/SIO/Sio0.cpp
     pcsx2/pcsx2/SIO/Sio2.cpp
-    pcsx2/pcsx2/SIO/SioTypes.cpp
-    pcsx2/pcsx2/SIO/Mcd/MemoryCardFile.cpp
-    pcsx2/pcsx2/SIO/Mcd/MemoryCardFolder.cpp
+    pcsx2/pcsx2/SIO/Memcard/MemoryCardFile.cpp
+    pcsx2/pcsx2/SIO/Memcard/MemoryCardFolder.cpp
 
     # SPU2
     pcsx2/pcsx2/SPU2/Dma.cpp
     pcsx2/pcsx2/SPU2/Mixer.cpp
     pcsx2/pcsx2/SPU2/RegTable.cpp
     pcsx2/pcsx2/SPU2/Reverb.cpp
-    pcsx2/pcsx2/SPU2/Spu2.cpp
-    pcsx2/pcsx2/SPU2/SndOut.cpp
+    pcsx2/pcsx2/SPU2/spu2.cpp
 
     # Config / VM
     pcsx2/pcsx2/Pcsx2Config.cpp
     pcsx2/pcsx2/VMManager.cpp
     pcsx2/pcsx2/Host.cpp
 
-    # GS core (no Vulkan, no OpenGL, no DX)
+    # GS Core (no Vulkan, no OpenGL, no DX)
     pcsx2/pcsx2/GS/GS.cpp
     pcsx2/pcsx2/GS/GSBlock.cpp
     pcsx2/pcsx2/GS/GSClut.cpp
@@ -275,10 +303,10 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/GS/Renderers/Common/GSDevice.cpp
     pcsx2/pcsx2/GS/Renderers/Common/GSRenderer.cpp
     pcsx2/pcsx2/GS/Renderers/Common/GSTexture.cpp
+    pcsx2/pcsx2/GS/Renderers/Common/GSVertexTraceFMM.cpp
     pcsx2/pcsx2/GS/Renderers/SW/GSDrawScanline.cpp
     pcsx2/pcsx2/GS/Renderers/SW/GSRasterizer.cpp
     pcsx2/pcsx2/GS/Renderers/SW/GSTextureCacheSW.cpp
-    pcsx2/pcsx2/GS/Renderers/SW/GSVertexTraceFMM.cpp
 )
 
 add_library(pcsx2_core STATIC ${PCSX2_CORE_SOURCES})
