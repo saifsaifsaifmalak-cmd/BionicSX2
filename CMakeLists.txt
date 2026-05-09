@@ -301,9 +301,6 @@ pcsx2/pcsx2/SPU2/RegTable.cpp
 
     # PS2 subsystem
     pcsx2/pcsx2/ps2/BiosTools.cpp
-    pcsx2/pcsx2/ps2/EeRecompiler.cpp
-    pcsx2/pcsx2/ps2/BiosDebug.cpp
-    pcsx2/pcsx2/ps2/Ps2Memcard.cpp
 
     # GS Core (no Vulkan, no OpenGL, no DX)
     pcsx2/pcsx2/GS/GS.cpp
