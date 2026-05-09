@@ -3630,6 +3630,7 @@ static void InitializeProcessorList()
 {
 	s_big_cores = 0;
 	s_small_cores = 0;
+#if !defined(PCSX2_TARGET_IOS)
 	std::vector<DarwinMisc::CPUClass> classes = DarwinMisc::GetCPUClasses();
 	for (size_t i = 0; i < classes.size(); i++)
 	{
@@ -3639,6 +3640,7 @@ static void InitializeProcessorList()
 			cls.num_physical, cls.num_logical, i, cls.name.c_str(), is_big ? "big" : "small");
 		(is_big ? s_big_cores : s_small_cores) += cls.num_physical;
 	}
+#endif
 }
 
 void VMManager::SetHardwareDependentDefaultSettings(SettingsInterface& si)
@@ -3773,6 +3775,7 @@ void VMManager::ReloadPINE()
 
 void VMManager::InitializeDiscordPresence()
 {
+#if !defined(PCSX2_TARGET_IOS) && !defined(DISABLE_DISCORD_RPC)
 	if (s_discord_presence_active)
 		return;
 
@@ -3781,10 +3784,12 @@ void VMManager::InitializeDiscordPresence()
 	s_discord_presence_active = true;
 
 	UpdateDiscordPresence(true);
+#endif
 }
 
 void VMManager::ShutdownDiscordPresence()
 {
+#if !defined(PCSX2_TARGET_IOS) && !defined(DISABLE_DISCORD_RPC)
 	if (!s_discord_presence_active)
 		return;
 
@@ -3792,10 +3797,12 @@ void VMManager::ShutdownDiscordPresence()
 	Discord_RunCallbacks();
 	Discord_Shutdown();
 	s_discord_presence_active = false;
+#endif
 }
 
 void VMManager::UpdateDiscordPresence(bool update_session_time)
 {
+#if !defined(PCSX2_TARGET_IOS) && !defined(DISABLE_DISCORD_RPC)
 	if (!s_discord_presence_active)
 		return;
 
@@ -3836,14 +3843,17 @@ void VMManager::UpdateDiscordPresence(bool update_session_time)
 
 	Discord_UpdatePresence(&rp);
 	Discord_RunCallbacks();
+#endif
 }
 
 void VMManager::PollDiscordPresence()
 {
+#if !defined(PCSX2_TARGET_IOS) && !defined(DISABLE_DISCORD_RPC)
 	if (!s_discord_presence_active)
 		return;
 
 	Discord_RunCallbacks();
+#endif
 }
 
 bool VMManager::WriteBytesToEESIORXFIFO(const std::span<const u8> data)
