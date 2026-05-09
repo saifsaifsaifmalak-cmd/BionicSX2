@@ -316,6 +316,7 @@ target_include_directories(pcsx2_core PUBLIC
     ${CMAKE_SOURCE_DIR}/pcsx2/pcsx2
     ${CMAKE_SOURCE_DIR}/pcsx2/common
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/ryml/src
+    ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/ccc/src
     ${CMAKE_SOURCE_DIR}/ios/platform
 )
 
