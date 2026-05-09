@@ -21,11 +21,11 @@ jobs:
           fetch-depth: 0
 
       # ─── 2. Verify submodules ────────────────────────────────────
-      - name: Verify submodules
+      - name: Verify and init submodules
         run: |
           git submodule status
           echo "--- Checking critical 3rdparty deps ---"
-          for dep in fmt fast_float cpuinfo; do
+          for dep in fmt fast_float cpuinfo ryml; do
             if [ -d "pcsx2/3rdparty/$dep" ]; then
               echo "OK: $dep"
             else
@@ -33,6 +33,8 @@ jobs:
               exit 1
             fi
           done
+          echo "--- Init nested submodules inside pcsx2 ---"
+          cd pcsx2 && git submodule update --init --recursive && cd ..
 
       # ─── 3. Xcode version ──────────────────────────────────────────
       - name: Select Xcode
@@ -41,9 +43,12 @@ jobs:
       - name: Xcode version
         run: xcodebuild -version
 
-      # ─── 4. CMake ──────────────────────────────────────────────────
-      - name: Install CMake
-        run: brew install cmake
+      # ─── 4. CMake + Dependencies ─────────────────────────────────
+      - name: Install CMake and dependencies
+        run: |
+          brew install cmake ninja \
+            jpeg-turbo libpng webp \
+            pkg-config
 
       # ─── 5. Configure ──────────────────────────────────────────────
       - name: Configure CMake for iOS
@@ -56,7 +61,8 @@ jobs:
             -DDISABLE_PCSX2_RECOMPILER=ON \
             -DDISABLE_VULKAN=ON \
             -DDISABLE_ANDROID=ON \
-            -D_M_ARM64=ON
+            -D_M_ARM64=ON \
+            -DCMAKE_PREFIX_PATH="$(brew --prefix)"
 
       # ─── 6. Build ──────────────────────────────────────────────────
       - name: Build
