@@ -62,7 +62,7 @@ jobs:
             -DDISABLE_VULKAN=ON \
             -DDISABLE_ANDROID=ON \
             -D_M_ARM64=ON \
-            -DCMAKE_PREFIX_PATH="$(brew --prefix)"
+            -DCMAKE_INCLUDE_PATH="pcsx2/3rdparty/ryml/src"
 
       # ─── 6. Build ──────────────────────────────────────────────────
       - name: Build
