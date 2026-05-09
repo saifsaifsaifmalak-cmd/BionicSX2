@@ -181,6 +181,134 @@ target_compile_definitions(pcsx2_common PUBLIC
     FASTFLOAT_ALLOWS_LEADING_PLUS=1
 )
 
+# ── pcsx2_core — PS2 interpreter ─────────────────────────────────────────
+
+set(PCSX2_CORE_SOURCES
+    # EE / IOP interpreters
+    pcsx2/pcsx2/R3000A.cpp
+    pcsx2/pcsx2/R3000AInterpreter.cpp
+    pcsx2/pcsx2/R3000AOpcodeTables.cpp
+    pcsx2/pcsx2/R5900.cpp
+    pcsx2/pcsx2/R5900OpcodeImpl.cpp
+    pcsx2/pcsx2/R5900OpcodeTables.cpp
+    pcsx2/pcsx2/COP0.cpp
+    pcsx2/pcsx2/COP2.cpp
+    pcsx2/pcsx2/FPU.cpp
+    pcsx2/pcsx2/VU.cpp
+    pcsx2/pcsx2/VUmicro.cpp
+    pcsx2/pcsx2/VUops.cpp
+
+    # Hardware
+    pcsx2/pcsx2/Cache.cpp
+    pcsx2/pcsx2/Counters.cpp
+    pcsx2/pcsx2/Dmac.cpp
+    pcsx2/pcsx2/FiFo.cpp
+    pcsx2/pcsx2/FW.cpp
+    pcsx2/pcsx2/GIF.cpp
+    pcsx2/pcsx2/GIFdump.cpp
+    pcsx2/pcsx2/Hardware.cpp
+    pcsx2/pcsx2/Hw.cpp
+    pcsx2/pcsx2/HwRead.cpp
+    pcsx2/pcsx2/HwWrite.cpp
+    pcsx2/pcsx2/Memory.cpp
+    pcsx2/pcsx2/MemoryTypes.cpp
+    pcsx2/pcsx2/Patch.cpp
+    pcsx2/pcsx2/Sif.cpp
+    pcsx2/pcsx2/vtlb.cpp
+
+    # BIOS / ELF
+    pcsx2/pcsx2/BIOS.cpp
+    pcsx2/pcsx2/Elfheader.cpp
+    pcsx2/pcsx2/SaveState.cpp
+
+    # IOP
+    pcsx2/pcsx2/IopBios.cpp
+    pcsx2/pcsx2/IopCounters.cpp
+    pcsx2/pcsx2/IopDma.cpp
+    pcsx2/pcsx2/IopHw.cpp
+    pcsx2/pcsx2/IopIrq.cpp
+    pcsx2/pcsx2/IopMem.cpp
+    pcsx2/pcsx2/IopSio2.cpp
+    pcsx2/pcsx2/Mdec.cpp
+
+    # IPU
+    pcsx2/pcsx2/IPU/IPU.cpp
+    pcsx2/pcsx2/IPU/IPUdma.cpp
+    pcsx2/pcsx2/IPU/mpeg2_vlc.cpp
+    pcsx2/pcsx2/IPU/yuv2rgb.cpp
+
+    # CDVD
+    pcsx2/pcsx2/CDVD/CDVDaccess.cpp
+    pcsx2/pcsx2/CDVD/CDVDcommon.cpp
+    pcsx2/pcsx2/CDVD/CDVDisoReader.cpp
+    pcsx2/pcsx2/CDVD/IsoFS/IsoFS.cpp
+    pcsx2/pcsx2/CDVD/IsoFS/IsoFSCDVD.cpp
+
+    # SIO / Pad
+    pcsx2/pcsx2/SIO/Pad/Pad.cpp
+    pcsx2/pcsx2/SIO/Pad/PadDualshock2.cpp
+    pcsx2/pcsx2/SIO/Pad/PadNotConnected.cpp
+    pcsx2/pcsx2/SIO/Sio0.cpp
+    pcsx2/pcsx2/SIO/Sio2.cpp
+    pcsx2/pcsx2/SIO/SioTypes.cpp
+    pcsx2/pcsx2/SIO/Mcd/MemoryCardFile.cpp
+    pcsx2/pcsx2/SIO/Mcd/MemoryCardFolder.cpp
+
+    # SPU2
+    pcsx2/pcsx2/SPU2/Dma.cpp
+    pcsx2/pcsx2/SPU2/Mixer.cpp
+    pcsx2/pcsx2/SPU2/RegTable.cpp
+    pcsx2/pcsx2/SPU2/Reverb.cpp
+    pcsx2/pcsx2/SPU2/Spu2.cpp
+    pcsx2/pcsx2/SPU2/SndOut.cpp
+
+    # Config / VM
+    pcsx2/pcsx2/Pcsx2Config.cpp
+    pcsx2/pcsx2/VMManager.cpp
+    pcsx2/pcsx2/Host.cpp
+
+    # GS core (no Vulkan, no OpenGL, no DX)
+    pcsx2/pcsx2/GS/GS.cpp
+    pcsx2/pcsx2/GS/GSBlock.cpp
+    pcsx2/pcsx2/GS/GSClut.cpp
+    pcsx2/pcsx2/GS/GSLocalMemory.cpp
+    pcsx2/pcsx2/GS/GSPerfMon.cpp
+    pcsx2/pcsx2/GS/GSState.cpp
+    pcsx2/pcsx2/GS/GSTables.cpp
+    pcsx2/pcsx2/GS/GSUtil.cpp
+    pcsx2/pcsx2/GS/Renderers/Common/GSDevice.cpp
+    pcsx2/pcsx2/GS/Renderers/Common/GSRenderer.cpp
+    pcsx2/pcsx2/GS/Renderers/Common/GSTexture.cpp
+    pcsx2/pcsx2/GS/Renderers/SW/GSDrawScanline.cpp
+    pcsx2/pcsx2/GS/Renderers/SW/GSRasterizer.cpp
+    pcsx2/pcsx2/GS/Renderers/SW/GSTextureCacheSW.cpp
+    pcsx2/pcsx2/GS/Renderers/SW/GSVertexTraceFMM.cpp
+)
+
+add_library(pcsx2_core STATIC ${PCSX2_CORE_SOURCES})
+
+target_include_directories(pcsx2_core PUBLIC
+    ${CMAKE_SOURCE_DIR}/pcsx2
+    ${CMAKE_SOURCE_DIR}/pcsx2/pcsx2
+    ${CMAKE_SOURCE_DIR}/pcsx2/common
+    ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/ryml/src
+    ${CMAKE_SOURCE_DIR}/ios/platform
+)
+
+target_compile_definitions(pcsx2_core PUBLIC
+    PCSX2_TARGET_IOS=1
+    _M_ARM64=1
+    DISABLE_PCSX2_RECOMPILER=1
+    DISABLE_VULKAN=1
+    DISABLE_ANDROID=1
+    TARGET_OS_IPHONE=1
+    DISABLE_DISCORD_RPC=1
+)
+
+target_link_libraries(pcsx2_core PUBLIC
+    pcsx2_common
+)
+
 # ─── Apple Frameworks ──────────────────────────────────────────────────────
 find_library(FW_METAL          Metal REQUIRED)
 find_library(FW_METALKIT       MetalKit REQUIRED)
@@ -212,6 +340,7 @@ target_include_directories(BionicSX2 PRIVATE
 )
 
 target_link_libraries(BionicSX2 PRIVATE
+    pcsx2_core
     pcsx2_common
     ${FW_METAL}
     ${FW_METALKIT}

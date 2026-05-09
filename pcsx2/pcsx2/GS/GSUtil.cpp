@@ -9,7 +9,7 @@
 
 #include <array>
 
-#ifdef ENABLE_VULKAN
+#if !defined(DISABLE_VULKAN)
 #include "GS/Renderers/Vulkan/GSDeviceVK.h"
 #endif
 

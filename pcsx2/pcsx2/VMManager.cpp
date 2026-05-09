@@ -53,12 +53,16 @@
 #include "common/StringUtil.h"
 #include "common/Threading.h"
 #include "common/Timer.h"
+#if !defined(PCSX2_TARGET_IOS)
 #include "common/emitter/x86emitter.h"
+#endif
 
 #include "IconsFontAwesome.h"
 #include "IconsPromptFont.h"
 #include "cpuinfo.h"
+#if !defined(PCSX2_TARGET_IOS) && !defined(DISABLE_DISCORD_RPC)
 #include "discord_rpc.h"
+#endif
 #include "fmt/format.h"
 
 #include <atomic>
@@ -74,7 +78,7 @@
 #include <dxgi.h>
 #endif
 
-#ifdef __APPLE__
+#if defined(__APPLE__) && !defined(PCSX2_TARGET_IOS)
 #include "common/Darwin/DarwinMisc.h"
 #endif
 

@@ -30,7 +30,7 @@
 #include "GS/Renderers/Metal/GSMetalCPPAccessible.h"
 #endif
 
-#ifdef ENABLE_VULKAN
+#if !defined(DISABLE_VULKAN)
 #include "GS/Renderers/Vulkan/GSDeviceVK.h"
 #endif
 
@@ -82,8 +82,10 @@ static RenderAPI GetAPIForRenderer(GSRendererType renderer)
 		case GSRendererType::OGL:
 			return RenderAPI::OpenGL;
 
+#if !defined(DISABLE_VULKAN)
 		case GSRendererType::VK:
 			return RenderAPI::Vulkan;
+#endif
 
 #ifdef _WIN32
 		case GSRendererType::DX11:
@@ -129,7 +131,7 @@ static bool OpenGSDevice(GSRendererType renderer, bool clear_state_on_fail, bool
 			break;
 #endif
 
-#ifdef ENABLE_VULKAN
+#if !defined(DISABLE_VULKAN)
 		case RenderAPI::Vulkan:
 			g_gs_device = std::make_unique<GSDeviceVK>();
 			break;
@@ -608,7 +610,7 @@ std::vector<GSAdapterInfo> GSGetAdapterInfo(GSRendererType renderer)
 		break;
 #endif
 
-#ifdef ENABLE_VULKAN
+#if !defined(DISABLE_VULKAN)
 		case GSRendererType::VK:
 		{
 			ret = GSDeviceVK::GetAdapterInfo();
