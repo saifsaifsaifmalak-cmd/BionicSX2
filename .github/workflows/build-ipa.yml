@@ -119,13 +119,11 @@ jobs:
       # ─── 11. Export unsigned IPA ───────────────────────────────────
       - name: Export IPA
         run: |
-          mkdir -p build/ipa
+          # .app is in build/Release-iphoneos/ (not inside xcarchive for unsigned builds)
+          APP_PATH="build/Release-iphoneos/BionicSX2.app"
+          echo "Using .app at: $APP_PATH"
 
-          APP_PATH=$(find build/BionicSX2.xcarchive \
-            -name "*.app" -type d | head -1)
-          echo "Found .app at: $APP_PATH"
-
-          if [ -n "$APP_PATH" ]; then
+          if [ -d "$APP_PATH" ]; then
             mkdir -p build/ipa/Payload
             cp -r "$APP_PATH" build/ipa/Payload/
             cd build/ipa
@@ -133,8 +131,8 @@ jobs:
             echo "IPA created successfully"
             ls -lh BionicSX2.ipa
           else
-            echo "ERROR: No .app found in xcarchive"
-            find build/BionicSX2.xcarchive -type d
+            echo "ERROR: .app not found at $APP_PATH"
+            ls build/
             exit 1
           fi
 
