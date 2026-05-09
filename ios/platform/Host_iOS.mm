@@ -3,11 +3,11 @@
 // Phase 4: minimal stubs sufficient for BIOS boot
 // Phase 5: connect to MetalViewController, GSDeviceMTL
 
-#include "pcsx2/Host.h"
-#include "pcsx2/GS.h"
-#include "pcsx2/VMManager.h"
-#include "pcsx2/Input/InputManager.h"
-#include "pcsx2/Pcsx2Config.h"
+#include "Host.h"
+#include "GS.h"
+#include "VMManager.h"
+#include "Input/InputManager.h"
+#include "Pcsx2Config.h"
 #include "common/ProgressCallback.h"
 #include "common/SettingsInterface.h"
 #include <cstring>

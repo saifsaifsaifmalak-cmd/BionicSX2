@@ -1,5 +1,6 @@
 #import "MetalViewController.h"
 #import <AVFoundation/AVFoundation.h>
+#include "platform/EmulatorBridge.h"
 
 @interface MetalViewController ()
 @property (nonatomic, strong) AVAudioEngine*     audioEngine;
