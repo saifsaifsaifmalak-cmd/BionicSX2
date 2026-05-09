@@ -259,6 +259,7 @@ set(PCSX2_CORE_SOURCES
 
     # CDVD
     pcsx2/pcsx2/CDVD/CDVDcommon.cpp
+    pcsx2/pcsx2/CDVD/CDVDdiscReader.cpp
     pcsx2/pcsx2/CDVD/CDVDisoReader.cpp
     pcsx2/pcsx2/CDVD/InputIsoFile.cpp
     pcsx2/pcsx2/CDVD/OutputIsoFile.cpp
@@ -267,6 +268,9 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/CDVD/ChdFileReader.cpp
     pcsx2/pcsx2/CDVD/CsoFileReader.cpp
     pcsx2/pcsx2/CDVD/GzippedFileReader.cpp
+
+    # PS2 subsystem (required by interpreter)
+    pcsx2/pcsx2/ps2/BiosTools.cpp
     pcsx2/pcsx2/CDVD/FlatFileReader.cpp
     pcsx2/pcsx2/CDVD/Ps1CD.cpp
 
@@ -282,14 +286,24 @@ set(PCSX2_CORE_SOURCES
     # SPU2
     pcsx2/pcsx2/SPU2/Dma.cpp
     pcsx2/pcsx2/SPU2/Mixer.cpp
-    pcsx2/pcsx2/SPU2/RegTable.cpp
+pcsx2/pcsx2/SPU2/RegTable.cpp
     pcsx2/pcsx2/SPU2/Reverb.cpp
     pcsx2/pcsx2/SPU2/spu2.cpp
+    pcsx2/pcsx2/SPU2/spu2sys.cpp
+
+    # Logging
+    pcsx2/pcsx2/SourceLog.cpp
 
     # Config / VM
     pcsx2/pcsx2/Pcsx2Config.cpp
     pcsx2/pcsx2/VMManager.cpp
     pcsx2/pcsx2/Host.cpp
+
+    # PS2 subsystem
+    pcsx2/pcsx2/ps2/BiosTools.cpp
+    pcsx2/pcsx2/ps2/EeRecompiler.cpp
+    pcsx2/pcsx2/ps2/BiosDebug.cpp
+    pcsx2/pcsx2/ps2/Ps2Memcard.cpp
 
     # GS Core (no Vulkan, no OpenGL, no DX)
     pcsx2/pcsx2/GS/GS.cpp
