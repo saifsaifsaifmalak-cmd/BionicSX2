@@ -75,7 +75,13 @@ jobs:
           echo "Patched fast_float_all.h intrin.h guard"
           grep "defined(_M_ARM64)" pcsx2/3rdparty/ryml/ext/c4core/src/c4/ext/fast_float_all.h | head -5
 
-      # ─── 6. Configure ──────────────────────────────────────────────
+      # ─── 6. Clean build directory ────────────────────────────────────────
+      - name: Clean build directory
+        run: |
+          rm -rf build
+          echo "Build directory cleaned"
+
+      # ─── 7. Configure ──────────────────────────────────────────────
       - name: Configure CMake for iOS
         run: |
           cmake -B build \
@@ -88,18 +94,18 @@ jobs:
             -DDISABLE_ANDROID=ON \
             -D_M_ARM64=ON
 
-      # ─── 7. Build ──────────────────────────────────────────────────
+      # ─── 8. Build ──────────────────────────────────────────────────
       - name: Build
         run: cmake --build build --config Release --parallel
 
-      # ─── 8. List Xcode schemes ──────────────────────────────────────
+      # ─── 9. List Xcode schemes ──────────────────────────────────────
       - name: List Xcode schemes
         run: |
           xcodebuild \
             -project build/BionicSX2.xcodeproj \
             -list 2>&1
 
-      # ─── 9. Archive (unsigned IPA) ─────────────────────────────────
+      # ─── 10. Archive (unsigned IPA) ─────────────────────────────────
       - name: Archive IPA
         run: |
           xcodebuild archive \
@@ -112,11 +118,11 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
 
-      # ─── 10. Inspect xcarchive structure ──────────────────────────
+      # ─── 11. Inspect xcarchive structure ──────────────────────────
       - name: Inspect xcarchive structure
         run: find build/BionicSX2.xcarchive -type d | head -20
 
-      # ─── 11. Export unsigned IPA ───────────────────────────────────
+      # ─── 12. Export unsigned IPA ───────────────────────────────────
       - name: Export IPA
         run: |
           # .app is in build/Release-iphoneos/ (not inside xcarchive for unsigned builds)
@@ -136,7 +142,7 @@ jobs:
             exit 1
           fi
 
-      # ─── 12. Upload artifact ──────────────────────────────────────
+      # ─── 13. Upload artifact ──────────────────────────────────────
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
