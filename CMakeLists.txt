@@ -56,11 +56,13 @@ add_subdirectory(pcsx2/3rdparty/ryml EXCLUDE_FROM_ALL)
 # ── Image Libraries (built from source for iOS ARM64) ──────────────────
 
 # libjpeg-turbo — native ARM64 SIMD, supports CMake cross-compile
-set(ENABLE_SHARED    OFF CACHE BOOL "" FORCE)
-set(ENABLE_STATIC    ON  CACHE BOOL "" FORCE)
-set(WITH_TURBOJPEG   OFF CACHE BOOL "" FORCE)
-set(WITH_JAVA        OFF CACHE BOOL "" FORCE)
-set(WITH_SIMD        ON  CACHE BOOL "" FORCE)
+set(ENABLE_SHARED     OFF CACHE BOOL "" FORCE)
+set(ENABLE_STATIC     ON  CACHE BOOL "" FORCE)
+set(WITH_TURBOJPEG    OFF CACHE BOOL "" FORCE)
+set(WITH_JAVA         OFF CACHE BOOL "" FORCE)
+set(WITH_SIMD         ON  CACHE BOOL "" FORCE)
+set(CMAKE_INSTALL_DOCDIR "share/doc" CACHE STRING "" FORCE)
+set(CMAKE_INSTALL_DOXYDIR "share/doc" CACHE STRING "" FORCE)
 add_subdirectory(3rdparty/libjpeg-turbo EXCLUDE_FROM_ALL)
 add_library(JPEG::JPEG ALIAS jpeg-static)
 
