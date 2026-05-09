@@ -356,6 +356,39 @@ The blueprint must cover all of the following:
           Deliverable: Project compiles for iOS target with zero Android dependencies.
           Interpreter mode only. No game execution required yet.
 
+        ## Phase 1 — COMPLETED ✅ (2026-05-09)
+
+        ### Status: BUILD GREEN — IPA produced (5.7KB unsigned)
+
+        ### Resolved Issues (do not revisit):
+        1. pthread_jit_write_protect_np — STUBBED intentionally
+           Reason: Interpreter-only mode (DISABLE_PCSX2_RECOMPILER=1)
+           Revisit: Phase 5 (VIXL JIT)
+
+        2. libjpeg-turbo / libpng / libwebp — BUILT FROM SOURCE
+           Location: 3rdparty/ submodules
+           Reason: find_package() fails on cross-compile host (x86_64 → iOS ARM64)
+           Do not use find_package() for these libs ever.
+
+        3. c4core fast_float intrin.h — PATCHED IN WORKFLOW
+           Location: .github/workflows/build-ipa.yml (sed patch step)
+           Reason: c4core bug — _M_ARM64 triggers Windows-only intrin.h
+           Upstream bug — patch applied at workflow level, not in source.
+
+        4. ryml include path — EXPLICIT in CMakeLists.txt
+           Do not rely on CMAKE_PREFIX_PATH or CMAKE_INCLUDE_PATH for ryml.
+
+        5. xcodebuild archive — requires -scheme flag explicitly
+           Scheme name: BionicSX2
+
+        ### Known constraints entering Phase 2:
+        - IPA is 5.7KB = shell only, no PCSX2 core sources yet
+        - AudioStream_iOS.mm = stubs (AVAudioEngine not implemented)
+        - Filesystem_iOS.mm = implemented
+        - HostSys_MemProtect = stub (interpreter safe)
+        - No GS/Metal renderer yet
+        - No input handling yet
+
         Phase 2 — Platform Layer
           Deliverable: All platform stubs replaced with real iOS implementations.
           HostSys, CocoaTools, AudioStream, Filesystem all functional.
