@@ -389,6 +389,36 @@ The blueprint must cover all of the following:
         - No GS/Metal renderer yet
         - No input handling yet
 
+        ## Phase 2 — COMPLETED ✅ (2026-05-09)
+
+        ### Status: BUILD GREEN — IPA 5.2KB (core interpreter included)
+
+        ### Resolved Issues:
+        1. SDL input — GUARDED with #ifndef PCSX2_TARGET_IOS
+           Revisit: Phase 6 (UIKit native input)
+
+        2. CsoFileReader.cpp — GUARDED (requires lz4)
+           Revisit: Phase 4
+
+        3. ChdFileReader.cpp — GUARDED (requires libchdr/zstd)
+           Revisit: Phase 4
+
+        4. VMManager.cpp — 3 guards applied:
+           - x86emitter: #if !defined(PCSX2_TARGET_IOS)
+           - discord_rpc: #if !defined(DISABLE_DISCORD_RPC)
+           - DarwinMisc: #if defined(__APPLE__) && !defined(PCSX2_TARGET_IOS)
+
+        5. GS Vulkan references — GUARDED with #ifndef DISABLE_VULKAN
+
+        ### 78 core source files compiling on iOS ARM64.
+
+        ### Known constraints entering Phase 3:
+        - No Metal GS renderer yet (Phase 5)
+        - No UIKit input (Phase 6)
+        - No UI/frontend (Phase 3)
+        - AudioStream stubs only (Phase 3)
+        - CHD/CSO disc formats guarded (Phase 4)
+
         Phase 2 — Platform Layer
           Deliverable: All platform stubs replaced with real iOS implementations.
           HostSys, CocoaTools, AudioStream, Filesystem all functional.
