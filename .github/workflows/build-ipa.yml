@@ -25,8 +25,8 @@ jobs:
         run: |
           git submodule status
           echo "--- Checking critical 3rdparty deps ---"
-          for dep in fmt fast_float cpuinfo ryml; do
-            if [ -d "pcsx2/3rdparty/$dep" ]; then
+          for dep in fmt fast_float cpuinfo ryml libjpeg-turbo libpng libwebp; do
+            if [ -d "pcsx2/3rdparty/$dep" ] || [ -d "3rdparty/$dep" ]; then
               echo "OK: $dep"
             else
               echo "MISSING: $dep — build will fail"
@@ -35,6 +35,10 @@ jobs:
           done
           echo "--- Init nested submodules inside pcsx2 ---"
           cd pcsx2 && git submodule update --init --recursive && cd ..
+          echo "--- Init BionicSX2 3rdparty submodules ---"
+          git submodule update --init 3rdparty/libjpeg-turbo \
+                                3rdparty/libpng \
+                                3rdparty/libwebp
 
       # ─── 3. Xcode version ──────────────────────────────────────────
       - name: Select Xcode
@@ -43,12 +47,10 @@ jobs:
       - name: Xcode version
         run: xcodebuild -version
 
-      # ─── 4. CMake + Dependencies ─────────────────────────────────
-      - name: Install CMake and dependencies
+      # ─── 4. Build Tools ────────────────────────────────────────────────
+      - name: Install build tools
         run: |
-          brew install cmake ninja \
-            jpeg-turbo libpng webp \
-            pkg-config
+          brew install cmake ninja pkg-config nasm
 
       # ─── 5. Patch c4core fast_float for iOS ─────────────────────────
       # Must run AFTER submodule init so the file exists with correct content
@@ -94,7 +96,7 @@ jobs:
           cp -r BionicSX2.app Payload/
           zip -r BionicSX2.ipa Payload/
 
-      # ─── 9. Upload artifact ────────────────────────────────────────
+      # ─── 10. Upload artifact ──────────────────────────────────────
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:

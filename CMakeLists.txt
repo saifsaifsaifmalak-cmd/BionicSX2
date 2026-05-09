@@ -53,22 +53,39 @@ add_subdirectory(pcsx2/3rdparty/ryml EXCLUDE_FROM_ALL)
 # zlib — NOT FOUND in pcsx2/3rdparty
 # add_subdirectory(pcsx2/3rdparty/zlib EXCLUDE_FROM_ALL)  # Directory does not exist
 
-# libpng — use system if available
-find_package(PNG QUIET)
-if(NOT PNG_FOUND)
-  # add_subdirectory(pcsx2/3rdparty/libpng EXCLUDE_FROM_ALL)  # Directory does not exist
-endif()
+# ── Image Libraries (built from source for iOS ARM64) ──────────────────
 
-# libjpeg — use system if available
-find_package(JPEG QUIET)
-if(NOT JPEG_FOUND)
-  # add_subdirectory(pcsx2/3rdparty/libjpeg EXCLUDE_FROM_ALL)  # Directory does not exist
-endif()
+# libjpeg-turbo — native ARM64 SIMD, supports CMake cross-compile
+set(ENABLE_SHARED    OFF CACHE BOOL "" FORCE)
+set(ENABLE_STATIC    ON  CACHE BOOL "" FORCE)
+set(WITH_TURBOJPEG   OFF CACHE BOOL "" FORCE)
+set(WITH_JAVA        OFF CACHE BOOL "" FORCE)
+set(WITH_SIMD        ON  CACHE BOOL "" FORCE)
+add_subdirectory(3rdparty/libjpeg-turbo EXCLUDE_FROM_ALL)
+add_library(JPEG::JPEG ALIAS jpeg-static)
 
-# libwebp — use system if available
-find_package(WebP QUIET)
-if(NOT WebP_FOUND)
-  # add_subdirectory(pcsx2/3rdparty/libwebp EXCLUDE_FROM_ALL)  # Directory does not exist
+# libpng — zlib is part of iOS SDK
+find_package(ZLIB QUIET)
+set(PNG_SHARED    OFF CACHE BOOL "" FORCE)
+set(PNG_STATIC    ON  CACHE BOOL "" FORCE)
+set(PNG_TESTS     OFF CACHE BOOL "" FORCE)
+add_subdirectory(3rdparty/libpng EXCLUDE_FROM_ALL)
+add_library(PNG::PNG ALIAS png_static)
+
+# libwebp
+set(WEBP_BUILD_ANIM_UTILS OFF CACHE BOOL "" FORCE)
+set(WEBP_BUILD_CWEBP      OFF CACHE BOOL "" FORCE)
+set(WEBP_BUILD_DWEBP      OFF CACHE BOOL "" FORCE)
+set(WEBP_BUILD_GIF2WEBP   OFF CACHE BOOL "" FORCE)
+set(WEBP_BUILD_IMG2WEBP   OFF CACHE BOOL "" FORCE)
+set(WEBP_BUILD_VWEBP      OFF CACHE BOOL "" FORCE)
+set(WEBP_BUILD_WEBPINFO   OFF CACHE BOOL "" FORCE)
+set(WEBP_BUILD_WEBPMUX    OFF CACHE BOOL "" FORCE)
+set(WEBP_BUILD_EXTRAS     OFF CACHE BOOL "" FORCE)
+set(WEBP_BUILD_WEBP_JS     OFF CACHE BOOL "" FORCE)
+add_subdirectory(3rdparty/libwebp EXCLUDE_FROM_ALL)
+if(NOT TARGET WebP::libwebp)
+    add_library(WebP::libwebp ALIAS webp)
 endif()
 
 # cpuinfo — ARM64 CPU feature detection
@@ -147,24 +164,15 @@ target_link_libraries(pcsx2_common PUBLIC
     fast_float
     cpuinfo
     ryml
+    JPEG::JPEG
+    PNG::PNG
+    WebP::libwebp
 )
 
 # fast_float: disable __umulh usage on ARM64/clang (not available)
-# This tells fast_float to use __uint128_t path instead
 target_compile_definitions(pcsx2_common PUBLIC
     FASTFLOAT_ALLOWS_LEADING_PLUS=1
 )
-
-# Link image libs if found
-if(TARGET PNG::PNG)
-    target_link_libraries(pcsx2_common PUBLIC PNG::PNG)
-endif()
-if(TARGET JPEG::JPEG)
-    target_link_libraries(pcsx2_common PUBLIC JPEG::JPEG)
-endif()
-if(TARGET WebP::libwebp)
-    target_link_libraries(pcsx2_common PUBLIC WebP::libwebp)
-endif()
 
 # ─── Apple Frameworks ──────────────────────────────────────────────────────
 find_library(FW_METAL          Metal REQUIRED)
