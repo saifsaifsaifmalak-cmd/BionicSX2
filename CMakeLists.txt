@@ -298,19 +298,6 @@ pcsx2/pcsx2/SPU2/RegTable.cpp
     # Logging
     pcsx2/pcsx2/SourceLog.cpp
 
-    # Debug tools
-    pcsx2/pcsx2/DebugTools/DebugInterface.cpp
-    pcsx2/pcsx2/DebugTools/SymbolGuardian.cpp
-    pcsx2/pcsx2/DebugTools/SymbolImporter.cpp
-    pcsx2/pcsx2/DebugTools/Breakpoints.cpp
-    pcsx2/pcsx2/DebugTools/DisassemblyManager.cpp
-    pcsx2/pcsx2/DebugTools/ExpressionParser.cpp
-    pcsx2/pcsx2/DebugTools/MIPSAnalyst.cpp
-    pcsx2/pcsx2/DebugTools/MipsAssembler.cpp
-    pcsx2/pcsx2/DebugTools/MipsAssemblerTables.cpp
-    pcsx2/pcsx2/DebugTools/MipsStackWalk.cpp
-    pcsx2/pcsx2/DebugTools/BiosDebugData.cpp
-
     # Config / VM
     pcsx2/pcsx2/Pcsx2Config.cpp
     pcsx2/pcsx2/VMManager.cpp
