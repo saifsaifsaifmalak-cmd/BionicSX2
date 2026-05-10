@@ -234,7 +234,8 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/MTVU.cpp
     pcsx2/pcsx2/Patch.cpp
     pcsx2/pcsx2/PINE.cpp
-    pcsx2/pcsx2/SaveState.cpp
+    # SaveState.cpp — guarded: requires libzip (TODO Phase 4b)
+    # pcsx2/pcsx2/SaveState.cpp
     pcsx2/pcsx2/Sif.cpp
     pcsx2/pcsx2/Sif0.cpp
     pcsx2/pcsx2/Sif1.cpp
@@ -390,6 +391,7 @@ set(IOS_PLATFORM_SOURCES
     ios/platform/Filesystem_iOS.mm
     ios/platform/Host_iOS.mm
     ios/platform/EmulatorBridge.cpp
+    ios/platform/ios_stubs.cpp
 )
 
 # ─── iOS UI Layer ──────────────────────────────────────────────────────────
