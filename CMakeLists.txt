@@ -53,8 +53,8 @@ add_subdirectory(pcsx2/3rdparty/ryml EXCLUDE_FROM_ALL)
 # zlib — NOT FOUND in pcsx2/3rdparty
 # add_subdirectory(pcsx2/3rdparty/zlib EXCLUDE_FROM_ALL)  # Directory does not exist
 
-# libzip — required by SaveState (zstd stubbed on iOS)
-add_subdirectory(pcsx2/3rdparty/libzip EXCLUDE_FROM_ALL)
+# libzip deferred — requires zstd + zlib which are not available on iOS
+# Enable when proper iOS zstd/zlib integration is implemented
 
 # ── Image Libraries (built from source for iOS ARM64) ──────────────────
 
