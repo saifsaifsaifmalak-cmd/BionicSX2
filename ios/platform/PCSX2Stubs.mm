@@ -76,6 +76,8 @@ public:
     void Unmap(void* addr, u64 size, bool) {}
 };
 
+} // extern "C"
+
 // ── InputRecording ──────────────────────────────────────────────────
 namespace InputRecording {
     bool isActive() { return false; }
