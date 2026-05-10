@@ -24,13 +24,14 @@ bool Common::InhibitScreensaver(bool inhibit)
 
 static CPUInfo CalcCPUInfo()
 {
-	CPUInfo out = {"Apple Silicon", 0, 0, 0, 0};
+	CPUInfo out;
+	out.name = "Apple Silicon";
 	
 	// Get CPU brand string
 	char cpu_name[256] = {0};
 	size_t name_size = sizeof(cpu_name);
 	sysctlbyname("machdep.cpu.brand_string", cpu_name, &name_size, nullptr, 0);
-	strncpy(out.name, cpu_name, sizeof(out.name) - 1);
+	out.name = cpu_name;
 	
 	// Get physical cpu count
 	size_t phys_size = sizeof(u32);
