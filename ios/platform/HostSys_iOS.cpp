@@ -8,6 +8,69 @@
 #include <pthread.h>
 #include <sys/mman.h>
 
+#include "common/HostSys.h"
+
+// ── SharedMemoryMappingArea ────────────────────────────────────────────────────
+// iOS implementation using Darwin XNU vm_allocate
+// For interpreter mode, allocates simple memory without JIT protections
+// Phase 5: will use pthread_jit_write_protect_np for JIT code pages
+
+SharedMemoryMappingArea::SharedMemoryMappingArea(u8* base_ptr, size_t size, size_t num_pages)
+	: m_base_ptr(base_ptr)
+	, m_size(size)
+	, m_num_pages(num_pages)
+{
+}
+
+SharedMemoryMappingArea::~SharedMemoryMappingArea()
+{
+	// Free the allocated memory
+	if (m_base_ptr)
+	{
+		vm_deallocate(mach_task_self(), reinterpret_cast<vm_address_t>(m_base_ptr), m_size);
+	}
+}
+
+std::unique_ptr<SharedMemoryMappingArea> SharedMemoryMappingArea::Create(size_t size, bool jit)
+{
+	// Allocate memory for the mapping area
+	vm_address_t addr = 0;
+	kern_return_t kr = vm_allocate(mach_task_self(), &addr, size, VM_FLAGS_ANYWHERE);
+	if (kr != KERN_SUCCESS)
+		return nullptr;
+
+	u8* base_ptr = reinterpret_cast<u8*>(addr);
+	size_t num_pages = size / HostSys::GetRuntimePageSize();
+
+	// For interpreter mode, simple allocation is sufficient
+	// JIT mode (Phase 5) will use different protections per page
+	(void)jit;
+
+	return std::unique_ptr<SharedMemoryMappingArea>(
+		new SharedMemoryMappingArea(base_ptr, size, num_pages));
+}
+
+u8* SharedMemoryMappingArea::Map(void* file_handle, size_t file_offset, void* map_base, size_t map_size, const PageProtectionMode& mode)
+{
+	// For now, just return the base pointer
+	// File mapping will be implemented in Phase 5
+	(void)file_handle;
+	(void)file_offset;
+	(void)map_base;
+	(void)map_size;
+	(void)mode;
+	return m_base_ptr;
+}
+
+bool SharedMemoryMappingArea::Unmap(void* map_base, size_t map_size, bool is_file)
+{
+	// Stub - unmap implementation deferred to Phase 5
+	(void)map_base;
+	(void)map_size;
+	(void)is_file;
+	return true;
+}
+
 // TODO Phase 2: Implement using vm_allocate()
 // Replaces: mmap(MAP_ANON) from Android fork
 // Requires: com.apple.security.cs.allow-jit entitlement for PROT_EXEC pages

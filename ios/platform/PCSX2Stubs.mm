@@ -76,19 +76,7 @@ namespace Threading {
     };
 }
 
-// ── SharedMemoryMappingArea ─────────────────────────────────────────
-class SharedMemoryMappingArea {
-public:
-    static std::unique_ptr<SharedMemoryMappingArea> Create(size_t size, bool jit = false) { return nullptr; }
-    ~SharedMemoryMappingArea() {}
-    size_t GetSize() const { return 0; }
-    size_t GetNumPages() const { return 0; }
-    u8* BasePointer() const { return nullptr; }
-    u8* OffsetPointer(size_t offset) const { return nullptr; }
-    u8* PagePointer(size_t page) const { return nullptr; }
-    u8* Map(void* file_handle, size_t file_offset, void* map_base, size_t map_size, const PageProtectionMode& mode) { return nullptr; }
-    bool Unmap(void* map_base, size_t map_size, bool is_file = true) { return false; }
-};
+// ── SharedMemoryMappingArea - provided by HostSys_iOS.cpp ─────────────
 
 // ── InputRecording ──────────────────────────────────────────────────
 namespace InputRecording {
@@ -152,11 +140,6 @@ public:
     void LoadSave(SettingsWrapper&, const char*) {}
 };
 
-// ── Common::InhibitScreensaver ───────────────────────────────────────
-namespace Common {
-    void InhibitScreensaver(bool) {}
-}
-
 // ── USB extended stubs ─────────────────────────────────────────────
 namespace USB {
     const char* GetConfigSection(int) { return nullptr; }
@@ -164,8 +147,8 @@ namespace USB {
     s32 DeviceTypeNameToIndex(std::string_view) { return 0; }
     std::vector<std::pair<const char*, const char*>> GetDeviceTypes() { return {}; }
     const char* GetConfigDevice(const SettingsInterface&, u32) { return nullptr; }
-    const char* GetConfigSubKey(std::string_view, std::string_view) { return nullptr; }
-    const char* GetConfigSubType(const SettingsInterface&, u32, std::string_view) { return nullptr; }
+    std::string GetConfigSubKey(std::string_view, std::string_view) { return ""; }
+    u32 GetConfigSubType(const SettingsInterface&, u32, std::string_view) { return 0; }
     void GetDeviceBindings(std::string_view, u32) {}
     void SetDeviceBindValue(u32, u32, float) {}
 }
