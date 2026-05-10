@@ -140,6 +140,9 @@ set(PCSX2_COMMON_SOURCES
     ios/platform/AudioStream_iOS.mm
     ios/platform/Filesystem_iOS.mm
 
+    # Darwin threading (works on iOS)
+    pcsx2/common/Darwin/DarwinThreads.cpp
+
     # EXCLUDED — DO NOT ADD:
     # pcsx2/common/HostSys.cpp        (replaced by HostSys_iOS.cpp)
     # pcsx2/common/Perf.cpp           (Linux perf_event_open — iOS incompatible)
@@ -321,12 +324,15 @@ pcsx2/pcsx2/SPU2/RegTable.cpp
     pcsx2/pcsx2/VMManager.cpp
     pcsx2/pcsx2/Host.cpp
 
+    # Audio Stream
+    pcsx2/pcsx2/Host/AudioStream.cpp
+
     # Input Manager
     # pcsx2/pcsx2/Input/InputManager.cpp  # Commented - causes more issues
     pcsx2/pcsx2/INISettingsInterface.cpp
 
-    # Game Database - stub only
-    # pcsx2/pcsx2/GameDatabase.cpp
+    # Game Database
+    pcsx2/pcsx2/GameDatabase.cpp
     # pcsx2/pcsx2/GameList.cpp
 
     # PS2 subsystem
