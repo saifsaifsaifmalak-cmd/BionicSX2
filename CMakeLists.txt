@@ -288,6 +288,7 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/SPU2/Mixer.cpp
 pcsx2/pcsx2/SPU2/RegTable.cpp
     pcsx2/pcsx2/SPU2/Reverb.cpp
+    pcsx2/pcsx2/SPU2/ReverbResample.cpp
     pcsx2/pcsx2/SPU2/spu2.cpp
     pcsx2/pcsx2/SPU2/spu2sys.cpp
 
