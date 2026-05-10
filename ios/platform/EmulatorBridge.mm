@@ -1,73 +1,30 @@
-// EmulatorBridge.mm — Phase 5 real implementation
-// Provides extern "C" interface to PCSX2 VMManager for Objective-C callers
-// Phase 5: Links pcsx2_core, calls VMManager for real BIOS boot
-
+// EmulatorBridge.mm — Phase 4 stub implementation (core not linked)
 #import <Foundation/Foundation.h>
 
 #include "EmulatorBridge.h"
-#include "VMManager.h"
-#include "Host.h"
-#include "common/Console.h"
 
 extern "C" {
 
 bool EmulatorBridge_Init(void) {
-    NSLog(@"[BionicSX2] EmulatorBridge_Init");
-    
-    // Load startup settings
-    VMManager::Internal::LoadStartupSettings();
-    
-    // Configure BIOS settings via Host:: (which will use defaults)
-    VMManager::Internal::UpdateEmuFolders();
-    
-    // Perform hardware checks
-    const char* error = nullptr;
-    if (!VMManager::PerformEarlyHardwareChecks(&error)) {
-        NSLog(@"[BionicSX2] Hardware check failed: %s", error ? error : "unknown");
-        return false;
-    }
-    
-    NSLog(@"[BionicSX2] EmulatorBridge_Init complete");
+    NSLog(@"[BionicSX2] EmulatorBridge_Init — Phase 4 stub");
     return true;
 }
 
 void EmulatorBridge_Shutdown(void) {
-    NSLog(@"[BionicSX2] EmulatorBridge_Shutdown");
-    if (VMManager::GetState() != VMState::Shutdown) {
-        VMManager::Shutdown(false);
-    }
+    NSLog(@"[BionicSX2] EmulatorBridge_Shutdown — Phase 4 stub");
 }
 
 bool EmulatorBridge_BootBIOS(const char* biosPath) {
-    NSLog(@"[BionicSX2] EmulatorBridge_BootBIOS: %s", biosPath ? biosPath : "(null)");
-    
-    VMBootParameters params;
-    if (biosPath && biosPath[0]) {
-        params.elf_override = biosPath;
-    }
-    
-    VMBootResult result = VMManager::Initialize(params);
-    
-    if (result == VMBootResult::StartupSuccess) {
-        NSLog(@"[BionicSX2] VM started successfully");
-        return true;
-    } else {
-        NSLog(@"[BionicSX2] VM boot failed with result: %d", (int)result);
-        return false;
-    }
+    NSLog(@"[BionicSX2] EmulatorBridge_BootBIOS stub: %s", biosPath ? biosPath : "(null)");
+    return false;
 }
 
 void EmulatorBridge_RunFrame(void) {
-    VMState state = VMManager::GetState();
-    if (state == VMState::Running) {
-        VMManager::Execute();
-    } else if (state == VMState::Paused) {
-        VMManager::IdlePollUpdate();
-    }
+    // Stub - no execution
 }
 
 bool EmulatorBridge_IsRunning(void) {
-    return VMManager::GetState() == VMState::Running;
+    return false;
 }
 
 } // extern "C"

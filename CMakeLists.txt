@@ -390,7 +390,7 @@ set(IOS_PLATFORM_SOURCES
     ios/platform/AudioStream_iOS.mm
     ios/platform/Filesystem_iOS.mm
     ios/platform/EmulatorBridge.mm
-    ios/platform/Host_iOS.mm
+    # Host_iOS.mm — requires pcsx2_core (Phase 6)
 )
 
 # ─── iOS UI Layer ──────────────────────────────────────────────────────────
