@@ -446,6 +446,7 @@ target_include_directories(BionicSX2 PRIVATE
 )
 
 target_link_libraries(BionicSX2 PRIVATE
+    "-framework UniformTypeIdentifiers"
     pcsx2_common
     pcsx2_core
     "-framework Metal"
