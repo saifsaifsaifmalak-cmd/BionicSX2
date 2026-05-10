@@ -7,8 +7,55 @@
 #include <mach/vm_map.h>
 #include <pthread.h>
 #include <sys/mman.h>
+#include <sys/sysctl.h>
+#include <CoreGraphics/CoreGraphics.h>
+#include <IOKit/pwr_mgt/IOKitLib.h>
 
 #include "common/HostSys.h"
+#include "common/Pcsx2Defs.h"
+#include "common/Threading.h"
+
+static IOPMAssertionID s_pm_assertion = 0;
+
+bool Common::InhibitScreensaver(bool inhibit)
+{
+	if (s_pm_assertion)
+	{
+		IOPMAssertionRelease(s_pm_assertion);
+		s_pm_assertion = 0;
+	}
+
+	if (inhibit)
+	{
+		IOPMAssertionCreateWithName(kIOPMAssertionTypePreventUserIdleDisplaySleep,
+									kIOPMAssertionLevelOn,
+									CFSTR("BionicSX2Playing"),
+									&s_pm_assertion);
+	}
+
+	return true;
+}
+
+static CPUInfo CalcCPUInfo()
+{
+	CPUInfo out = {"Apple Silicon", 0, 0, 0, 0};
+	size_t name_size = sizeof(out.name);
+	sysctlbyname("machdep.cpu.brand_string", out.name, &name_size, nullptr, 0);
+
+	if (std::optional<u32> physcpu = sysctlbyname_T<u32>("hw.physicalcpu"))
+	{
+		out.num_big_cores = *physcpu;
+		out.num_threads = sysctlbyname_T<u32>("hw.logicalcpu").value_or(*physcpu);
+	}
+	out.num_clusters = 1;
+	return out;
+}
+
+const CPUInfo& GetCPUInfo()
+{
+	static const CPUInfo info = CalcCPUInfo();
+	return info;
+}
 
 // ── SharedMemoryMappingArea ────────────────────────────────────────────────────
 // iOS implementation using Darwin XNU vm_allocate

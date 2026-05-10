@@ -146,6 +146,11 @@ set(PCSX2_COMMON_SOURCES
     ios/platform/AudioStream_iOS.mm
     ios/platform/Filesystem_iOS.mm
 
+    # Darwin Threading (no macOS dependencies - pure Mach/pthread)
+    # Note: DarwinMisc excluded - uses macOS-only APIs (ApplicationServices, IOPMLib)
+    # InhibitScreensaver and CPUInfo re-implemented in HostSys_iOS.cpp
+    pcsx2/common/Darwin/DarwinThreads.cpp
+
     # EXCLUDED — DO NOT ADD:
     # pcsx2/common/HostSys.cpp        (replaced by HostSys_iOS.cpp)
     # pcsx2/common/Perf.cpp           (Linux perf_event_open — iOS incompatible)
@@ -153,7 +158,7 @@ set(PCSX2_COMMON_SOURCES
     # pcsx2/common/emitter/*          (x86 only)
     # pcsx2/common/Windows/*          (Windows only)
     # pcsx2/common/Linux/*            (Linux only)
-    # pcsx2/common/Darwin/*           (macOS only — we have iOS replacements)
+    # pcsx2/common/Darwin/DarwinMisc.cpp (macOS-specific, excluded)
     # pcsx2/common/CocoaTools.mm      (macOS — we have iOS replacement)
     # pcsx2/common/HTTPDownloaderCurl.cpp (no libcurl on iOS)
 )
@@ -326,6 +331,7 @@ pcsx2/pcsx2/SPU2/RegTable.cpp
     pcsx2/pcsx2/VMManager.cpp
     pcsx2/pcsx2/Host.cpp
     pcsx2/pcsx2/Host/AudioStream.cpp
+    pcsx2/pcsx2/GameDatabase.cpp
 
     # Input Manager
     # pcsx2/pcsx2/Input/InputManager.cpp  # Commented - causes more issues
