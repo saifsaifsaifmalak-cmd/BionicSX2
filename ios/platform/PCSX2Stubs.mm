@@ -146,25 +146,15 @@ namespace USB {
 
 // ── InputRecording stubs ──────────────────────────────────────────
 namespace InputRecording {
-    bool isActive() { return false; }
+    bool isActive() const { return false; }
     void stop() {}
 }
 bool g_InputRecording = false;
 
 // ── IOCtlSrc (macOS only - stubbed for iOS) ──────────────────────────
-namespace Host {
-    void ReleaseRenderWindow() {}
-    void SetMouseMode(bool, bool) {}
-}
-
-// ── ImGuiManager ───────────────────────────────────────────────────
-class ImGuiManager {
+class IOCtlSrc {
 public:
-    void Initialize() {}
-    void Shutdown(bool) {}
-    void ReloadFonts() {}
-    void RequestScaleUpdate() {}
-    bool HasSoftwareCursor(u32) { return false; }
+    ~IOCtlSrc() {}
 };
 ImGuiManager* g_imGuiManager = nullptr;
 
