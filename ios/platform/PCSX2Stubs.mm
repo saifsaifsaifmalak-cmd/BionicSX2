@@ -7,6 +7,9 @@
 #include <vector>
 #include <span>
 
+#include "common/Pcsx2Defs.h"
+#include "common/HostSys.h"
+
 // Type aliases
 typedef unsigned int u32;
 typedef unsigned long long u64;
