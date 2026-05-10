@@ -390,8 +390,8 @@ set(IOS_PLATFORM_SOURCES
     ios/platform/AudioStream_iOS.mm
     ios/platform/Filesystem_iOS.mm
     ios/platform/EmulatorBridge.mm
+    ios/platform/Host_iOS.mm
     # ios_stubs.cpp — NOT linked (pcsx2_core excluded)
-    # ios/platform/Host_iOS.mm — NOT linked (pcsx2_core excluded)
 )
 
 # ─── iOS UI Layer ──────────────────────────────────────────────────────────
@@ -418,8 +418,8 @@ target_include_directories(BionicSX2 PRIVATE
 )
 
 target_link_libraries(BionicSX2 PRIVATE
-    # pcsx2_core NOT linked yet — will be added in Phase 5 with Metal renderer
-    # For now, only link frameworks + common (no undefined symbols)
+    # Phase 5: Link pcsx2_core with Metal renderer
+    pcsx2_core
     pcsx2_common
     "-framework Metal"
     "-framework MetalKit"

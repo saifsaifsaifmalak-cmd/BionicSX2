@@ -52,6 +52,12 @@
 }
 
 - (void)initializeEmulator {
+    // Register Metal layer BEFORE initializing emulator
+    // This allows Host:: to get the surface info
+    CAMetalLayer* metalLayer = (CAMetalLayer*)self.metalView.layer;
+    BionicSX2_SetMetalLayer(metalLayer, self.device);
+    NSLog(@"[BionicSX2] Metal layer registered with Host");
+
     if (!EmulatorBridge_Init()) {
         NSLog(@"[BionicSX2] ERROR: EmulatorBridge_Init failed");
         return;

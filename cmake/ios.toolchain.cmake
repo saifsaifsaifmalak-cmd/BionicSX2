@@ -42,25 +42,6 @@ add_compile_definitions(DISABLE_VULKAN=1)
 # Disable Android paths
 add_compile_definitions(DISABLE_ANDROID=1)
 
-# Required Apple frameworks (non-fatal on non-macOS for validation)
-set(IOS_FRAMEWORKS
-    Metal
-    MetalKit
-    AVFoundation
-    AudioToolbox
-    UIKit
-    Foundation
-    CoreGraphics
-    QuartzCore
-)
-
-foreach(FW ${IOS_FRAMEWORKS})
-    find_library(FW_${FW} ${FW})
-    if(NOT FW_${FW})
-        message(WARNING "Framework ${FW} not found — iOS SDK not available on this platform")
-    endif()
-endforeach()
-
 # Include paths for 3rdparty sources (must be set early, before project())
 # ryml must be findable for #include "ryml.hpp"
 set(CMAKE_INCLUDE_PATH "${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/ryml/src"
