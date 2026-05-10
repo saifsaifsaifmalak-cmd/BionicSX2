@@ -61,6 +61,9 @@ add_subdirectory(pcsx2/3rdparty/ryml EXCLUDE_FROM_ALL)
 # freesurround — audio expansion library
 add_subdirectory(pcsx2/3rdparty/freesurround EXCLUDE_FROM_ALL)
 
+# soundtouch — audio timestretching library
+add_subdirectory(pcsx2/3rdparty/soundtouch EXCLUDE_FROM_ALL)
+
 # libjpeg-turbo — native ARM64 SIMD, supports CMake cross-compile
 set(ENABLE_SHARED     OFF CACHE BOOL "" FORCE)
 set(ENABLE_STATIC     ON  CACHE BOOL "" FORCE)
@@ -379,6 +382,7 @@ target_include_directories(pcsx2_core PUBLIC
     ${CMAKE_SOURCE_DIR}/3rdparty/libpng
     ${CMAKE_SOURCE_DIR}/3rdparty/libwebp
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/freesurround/include
+    ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/soundtouch/soundtouch
 )
 
 target_compile_definitions(pcsx2_core PUBLIC
@@ -396,6 +400,7 @@ target_compile_definitions(pcsx2_core PUBLIC
 
 target_link_libraries(pcsx2_core PUBLIC
     freesurround
+    SoundTouch::SoundTouch
     "-framework Metal"
     "-framework MetalKit"
     "-framework AVFoundation"

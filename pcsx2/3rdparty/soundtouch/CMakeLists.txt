@@ -7,11 +7,9 @@ add_library(pcsx2-soundtouch
 	source/SoundTouch/InterpolateCubic.cpp
 	source/SoundTouch/InterpolateLinear.cpp
 	source/SoundTouch/InterpolateShannon.cpp
-	source/SoundTouch/mmx_optimized.cpp
 	source/SoundTouch/PeakFinder.cpp
 	source/SoundTouch/RateTransposer.cpp
 	source/SoundTouch/SoundTouch.cpp
-	source/SoundTouch/sse_optimized.cpp
 	source/SoundTouch/TDStretch.cpp
 	soundtouch/BPMDetect.h
 	soundtouch/FIFOSampleBuffer.h
@@ -29,7 +27,17 @@ add_library(pcsx2-soundtouch
 	source/SoundTouch/TDStretch.h
 )
 
+# Exclude x86-specific SIMD files on ARM64 - these use mmintrin.h and SSE intrinsics
+# which don't exist on ARM. The generic C++ implementations are sufficient.
+if(NOT _M_ARM64)
+	target_sources(pcsx2-soundtouch PRIVATE
+		source/SoundTouch/mmx_optimized.cpp
+		source/SoundTouch/sse_optimized.cpp
+	)
+endif()
+
 target_include_directories(pcsx2-soundtouch PUBLIC soundtouch)
+target_include_directories(pcsx2-soundtouch PRIVATE source/SoundTouch)
 target_compile_definitions(pcsx2-soundtouch PUBLIC SOUNDTOUCH_FLOAT_SAMPLES ST_NO_EXCEPTION_HANDLING)
 set_property(TARGET pcsx2-soundtouch PROPERTY CXX_STANDARD 17)
 set_property(TARGET pcsx2-soundtouch PROPERTY CXX_STANDARD_REQUIRED ON)
