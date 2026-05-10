@@ -48,12 +48,11 @@ bool GetValidDrive(std::string& filename) { (void)filename; return false; }
 void PGIFrQword(u32 addr, void* data) { (void)addr; (void)data; }
 void PGIFwQword(u32 addr, void* data) { (void)addr; (void)data; }
 
-// Template instantiation for dVifUnpack
-template void dVifUnpack<0>(const u8* data, bool isFill);
-template void dVifUnpack<1>(const u8* data, bool isFill);
-
+// dVifUnpack stubs - template functions
+namespace {
 template <int idx>
 void dVifUnpack(const u8* data, bool isFill) { (void)data; (void)isFill; }
+}
 
 // ── GS stubs (graphics synth) ───────────────────────────────────────────────
 void gsSetVideoMode(GS::GS_VideoMode mode) { (void)mode; }
