@@ -93,12 +93,12 @@ struct HotkeyInfo {
 
 // ── FullscreenUI ───────────────────────────────────────────────────
 namespace FullscreenUI {
-    void GameChanged(std::string title, std::string path, std::string serial, u32 disc_crc, u32 crc) {}
+    void GameChanged(const std::string&, const std::string&, const std::string&, u32, u32) {}
 }
 
 // ── Achievements ───────────────────────────────────────────────────
 namespace Achievements {
-    void GameChanged(u32 disc_crc, u32 crc) {}
+    void GameChanged(u32, u32) {}
     bool IsHardcoreModeActive() { return false; }
 }
 
@@ -113,7 +113,7 @@ namespace GSTextureReplacements {
     void GameChanged() {}
     void ReloadReplacementMap() {}
     void Shutdown() {}
-    void UpdateConfig(class Pcsx2Config::GSOptions&) {}
+    void UpdateConfig(void*) {}
 }
 
 // ── SaveStateSelectorUI ─────────────────────────────────────────────
