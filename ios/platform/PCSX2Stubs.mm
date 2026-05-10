@@ -30,11 +30,6 @@ struct InputBindingInfo;
 struct SettingInfo;
 struct ButtonData;
 
-// Forward declare nested types
-namespace Pcsx2Config {
-    class GSOptions;
-}
-
 // ── DEV9 ────────────────────────────────────────────────────────────
 void DEV9shutdown() {}
 s32 DEV9open() { return 0; }
@@ -240,8 +235,8 @@ namespace Host {
 namespace GameDatabaseSchema {
     class GameEntry {
     public:
-        void applyGameFixes(Pcsx2Config& config, bool applyAuto) const {}
-        void applyGSHardwareFixes(Pcsx2Config::GSOptions& options) const {}
+        void applyGameFixes(void* config, bool applyAuto) const {}
+        void applyGSHardwareFixes(void* options) const {}
     };
 }
 
