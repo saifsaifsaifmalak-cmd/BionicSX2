@@ -30,15 +30,15 @@ static CPUInfo CalcCPUInfo()
 	size_t name_size = sizeof(out.name);
 	sysctlbyname("machdep.cpu.brand_string", out.name, &name_size, nullptr, 0);
 	
-	// Get core count using size-based sysctl
-	u64 physmem = 0;
-	size_t physmem_size = sizeof(physmem);
-	sysctlbyname("hw.physicalcpu", &out.num_big_cores, &physmem_size, nullptr, 0);
+	// Get physical cpu count
+	size_t phys_size = sizeof(out.num_big_cores);
+	sysctlbyname("hw.physicalcpu", &out.num_big_cores, &phys_size, nullptr, 0);
 	
-	u64 logcpu = 0;
-	size_t logcpu_size = sizeof(logcpu);
-	sysctlbyname("hw.logicalcpu", &logcpu, &logcpu_size, nullptr, 0);
-	out.num_threads = static_cast<u32>(logcpu);
+	// Get logical cpu count
+	size_t log_size = sizeof(out.num_threads);
+	u32 logcpu = 0;
+	sysctlbyname("hw.logicalcpu", &logcpu, &log_size, nullptr, 0);
+	out.num_threads = logcpu;
 	
 	out.num_clusters = 1;
 	return out;
