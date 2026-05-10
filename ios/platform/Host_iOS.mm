@@ -29,18 +29,7 @@ namespace Host {
 
 // ── LoadSettings ─────────────────────────────────────────────────────────
 void LoadSettings(SettingsInterface& si, std::unique_lock<std::mutex>& lock) {
-    NSLog(@"[BionicSX2] Host::LoadSettings");
-    EmuConfig.Cpu.Recompiler.EnableEE  = false;
-    EmuConfig.Cpu.Recompiler.EnableIOP = false;
-    EmuConfig.Cpu.Recompiler.EnableVU0 = false;
-    EmuConfig.Cpu.Recompiler.EnableVU1 = false;
-
-    NSString* docs = NSSearchPathForDirectoriesInDomains(
-        NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-    EmuConfig.BaseFilenames.Bios = [[docs stringByAppendingPathComponent:@"bios"] UTF8String];
-
-    EmuConfig.EnableRecordingTools = false;
-    EmuConfig.EnablePatches = true;
+    NSLog(@"[BionicSX2] Host::LoadSettings - stub");
 }
 
 // ── Translation (stub) ───────────────────────────────────────────────────

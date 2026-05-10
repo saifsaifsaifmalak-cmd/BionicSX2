@@ -2,8 +2,6 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 #include "platform/EmulatorBridge.h"
-#include "Input/InputManager.h"
-#include "Config.h"
 
 @interface MetalViewController ()
 @property (nonatomic, strong) AVAudioEngine*     audioEngine;
@@ -50,7 +48,7 @@
     if (error) {
         NSLog(@"[BionicSX2] AudioEngine start error: %@", error);
     } else {
-        NSLog(@"[BionicSX2] AudioEngine running (silent — Phase 3)");
+        NSLog(@"[BionicSX2] AudioEngine running (silent)");
     }
 }
 
@@ -59,32 +57,7 @@
         NSLog(@"[BionicSX2] EmulatorBridge_Init failed");
         return;
     }
-
-    NSString* docs = NSSearchPathForDirectoriesInDomains(
-        NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-    NSString* biosDir = [docs stringByAppendingPathComponent:@"bios"];
-    NSArray* files = [[NSFileManager defaultManager]
-                      contentsOfDirectoryAtPath:biosDir error:nil];
-
-    NSString* biosFile = nil;
-    for (NSString* f in files) {
-        if ([f.pathExtension.lowercaseString isEqualToString:@"bin"]) {
-            biosFile = [biosDir stringByAppendingPathComponent:f];
-            break;
-        }
-    }
-
-    if (!biosFile) {
-        NSLog(@"[BionicSX2] No BIOS in %@ — boot skipped", biosDir);
-        NSLog(@"[BionicSX2] Place SCPH-XXXXX.bin in Documents/bios/");
-        return;
-    }
-
-    NSLog(@"[BionicSX2] BIOS found: %@", biosFile);
-    if (EmulatorBridge_BootBIOS(biosFile.UTF8String)) {
-        self.emulatorRunning = YES;
-        NSLog(@"[BionicSX2] PS2 interpreter running");
-    }
+    NSLog(@"[BionicSX2] Emulator initialized (stub mode)");
 }
 
 - (void)startEmulatorLoop {
@@ -98,9 +71,7 @@
 }
 
 - (void)drawMTKView:(MTKView*)view {
-    if (self.emulatorRunning && EmulatorBridge_IsRunning()) {
-        EmulatorBridge_RunFrame();
-    }
+    // Stub - no rendering yet
 }
 
 - (void)mtkView:(MTKView*)view drawableSizeDidChange:(CGSize)size {
@@ -126,27 +97,7 @@
 }
 
 - (void)handleTouch:(CGPoint)pt pressed:(BOOL)pressed {
-    CGSize sz = self.view.bounds.size;
-    float value = pressed ? 1.0f : 0.0f;
-
-    if (pt.x < sz.width * 0.5f) {
-        CGPoint c = CGPointMake(sz.width * 0.25f, sz.height * 0.75f);
-        float dx = pt.x - c.x;
-        float dy = pt.y - c.y;
-        if (fabsf(dx) > fabsf(dy)) {
-            [self sendInput:(dx > 0) ? GenericInputBinding::DPadRight : GenericInputBinding::DPadLeft value:value];
-        } else {
-            [self sendInput:(dy > 0) ? GenericInputBinding::DPadDown : GenericInputBinding::DPadUp value:value];
-        }
-    } else {
-        if (pt.y > sz.height * 0.6f) {
-            [self sendInput:(pt.x > sz.width * 0.75f) ? GenericInputBinding::Circle : GenericInputBinding::Cross value:value];
-        }
-    }
-}
-
-- (void)sendInput:(GenericInputBinding)btn value:(float)val {
-    InputManager::InvokeEvents(InputBindingKey{}, val, btn);
+    NSLog(@"[BionicSX2] Touch %@ at %@", pressed ? @"down" : @"up", NSStringFromCGPoint(pt));
 }
 
 @end
