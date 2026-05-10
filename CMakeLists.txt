@@ -285,7 +285,7 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/CDVD/CDVD.cpp
     pcsx2/pcsx2/CDVD/CDVDcommon.cpp
     pcsx2/pcsx2/CDVD/CDVDdiscReader.cpp
-    pcsx2/pcsx2/CDVD/Darwin/IOCtlSrc.cpp
+    # pcsx2/pcsx2/CDVD/Darwin/IOCtlSrc.cpp  # macOS only - IOKit not available on iOS
     pcsx2/pcsx2/CDVD/CDVDisoReader.cpp
     pcsx2/pcsx2/CDVD/InputIsoFile.cpp
     pcsx2/pcsx2/CDVD/OutputIsoFile.cpp
