@@ -380,7 +380,6 @@ target_link_libraries(pcsx2_core PUBLIC
     "-framework MetalKit"
     "-framework AVFoundation"
     "-framework AudioToolbox"
-    "-framework AudioUnit"
 )
 
 # ─── iOS Platform Layer ────────────────────────────────────────────────────
@@ -423,7 +422,6 @@ target_link_libraries(BionicSX2 PRIVATE
     "-framework MetalKit"
     "-framework AVFoundation"
     "-framework AudioToolbox"
-    "-framework AudioUnit"
     "-framework UIKit"
     "-framework Foundation"
     "-framework QuartzCore"
