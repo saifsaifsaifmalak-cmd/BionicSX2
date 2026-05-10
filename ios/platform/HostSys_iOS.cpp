@@ -25,14 +25,21 @@ bool Common::InhibitScreensaver(bool inhibit)
 static CPUInfo CalcCPUInfo()
 {
 	CPUInfo out = {"Apple Silicon", 0, 0, 0, 0};
+	
+	// Get CPU brand string
 	size_t name_size = sizeof(out.name);
 	sysctlbyname("machdep.cpu.brand_string", out.name, &name_size, nullptr, 0);
-
-	if (std::optional<u32> physcpu = sysctlbyname_T<u32>("hw.physicalcpu"))
-	{
-		out.num_big_cores = *physcpu;
-		out.num_threads = sysctlbyname_T<u32>("hw.logicalcpu").value_or(*physcpu);
-	}
+	
+	// Get core count using size-based sysctl
+	u64 physmem = 0;
+	size_t physmem_size = sizeof(physmem);
+	sysctlbyname("hw.physicalcpu", &out.num_big_cores, &physmem_size, nullptr, 0);
+	
+	u64 logcpu = 0;
+	size_t logcpu_size = sizeof(logcpu);
+	sysctlbyname("hw.logicalcpu", &logcpu, &logcpu_size, nullptr, 0);
+	out.num_threads = static_cast<u32>(logcpu);
+	
 	out.num_clusters = 1;
 	return out;
 }
