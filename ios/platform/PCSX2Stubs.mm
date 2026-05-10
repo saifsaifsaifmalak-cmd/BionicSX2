@@ -76,9 +76,15 @@ namespace Threading {
 // ── SharedMemoryMappingArea ─────────────────────────────────────────
 class SharedMemoryMappingArea {
 public:
-    SharedMemoryMappingArea() {}
+    static std::unique_ptr<SharedMemoryMappingArea> Create(size_t size, bool jit = false) { return nullptr; }
     ~SharedMemoryMappingArea() {}
-    void Unmap(void* addr, u64 size, bool) {}
+    size_t GetSize() const { return 0; }
+    size_t GetNumPages() const { return 0; }
+    u8* BasePointer() const { return nullptr; }
+    u8* OffsetPointer(size_t offset) const { return nullptr; }
+    u8* PagePointer(size_t page) const { return nullptr; }
+    u8* Map(void* file_handle, size_t file_offset, void* map_base, size_t map_size, const PageProtectionMode& mode) { return nullptr; }
+    bool Unmap(void* map_base, size_t map_size, bool is_file = true) { return false; }
 };
 
 // ── InputRecording ──────────────────────────────────────────────────
@@ -135,12 +141,6 @@ namespace GameDatabase {
 // ── GameList ───────────────────────────────────────────────────────
 namespace GameList {
     void AddPlayedTimeForSerial(const std::string&, long, long) {}
-}
-
-// ── AudioStream ───────────────────────────────────────────────────
-namespace AudioStream {
-    const char* GetBackendName(int) { return "Null"; }
-    int ParseBackendName(const char*) { return 0; }
 }
 
 // ── AudioStreamParameters ───────────────────────────────────────────
@@ -251,59 +251,3 @@ namespace InputManager {
 }
 
 // ── Pad base class ─────────────────────────────────────────────────
-class PadBase {
-public:
-    PadBase(u8, u64) {}
-    virtual ~PadBase() {}
-    virtual void Freeze(StateWrapper&, bool) {}
-    virtual void SetMode(u32) {}
-    virtual std::string GetEffect(u32) const { return ""; }
-    virtual void SetEffect(u32, std::string_view) {}
-    virtual void GetButtonState(ButtonData*) const {}
-    virtual void SetButtonState(ButtonData*) {}
-    virtual void SetAxisState(u32, float, float) {}
-    virtual void SetDPadState(u32) {}
-    virtual float Get(u32, float) const { return 0.0f; }
-    virtual void Set(u32, float) {}
-    virtual void QueueDmaTransfer(u32, u32, u32, u32, u32, u32) {}
-    virtual void StartDma() {}
-    virtual void StopDma() {}
-    virtual bool IsDmaRunning() const { return false; }
-    virtual void ResetDma() {}
-    virtual void SetButton(u32) {}
-    virtual void UnsetButton(u32) {}
-    virtual void BuildNativeBinding(std::string_view, std::string_view, bool) {}
-    virtual void InvertAxis(u32, bool) {}
-    virtual void SaveToSaveState(u8, SaveStateWrapper&) const {}
-    virtual void LoadFromSaveState(u8, SaveStateWrapper&) {}
-};
-class ButtonData { u16 bits; u16 align; };
-
-// ── Pad classes - use weak symbols for ControllerInfo ─────────────────
-class PadPopn : public PadBase {
-public:
-    __attribute__((weak_import)) static const ControllerInfo ControllerInfo;
-    PadPopn(u8, u64) : PadBase(0, 0) {}
-    virtual ~PadPopn() {}
-};
-
-class PadGuitar : public PadBase {
-public:
-    __attribute__((weak_import)) static const ControllerInfo ControllerInfo;
-    PadGuitar(u8, u64) : PadBase(0, 0) {}
-    virtual ~PadGuitar() {}
-};
-
-class PadJogcon : public PadBase {
-public:
-    __attribute__((weak_import)) static const ControllerInfo ControllerInfo;
-    PadJogcon(u8, u64) : PadBase(0, 0) {}
-    virtual ~PadJogcon() {}
-};
-
-class PadNegcon : public PadBase {
-public:
-    __attribute__((weak_import)) static const ControllerInfo ControllerInfo;
-    PadNegcon(u8, u64) : PadBase(0, 0) {}
-    virtual ~PadNegcon() {}
-};

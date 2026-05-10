@@ -291,12 +291,12 @@ set(PCSX2_CORE_SOURCES
     # SIO / Pad
     pcsx2/pcsx2/SIO/Sio.cpp
     pcsx2/pcsx2/SIO/Pad/Pad.cpp
-    # pcsx2/pcsx2/SIO/Pad/PadBase.cpp  # stub only
+    pcsx2/pcsx2/SIO/Pad/PadBase.cpp
     pcsx2/pcsx2/SIO/Pad/PadDualshock2.cpp
-    # pcsx2/pcsx2/SIO/Pad/PadGuitar.cpp
-    # pcsx2/pcsx2/SIO/Pad/PadJogcon.cpp
-    # pcsx2/pcsx2/SIO/Pad/PadNegcon.cpp
-    # pcsx2/pcsx2/SIO/Pad/PadPopn.cpp
+    pcsx2/pcsx2/SIO/Pad/PadGuitar.cpp
+    pcsx2/pcsx2/SIO/Pad/PadJogcon.cpp
+    pcsx2/pcsx2/SIO/Pad/PadNegcon.cpp
+    pcsx2/pcsx2/SIO/Pad/PadPopn.cpp
     pcsx2/pcsx2/SIO/Pad/PadNotConnected.cpp
     pcsx2/pcsx2/SIO/Sio0.cpp
     pcsx2/pcsx2/SIO/Sio2.cpp
@@ -319,6 +319,7 @@ pcsx2/pcsx2/SPU2/RegTable.cpp
     pcsx2/pcsx2/Pcsx2Config.cpp
     pcsx2/pcsx2/VMManager.cpp
     pcsx2/pcsx2/Host.cpp
+    pcsx2/pcsx2/Host/AudioStream.cpp
 
     # Input Manager
     # pcsx2/pcsx2/Input/InputManager.cpp  # Commented - causes more issues
