@@ -53,8 +53,8 @@ add_subdirectory(pcsx2/3rdparty/ryml EXCLUDE_FROM_ALL)
 # zlib — NOT FOUND in pcsx2/3rdparty
 # add_subdirectory(pcsx2/3rdparty/zlib EXCLUDE_FROM_ALL)  # Directory does not exist
 
-# libzip deferred — Phase 4: provide stub symbols to avoid linker errors
-# Will be enabled when zstd dependency is resolved
+# libzip — required by SaveState (zstd stubbed on iOS)
+add_subdirectory(pcsx2/3rdparty/libzip EXCLUDE_FROM_ALL)
 
 # ── Image Libraries (built from source for iOS ARM64) ──────────────────
 
@@ -377,7 +377,6 @@ set(IOS_PLATFORM_SOURCES
     ios/platform/Filesystem_iOS.mm
     ios/platform/Host_iOS.mm
     ios/platform/EmulatorBridge.cpp
-    ios/platform/libzip_stub.cpp
 )
 
 # ─── iOS UI Layer ──────────────────────────────────────────────────────────

@@ -272,7 +272,9 @@ else(WIN32)
 endif(WIN32)
 
 target_sources(zip PRIVATE lib/zip_algorithm_zstd.c)
-target_link_libraries(zip PRIVATE Zstd::Zstd)
+if(NOT PCSX2_TARGET_IOS)
+  target_link_libraries(zip PRIVATE Zstd::Zstd)
+endif()
 
 target_link_libraries(zip PRIVATE ZLIB::ZLIB)
 target_include_directories(zip
