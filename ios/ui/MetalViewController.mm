@@ -68,13 +68,13 @@
 }
 
 - (void)drawMTKView:(MTKView*)view {
-    // Clear to black background
+    // Simple clear - wait for Phase 6 GSDeviceMTL
     id<MTLCommandBuffer> commandBuffer = [self.commandQueue commandBuffer];
-    id<MTLRenderPassDescriptor> passDescriptor = self.metalView.currentRenderPassDescriptor;
     
-    if (passDescriptor) {
-        passDescriptor.clearColor = MTLClearColorMake(0, 0, 0, 1);
-        id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:passDescriptor];
+    MTLRenderPassDescriptor* passDesc = self.metalView.currentRenderPassDescriptor;
+    if (passDesc) {
+        passDesc.clearColor = MTLClearColorMake(0, 0, 0, 1);
+        id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:passDesc];
         [encoder endEncoding];
         [commandBuffer presentDrawable:self.metalView.currentDrawable];
     }
