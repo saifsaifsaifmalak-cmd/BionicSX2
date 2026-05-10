@@ -40,7 +40,7 @@ void dVifUnpack(const u8* data, bool isFill) { (void)data; (void)isFill; }
 
 // ── GS stubs (graphics synth) ───────────────────────────────────────────────
 extern "C" {
-void gsSetVideoMode(GSVideoMode mode) { (void)mode; }
+void gsSetVideoMode(GS_VideoMode mode) { (void)mode; }
 void gsPostVsyncStart() {}
 void gsWrite64_page_00(u32 addr, u64 data) { (void)addr; (void)data; }
 void gsWrite64_page_01(u32 addr, u64 data) { (void)addr; (void)data; }
