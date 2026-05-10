@@ -327,9 +327,6 @@ pcsx2/pcsx2/SPU2/RegTable.cpp
     pcsx2/pcsx2/VMManager.cpp
     pcsx2/pcsx2/Host.cpp
 
-    # Audio Stream
-    pcsx2/pcsx2/Host/AudioStream.cpp
-
     # Input Manager
     # pcsx2/pcsx2/Input/InputManager.cpp  # Commented - causes more issues
     pcsx2/pcsx2/INISettingsInterface.cpp
