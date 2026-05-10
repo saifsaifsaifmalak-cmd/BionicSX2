@@ -351,6 +351,7 @@ target_include_directories(pcsx2_core PUBLIC
     ${CMAKE_SOURCE_DIR}/ios/platform
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/fast_float/include
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/fmt/include
+    ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/cpuinfo/include
 )
 
 target_compile_definitions(pcsx2_core PUBLIC
