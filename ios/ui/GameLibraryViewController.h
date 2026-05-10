@@ -9,7 +9,7 @@
 @interface GameLibraryViewController : UIViewController
     <UIDocumentPickerDelegate, UITableViewDataSource, UITableViewDelegate>
 
-@property (nonatomic, weak) id<GameLibraryDelegate> delegate;
+@property (nonatomic, assign) id<GameLibraryDelegate> delegate;
 @property (nonatomic, strong) NSMutableArray<NSString*>* isoFiles;
 
 - (void)scanForGames;
