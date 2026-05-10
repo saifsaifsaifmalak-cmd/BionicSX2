@@ -385,12 +385,13 @@ target_link_libraries(pcsx2_core PUBLIC
 
 # ─── iOS Platform Layer ────────────────────────────────────────────────────
 set(IOS_PLATFORM_SOURCES
-    ios/platform/HostSys_iOS.cpp
-    ios/platform/CocoaTools.mm
+    ios/platform/EmulatorBridge.h
+    ios/platform/EmulatorBridge.mm
     ios/platform/AudioStream_iOS.mm
     ios/platform/Filesystem_iOS.mm
     ios/platform/EmulatorBridge.mm
     ios/platform/Host_iOS.mm
+    ios/platform/PCSX2Stubs.mm
 )
 
 # ─── iOS UI Layer ──────────────────────────────────────────────────────────
