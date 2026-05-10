@@ -264,6 +264,7 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/IPU/yuv2rgb.cpp
 
     # CDVD
+    pcsx2/pcsx2/CDVD/CDVD.cpp
     pcsx2/pcsx2/CDVD/CDVDcommon.cpp
     pcsx2/pcsx2/CDVD/CDVDdiscReader.cpp
     pcsx2/pcsx2/CDVD/CDVDisoReader.cpp
@@ -281,6 +282,7 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/CDVD/Ps1CD.cpp
 
     # SIO / Pad
+    pcsx2/pcsx2/SIO/Sio.cpp
     pcsx2/pcsx2/SIO/Pad/Pad.cpp
     pcsx2/pcsx2/SIO/Pad/PadDualshock2.cpp
     pcsx2/pcsx2/SIO/Pad/PadNotConnected.cpp
@@ -308,6 +310,9 @@ pcsx2/pcsx2/SPU2/RegTable.cpp
 
     # PS2 subsystem
     pcsx2/pcsx2/ps2/BiosTools.cpp
+
+    # GSDump Replayer
+    pcsx2/pcsx2/GSDumpReplayer.cpp
 
     # GS Core (no Vulkan, no OpenGL, no DX)
     pcsx2/pcsx2/GS/GS.cpp
@@ -352,22 +357,33 @@ target_compile_definitions(pcsx2_core PUBLIC
     DISABLE_ANDROID=1
     TARGET_OS_IPHONE=1
     DISABLE_DISCORD_RPC=1
+    MULTI_ISA_SHARED_COMPILATION=1
 )
+
+# ─── Apple Frameworks (direct linking - no find_library needed) ─────────────────────────
+# Note: -framework flags work directly in Xcode/Apple toolchains
 
 target_link_libraries(pcsx2_core PUBLIC
-    pcsx2_common
+    "-framework Metal"
+    "-framework MetalKit"
+    "-framework AVFoundation"
+    "-framework AudioToolbox"
+    "-framework AudioUnit"
 )
 
-# ─── Apple Frameworks ──────────────────────────────────────────────────────
-find_library(FW_METAL          Metal REQUIRED)
-find_library(FW_METALKIT       MetalKit REQUIRED)
-find_library(FW_AVFOUNDATION   AVFoundation REQUIRED)
-find_library(FW_AUDIOTOOLBOX   AudioToolbox REQUIRED)
-find_library(FW_UIKIT          UIKit REQUIRED)
-find_library(FW_FOUNDATION     Foundation REQUIRED)
-find_library(FW_QUARTZCORE     QuartzCore REQUIRED)
-find_library(FW_COREGRAPHICS   CoreGraphics REQUIRED)
-
+target_link_libraries(BionicSX2 PRIVATE
+    pcsx2_core
+    pcsx2_common
+    "-framework Metal"
+    "-framework MetalKit"
+    "-framework AVFoundation"
+    "-framework AudioToolbox"
+    "-framework AudioUnit"
+    "-framework UIKit"
+    "-framework Foundation"
+    "-framework QuartzCore"
+    "-framework CoreGraphics"
+)
 
 # ─── iOS Platform Layer ────────────────────────────────────────────────────
 set(IOS_PLATFORM_SOURCES
