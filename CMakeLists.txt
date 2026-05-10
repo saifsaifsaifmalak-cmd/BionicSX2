@@ -391,7 +391,7 @@ set(IOS_PLATFORM_SOURCES
     ios/platform/Filesystem_iOS.mm
     ios/platform/EmulatorBridge.mm
     ios/platform/Host_iOS.mm
-    ios/platform/PCSX2Stubs.cpp
+    ios/platform/PCSX2Stubs.c
 )
 
 # ─── iOS UI Layer ──────────────────────────────────────────────────────────
