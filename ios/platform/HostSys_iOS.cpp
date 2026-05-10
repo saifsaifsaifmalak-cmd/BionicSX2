@@ -8,31 +8,17 @@
 #include <pthread.h>
 #include <sys/mman.h>
 #include <sys/sysctl.h>
-#include <CoreGraphics/CoreGraphics.h>
-#include <IOKit/pwr_mgt/IOKitLib.h>
 
 #include "common/HostSys.h"
 #include "common/Pcsx2Defs.h"
 #include "common/Threading.h"
 
-static IOPMAssertionID s_pm_assertion = 0;
-
 bool Common::InhibitScreensaver(bool inhibit)
 {
-	if (s_pm_assertion)
-	{
-		IOPMAssertionRelease(s_pm_assertion);
-		s_pm_assertion = 0;
-	}
-
-	if (inhibit)
-	{
-		IOPMAssertionCreateWithName(kIOPMAssertionTypePreventUserIdleDisplaySleep,
-									kIOPMAssertionLevelOn,
-									CFSTR("BionicSX2Playing"),
-									&s_pm_assertion);
-	}
-
+	// iOS: Use idleTimerDisabled on UIApplication
+	// This is a stub - full implementation needs UIKit integration
+	// For now, no-op on iOS
+	(void)inhibit;
 	return true;
 }
 
