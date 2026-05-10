@@ -35,8 +35,8 @@ void PGIFrQword(u32 addr, void* data) { (void)addr; (void)data; }
 void PGIFwQword(u32 addr, void* data) { (void)addr; (void)data; }
 } // extern "C"
 
-void dVifUnpack<0>(const u8* data, bool isstatic) { (void)data; (void)isstatic; }
-void dVifUnpack<1>(const u8* data, bool isstatic) { (void)data; (void)isstatic; }
+template <int idx>
+void dVifUnpack(const u8* data, bool isFill) { (void)data; (void)isFill; }
 
 // ── GS stubs (graphics synth) ───────────────────────────────────────────────
 extern "C" {
