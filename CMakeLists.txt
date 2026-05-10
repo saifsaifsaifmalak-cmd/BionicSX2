@@ -389,7 +389,7 @@ set(IOS_PLATFORM_SOURCES
     ios/platform/CocoaTools.mm
     ios/platform/AudioStream_iOS.mm
     ios/platform/Filesystem_iOS.mm
-    ios/platform/EmulatorBridge.cpp
+    ios/platform/EmulatorBridge.mm
     # ios_stubs.cpp — NOT linked (pcsx2_core excluded)
     # ios/platform/Host_iOS.mm — NOT linked (pcsx2_core excluded)
 )
