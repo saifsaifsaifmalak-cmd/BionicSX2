@@ -4,6 +4,7 @@
 
 #include "common/Pcsx2Types.h"
 #include "GS/GS.h"
+#include "Config.h"
 
 extern "C" {
 
@@ -31,7 +32,7 @@ void cdvdRefreshData() {}
 bool GetValidDrive(std::string& filename) { return false; }
 
 // ── GS stubs (graphics synth) ────────────────────────────────────────────────
-void gsSetVideoMode(GS_VideoMode mode) {}
+void gsSetVideoMode(GSVideoMode mode) {}
 void gsPostVsyncStart() {}
 void gsWrite64_page_00(u32 addr, u64 data) {}
 void gsWrite64_generic(u32 addr, u64 data) {}
