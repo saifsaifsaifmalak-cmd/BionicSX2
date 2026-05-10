@@ -92,16 +92,15 @@ struct HotkeyInfo {
 };
 
 // ── FullscreenUI ───────────────────────────────────────────────────
-// Stubs commented out - causing compilation errors
-// namespace FullscreenUI {
-//     void GameChanged(const std::string&, const std::string&, const std::string&, u32, u32) {}
-// }
+namespace FullscreenUI {
+    __attribute__((weak_import)) void OnVMDestroyed() {}
+}
 
 // ── Achievements ───────────────────────────────────────────────────
-// namespace Achievements {
-//     void GameChanged(u32, u32) {}
-//     bool IsHardcoreModeActive() { return false; }
-// }
+namespace Achievements {
+    __attribute__((weak_import)) void GameChanged(unsigned int, unsigned int) {}
+    __attribute__((weak_import)) bool IsHardcoreModeActive() { return false; }
+}
 
 // ── GSCapture ───────────────────────────────────────────────────────
 namespace GSCapture {
@@ -110,12 +109,12 @@ namespace GSCapture {
 }
 
 // ── GSTextureReplacements ───────────────────────────────────────────
-// namespace GSTextureReplacements {
-//     void GameChanged() {}
-//     void ReloadReplacementMap() {}
-//     void Shutdown() {}
-//     void UpdateConfig(void*) {}
-// }
+namespace GSTextureReplacements {
+    __attribute__((weak_import)) void GameChanged() {}
+    void ReloadReplacementMap() {}
+    void Shutdown() {}
+    void UpdateConfig(void*) {}
+}
 
 // ── SaveStateSelectorUI ─────────────────────────────────────────────
 namespace SaveStateSelectorUI {
