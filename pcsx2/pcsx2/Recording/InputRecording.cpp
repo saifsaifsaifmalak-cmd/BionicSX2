@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2002-2026 PCSX2 Dev Team
 // SPDX-License-Identifier: GPL-3.0+
 
+#if !defined(PCSX2_TARGET_IOS)
 #include "Counters.h"
 #include "MTGS.h"
 #include "SaveState.h"
@@ -403,3 +404,5 @@ void InputRecording::InformGSThread()
 		g_InputRecordingData.undo_count_message = undo_count_message;
 	});
 }
+
+#endif // !PCSX2_TARGET_IOS

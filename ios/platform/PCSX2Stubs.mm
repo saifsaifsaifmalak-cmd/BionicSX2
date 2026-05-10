@@ -1,32 +1,24 @@
-// PCSX2Stubs.mm — C++ stub implementations for iOS linking
-// Phase 6: Real VMManager boot - provides external symbols
+// PCSX2Stubs.mm — iOS stubs for unimplemented subsystems
+// Phase 6: Stubs all undefined symbols to get build passing
 
+#import <Foundation/Foundation.h>
 #include <string>
+#include <memory>
 
-// Type aliases for PCSX2 types
+// Type aliases
 typedef unsigned int u32;
 typedef unsigned long long u64;
 typedef unsigned char u8;
 typedef unsigned short u16;
 
-namespace PCSX2 {
-struct Pcsx2Config;
-}
-
-// Forward declarations to match PCSX2 headers
-namespace GS {
-enum class GSVideoMode : int;
-enum class GS_VideoMode : int;
-}
+namespace PCSX2 { struct Pcsx2Config; }
+namespace GS { enum class GS_VideoMode : int; }
 
 extern "C" {
 
-// ── Debug symbols (DebugTools) ─────────────────────────────────────────────
-void R3000SymbolGuardian(u32 pc, const char* name) {}
-void R5900SymbolImporter(u32 pc, const char* name) {}
-
-// ── DEV9 stubs (network adapter) ───────────────────────────────────────────
+// ── DEV9 — PS2 expansion port ─────────────────────────────────────────────
 void DEV9shutdown() {}
+void DEV9close() {}
 void DEV9irqHandler() {}
 void DEV9CheckChanges(const PCSX2::Pcsx2Config*) {}
 u8 DEV9read8(u32 addr) { (void)addr; return 0; }
@@ -36,47 +28,126 @@ void DEV9write8(u32 addr, u8 val) { (void)addr; (void)val; }
 void DEV9write16(u32 addr, u16 val) { (void)addr; (void)val; }
 void DEV9write32(u32 addr, u32 val) { (void)addr; (void)val; }
 
-// ── CDVD stubs (disc drive) ─────────────────────────────────────────────────
-void cdvdStartThread() {}
-void cdvdStopThread() {}
-void cdvdRequestSector(u32 lsn, int retry) { (void)lsn; (void)retry; }
-int cdvdGetSector(u32 lsn, int mode) { (void)lsn; (void)mode; return 0; }
-void cdvdRefreshData() {}
-bool GetValidDrive(std::string& filename) { (void)filename; return false; }
+// ── USB — PS2 USB controller ─────────────────────────────────────────────
+void USBclose() {}
 
-// ── VIF stubs ───────────────────────────────────────────────────────────────
-void PGIFrQword(u32 addr, void* data) { (void)addr; (void)data; }
-void PGIFwQword(u32 addr, void* data) { (void)addr; (void)data; }
+// ── gsIrq ──────────────────────────────────────────────────────────────────
+void gsIrq() {}
 
-// dVifUnpack stubs
-void dVifUnpack_0(const u8* data, bool isFill) { (void)data; (void)isFill; }
-void dVifUnpack_1(const u8* data, bool isFill) { (void)data; (void)isFill; }
-
-// ── GS stubs (graphics synth) ───────────────────────────────────────────────
-void gsSetVideoMode(GS::GS_VideoMode mode) { (void)mode; }
-void gsPostVsyncStart() {}
-void gsWrite64_page_00(u32 addr, u64 data) { (void)addr; (void)data; }
-void gsWrite64_page_01(u32 addr, u64 data) { (void)addr; (void)data; }
-void gsWrite64_generic(u32 addr, u64 data) { (void)addr; (void)data; }
-
-// ── Metal GS device stub ───────────────────────────────────────────────────
-extern "C++" {
-class GSDevice;
-GSDevice* MakeGSDeviceMTL() { return nullptr; }
-}
-
-// ── IOP BIOS stubs ───────────────────────────────────────────────────────────
-void psxBiosReset() {}
-void psxBiosCall() {}
-
-// ── Timing stubs ─────────────────────────────────────────────────────────────
-u64 GetCPUTicks() { return 0; }
-u64 GetTickFrequency() { return 1000000000; }
-
-// ── Error handling stub ─────────────────────────────────────────────────────
+// ── AbortWithMessage ─────────────────────────────────────────────────────
 void AbortWithMessage(const char* msg) {
-    (void)msg;
-    __builtin_trap();
+    NSLog(@"[BionicSX2] ABORT: %s", msg ? msg : "unknown");
+    abort();
 }
 
 } // extern "C"
+
+// ── FullscreenUI stubs ───────────────────────────────────────────────────
+namespace FullscreenUI {
+    void GameChanged(const std::string&, const std::string&, const std::string&, u32, u32) {}
+    void OnVMDestroyed() {}
+}
+
+// ── SaveStateSelectorUI stub ─────────────────────────────────────────────
+namespace SaveStateSelectorUI {
+    void Clear() {}
+}
+
+// ── Achievements stubs ───────────────────────────────────────────────────
+namespace Achievements {
+    void GameChanged(u32, u32) {}
+    bool IsHardcoreModeActive() { return false; }
+}
+
+// ── GSCapture stubs ─────────────────────────────────────────────────────
+namespace GSCapture {
+    void EndCapture() {}
+    bool IsCapturing() { return false; }
+}
+
+// ── GSTextureReplacements stub ──────────────────────────────────────────
+namespace GSTextureReplacements {
+    void GameChanged() {}
+}
+
+// ── GameDatabase stubs ───────────────────────────────────────────────────
+namespace GameDatabase {
+    class GameEntry;
+    const GameEntry* findGame(std::string_view) { return nullptr; }
+}
+namespace GameDatabaseSchema {
+    class GameEntry {
+    public:
+        void applyGSHardwareFixes(class Pcsx2Config::GSOptions&) const {}
+        void applyGameFixes(Pcsx2Config&, bool) const {}
+    };
+}
+
+// ── GameList stub ───────────────────────────────────────────────────────
+namespace GameList {
+    void AddPlayedTimeForSerial(const std::string&, long, long) {}
+}
+
+// ── Common::InhibitScreensaver ───────────────────────────────────────────
+namespace Common {
+    void InhibitScreensaver(bool) {
+        // iOS handles this via UIApplication
+    }
+}
+
+// ── SharedMemoryMappingArea stub ─────────────────────────────────────────
+class SharedMemoryMappingArea {
+public:
+    SharedMemoryMappingArea() {}
+    ~SharedMemoryMappingArea() {}
+    void Unmap(void* addr, u64 size, bool) { (void)addr; (void)size; }
+};
+
+// ── Threading::KernelSemaphore stub ──────────────────────────────────────
+namespace Threading {
+    class KernelSemaphore {
+    public:
+        KernelSemaphore() {}
+        ~KernelSemaphore() {}
+        void Post() {}
+        void Wait() {}
+    };
+}
+
+// ── Threading::Thread stubs ──────────────────────────────────────────────
+namespace Threading {
+    class Thread {
+    public:
+        Thread() {}
+        ~Thread() {}
+        void Join() {}
+    };
+    class ThreadHandle {
+    public:
+        ThreadHandle() {}
+        ~ThreadHandle() {}
+        void SetAffinity(unsigned long long) {}
+    };
+}
+
+// ── USB stubs ───────────────────────────────────────────────────────────
+namespace USB {
+    const char* GetConfigSection(int) { return nullptr; }
+    const char* DeviceTypeIndexToName(int) { return nullptr; }
+    int DeviceTypeNameToIndex(std::string_view) { return 0; }
+}
+
+// ── InputRecording stubs ───────────────────────────────────────────────
+namespace InputRecording {
+    bool isActive() { return false; }
+    void stop() {}
+}
+bool g_InputRecording = false;
+
+// ── Memory stub ─────────────────────────────────────────────────────────
+unsigned char* g_RealGSMem = nullptr;
+
+// ── gsIrq declaration for GS ─────────────────────────────────────────────
+extern "C" {
+void gsIrq();
+}
