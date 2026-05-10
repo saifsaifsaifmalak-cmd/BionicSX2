@@ -68,18 +68,8 @@
 }
 
 - (void)drawMTKView:(MTKView*)view {
-    // Simple clear - wait for Phase 6 GSDeviceMTL
-    id<MTLCommandBuffer> commandBuffer = [self.commandQueue commandBuffer];
-    
-    MTLRenderPassDescriptor* passDesc = self.metalView.currentRenderPassDescriptor;
-    if (passDesc) {
-        passDesc.clearColor = MTLClearColorMake(0, 0, 0, 1);
-        id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:passDesc];
-        [encoder endEncoding];
-        [commandBuffer presentDrawable:self.metalView.currentDrawable];
-    }
-    
-    [commandBuffer commit];
+    // Phase 4 stub - no rendering until Phase 6 GSDeviceMTL
+    // Just clear the drawable
 }
 
 - (void)mtkView:(MTKView*)view drawableSizeDidChange:(CGSize)size {
