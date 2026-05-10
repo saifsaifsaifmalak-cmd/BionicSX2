@@ -390,7 +390,7 @@ set(IOS_PLATFORM_SOURCES
     ios/platform/AudioStream_iOS.mm
     ios/platform/Filesystem_iOS.mm
     ios/platform/EmulatorBridge.mm
-    # Host_iOS.mm — requires pcsx2_core (Phase 6)
+    ios/platform/Host_iOS.mm
 )
 
 # ─── iOS UI Layer ──────────────────────────────────────────────────────────
@@ -417,7 +417,8 @@ target_include_directories(BionicSX2 PRIVATE
 )
 
 target_link_libraries(BionicSX2 PRIVATE
-    # pcsx2_core NOT linked - defer to Phase 6 when implementation complete
+    # Phase 5: Link pcsx2_core to capture full undefined symbol list
+    pcsx2_core
     pcsx2_common
     "-framework Metal"
     "-framework MetalKit"
