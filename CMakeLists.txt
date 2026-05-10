@@ -361,7 +361,6 @@ target_compile_definitions(pcsx2_core PUBLIC
     DISABLE_ANDROID=1
     TARGET_OS_IPHONE=1
     DISABLE_DISCORD_RPC=1
-    MULTI_ISA_SHARED_COMPILATION=1
 )
 
 # ─── Apple Frameworks (direct linking - no find_library needed) ─────────────────────────
