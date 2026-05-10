@@ -27,15 +27,19 @@ static CPUInfo CalcCPUInfo()
 	CPUInfo out = {"Apple Silicon", 0, 0, 0, 0};
 	
 	// Get CPU brand string
-	size_t name_size = sizeof(out.name);
-	sysctlbyname("machdep.cpu.brand_string", out.name, &name_size, nullptr, 0);
+	char cpu_name[256] = {0};
+	size_t name_size = sizeof(cpu_name);
+	sysctlbyname("machdep.cpu.brand_string", cpu_name, &name_size, nullptr, 0);
+	strncpy(out.name, cpu_name, sizeof(out.name) - 1);
 	
 	// Get physical cpu count
-	size_t phys_size = sizeof(out.num_big_cores);
-	sysctlbyname("hw.physicalcpu", &out.num_big_cores, &phys_size, nullptr, 0);
+	size_t phys_size = sizeof(u32);
+	u32 physcpu = 0;
+	sysctlbyname("hw.physicalcpu", &physcpu, &phys_size, nullptr, 0);
+	out.num_big_cores = physcpu;
 	
 	// Get logical cpu count
-	size_t log_size = sizeof(out.num_threads);
+	size_t log_size = sizeof(u32);
 	u32 logcpu = 0;
 	sysctlbyname("hw.logicalcpu", &logcpu, &log_size, nullptr, 0);
 	out.num_threads = logcpu;
