@@ -78,12 +78,7 @@ namespace Threading {
 
 // ── SharedMemoryMappingArea - provided by HostSys_iOS.cpp ─────────────
 
-// ── InputRecording ──────────────────────────────────────────────────
-namespace InputRecording {
-    bool isActive() { return false; }
-    void stop() {}
-}
-bool g_InputRecording = false;
+// ── InputRecording — provided by Recording/InputRecording.cpp ─────────────
 
 // ── Hotkey globals ─────────────────────────────────────────────────
 struct HotkeyInfo {

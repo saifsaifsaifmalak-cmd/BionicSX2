@@ -285,6 +285,7 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/CDVD/CDVD.cpp
     pcsx2/pcsx2/CDVD/CDVDcommon.cpp
     pcsx2/pcsx2/CDVD/CDVDdiscReader.cpp
+    pcsx2/pcsx2/CDVD/Darwin/IOCtlSrc.cpp
     pcsx2/pcsx2/CDVD/CDVDisoReader.cpp
     pcsx2/pcsx2/CDVD/InputIsoFile.cpp
     pcsx2/pcsx2/CDVD/OutputIsoFile.cpp
@@ -332,6 +333,9 @@ pcsx2/pcsx2/SPU2/RegTable.cpp
     pcsx2/pcsx2/Host.cpp
     pcsx2/pcsx2/Host/AudioStream.cpp
     pcsx2/pcsx2/GameDatabase.cpp
+    pcsx2/pcsx2/Recording/InputRecording.cpp
+    pcsx2/pcsx2/Recording/InputRecordingControls.cpp
+    pcsx2/pcsx2/Recording/InputRecordingFile.cpp
 
     # Input Manager
     # pcsx2/pcsx2/Input/InputManager.cpp  # Commented - causes more issues
