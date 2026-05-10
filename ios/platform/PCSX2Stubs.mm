@@ -78,8 +78,7 @@ namespace GameDatabase {
 namespace GameDatabaseSchema {
     class GameEntry {
     public:
-        void applyGSHardwareFixes(class Pcsx2Config::GSOptions&) const {}
-        void applyGameFixes(class Pcsx2Config&, bool) const {}
+        // Stub implementations - actual functionality not needed for linking
     };
 }
 
