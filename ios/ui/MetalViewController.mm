@@ -52,46 +52,10 @@
 }
 
 - (void)initializeEmulator {
-    // Register Metal layer BEFORE initializing emulator
-    // This allows Host:: to get the surface info
-    CAMetalLayer* metalLayer = (CAMetalLayer*)self.metalView.layer;
-    BionicSX2_SetMetalLayer(metalLayer, self.device);
-    NSLog(@"[BionicSX2] Metal layer registered with Host");
+    NSLog(@"[BionicSX2] initializeEmulator — Phase 4 stub (no core linked)");
 
-    if (!EmulatorBridge_Init()) {
-        NSLog(@"[BionicSX2] ERROR: EmulatorBridge_Init failed");
-        return;
-    }
-
-    NSString* docsPath = NSSearchPathForDirectoriesInDomains(
-        NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-    NSString* biosDir = [docsPath stringByAppendingPathComponent:@"bios"];
-
-    NSFileManager* fm = [NSFileManager defaultManager];
-    NSArray* files = [fm contentsOfDirectoryAtPath:biosDir error:nil];
-    NSString* biosFile = nil;
-
-    for (NSString* f in files) {
-        if ([f.pathExtension.lowercaseString isEqualToString:@"bin"]) {
-            biosFile = [biosDir stringByAppendingPathComponent:f];
-            break;
-        }
-    }
-
-    if (!biosFile) {
-        NSLog(@"[BionicSX2] No BIOS found in %@ — check Documents/bios/ folder",
-              biosDir);
-        return;
-    }
-
-    NSLog(@"[BionicSX2] Found BIOS: %@", biosFile);
-
-    if (EmulatorBridge_BootBIOS(biosFile.UTF8String)) {
-        NSLog(@"[BionicSX2] BIOS boot started");
-        self.emulatorInitialized = YES;
-    } else {
-        NSLog(@"[BionicSX2] BIOS boot failed");
-    }
+    // Don't call any PCSX2 functions - bios check will be Phase 6
+    self.emulatorInitialized = YES;
 }
 
 - (void)startEmulatorLoop {
@@ -99,37 +63,27 @@
 }
 
 - (void)stopEmulatorLoop {
-    if (self.emulatorInitialized) {
-        EmulatorBridge_Shutdown();
-    }
-    NSLog(@"[BionicSX2] Emulator loop stopped");
+    NSLog(@"[BionicSX2] Stopping emulator");
+    self.emulatorInitialized = NO;
 }
 
-- (void)drawInMTKView:(MTKView*)view {
-    if (self.emulatorInitialized) {
-        EmulatorBridge_RunFrame();
-    }
-
+- (void)drawMTKView:(MTKView*)view {
+    // Clear to black background
     id<MTLCommandBuffer> commandBuffer = [self.commandQueue commandBuffer];
-    MTLRenderPassDescriptor* rpd = view.currentRenderPassDescriptor;
-    if (rpd) {
-        id<MTLRenderCommandEncoder> encoder =
-            [commandBuffer renderCommandEncoderWithDescriptor:rpd];
+    id<MTLRenderPassDescriptor> passDescriptor = self.metalView.currentRenderPassDescriptor;
+    
+    if (passDescriptor) {
+        passDescriptor.clearColor = MTLClearColorMake(0, 0, 0, 1);
+        id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:passDescriptor];
         [encoder endEncoding];
-        [commandBuffer presentDrawable:view.currentDrawable];
+        [commandBuffer presentDrawable:self.metalView.currentDrawable];
     }
+    
     [commandBuffer commit];
 }
 
-- (void)mtkView:(MTKView*)view drawableSizeWillChange:(CGSize)size {
-    NSLog(@"[BionicSX2] Metal view size: %.0fx%.0f",
-          size.width, size.height);
-}
-
-- (void)dealloc {
-    if (self.emulatorInitialized) {
-        EmulatorBridge_Shutdown();
-    }
+- (void)mtkView:(MTKView*)view drawableSizeDidChange:(CGSize)size {
+    NSLog(@"[BionicSX2] drawableSizeDidChange: %@", NSStringFromCGSize(size));
 }
 
 @end
