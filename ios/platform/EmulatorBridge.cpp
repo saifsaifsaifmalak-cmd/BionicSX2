@@ -1,80 +1,37 @@
-// EmulatorBridge.cpp — C++ bridge implementation
+// EmulatorBridge.cpp — Phase 4 stub implementation
 // Provides extern "C" interface to PCSX2 VMManager for Objective-C callers
-// Phase 4: BIOS boot via interpreter
+//
+// Phase 4: Stub only — pcsx2_core not yet linked
+// TODO Phase 5: uncomment real implementations when Metal + Host ready
 
 #include "EmulatorBridge.h"
-#include "VMManager.h"
-#include "Host.h"
-#include "Config.h"
-#include "common/Console.h"
-#include "common/FileSystem.h"
-#include "common/Error.h"
-#include "common/SettingsInterface.h"
-#include "common/MemorySettingsInterface.h"
-
-static MemorySettingsInterface s_settings_interface;
+#include <Foundation/Foundation.h>
 
 extern "C" {
 
 bool EmulatorBridge_Init(void) {
-    Console.WriteLn("[BionicSX2] EmulatorBridge_Init");
-
-    VMManager::Internal::LoadStartupSettings();
-
-    s_settings_interface.SetStringValue("BIOS", "BB_BIOS", "SCPH-10000.BIN");
-
-    Host::Internal::SetBaseSettingsLayer(&s_settings_interface);
-    Host::Internal::SetSecretsSettingsLayer(&s_settings_interface);
-
-    VMManager::Internal::UpdateEmuFolders();
-
-    const char* error = nullptr;
-    if (!VMManager::PerformEarlyHardwareChecks(&error)) {
-        Console.WriteLn("[BionicSX2] Hardware check failed: %s", error ? error : "unknown");
-        return false;
-    }
-
+    NSLog(@"[BionicSX2] EmulatorBridge_Init — Phase 4 stub");
+    // TODO Phase 5: call VMManager::Initialize() via Host:: callbacks
     return true;
 }
 
 void EmulatorBridge_Shutdown(void) {
-    Console.WriteLn("[BionicSX2] EmulatorBridge_Shutdown");
-    if (VMManager::GetState() != VMState::Shutdown) {
-        VMManager::Shutdown(false);
-    }
+    NSLog(@"[BionicSX2] EmulatorBridge_Shutdown — Phase 4 stub");
+    // TODO Phase 5: call VMManager::Shutdown()
 }
 
 bool EmulatorBridge_BootBIOS(const char* biosPath) {
-    Console.WriteLn("[BionicSX2] EmulatorBridge_BootBIOS: %s", biosPath ? biosPath : "(null)");
-
-    VMBootParameters params;
-    if (biosPath && biosPath[0]) {
-        params.elf_override = biosPath;
-    }
-
-    Error error;
-    VMBootResult result = VMManager::Initialize(params, &error);
-    if (result == VMBootResult::StartupSuccess) {
-        Console.WriteLn("[BionicSX2] VM started successfully");
-        return true;
-    } else {
-        Console.WriteLn("[BionicSX2] VM boot failed: %s",
-            error.IsValid() ? error.GetDescription().c_str() : "unknown error");
-        return false;
-    }
+    NSLog(@"[BionicSX2] EmulatorBridge_BootBIOS stub: %s", biosPath ? biosPath : "(null)");
+    // TODO Phase 5: call VMManager::Initialize()
+    return false;
 }
 
 void EmulatorBridge_RunFrame(void) {
-    VMState state = VMManager::GetState();
-    if (state == VMState::Running) {
-        VMManager::Execute();
-    } else if (state == VMState::Paused) {
-        VMManager::IdlePollUpdate();
-    }
+    // TODO Phase 5: call VMManager::Execute()
 }
 
 bool EmulatorBridge_IsRunning(void) {
-    return VMManager::GetState() == VMState::Running;
+    return false; // TODO Phase 5
 }
 
 } // extern "C"
