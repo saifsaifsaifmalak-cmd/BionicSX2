@@ -78,14 +78,10 @@ namespace Threading {
 
 // ── SharedMemoryMappingArea - provided by HostSys_iOS.cpp ─────────────
 
-// ── InputRecording — provided by Recording/InputRecording.cpp ─────────────
-
-// ── Hotkey globals ─────────────────────────────────────────────────
-struct HotkeyInfo {
-    const char* name;
-    const char* category;
-    const char* display_name;
-    void (*handler)(s32 pressed);
+// ── IOCtlSrc (macOS only - stubbed for iOS) ──────────────────────────
+class IOCtlSrc {
+public:
+    __attribute__((weak_import)) ~IOCtlSrc() {}
 };
 
 // ── FullscreenUI ───────────────────────────────────────────────────
@@ -148,7 +144,14 @@ namespace USB {
     void SetDeviceBindValue(u32, u32, float) {}
 }
 
-// ── Host callbacks (only those NOT in Host_iOS.mm) ──────────────────
+// ── InputRecording stubs ──────────────────────────────────────────
+namespace InputRecording {
+    bool isActive() { return false; }
+    void stop() {}
+}
+bool g_InputRecording = false;
+
+// ── IOCtlSrc (macOS only - stubbed for iOS) ──────────────────────────
 namespace Host {
     void ReleaseRenderWindow() {}
     void SetMouseMode(bool, bool) {}
