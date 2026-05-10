@@ -215,5 +215,3 @@ public:
 void SaveState_ZipToDisk(std::unique_ptr<ArchiveEntryList>, std::unique_ptr<SaveStateScreenshotData>, const char*, Error*) {}
 void SaveState_DownloadState(Error*) {}
 void SaveState_SaveScreenshot() {}
-
-} // extern "C"
