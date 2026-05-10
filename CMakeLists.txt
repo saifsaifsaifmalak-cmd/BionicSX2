@@ -419,10 +419,8 @@ target_include_directories(BionicSX2 PRIVATE
 
 target_link_libraries(BionicSX2 PRIVATE
     # Phase 6: Link pcsx2_core for real VM boot
-    # Temporarily disabled due to too many undefined symbols
-    # Will re-enable after implementing stubs
-    # pcsx2_core
     pcsx2_common
+    pcsx2_core
     "-framework Metal"
     "-framework MetalKit"
     "-framework AVFoundation"
