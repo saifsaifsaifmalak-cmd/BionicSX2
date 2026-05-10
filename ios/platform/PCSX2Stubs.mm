@@ -93,7 +93,6 @@ struct HotkeyInfo {
 
 // ── FullscreenUI ───────────────────────────────────────────────────
 namespace FullscreenUI {
-    void OnVMDestroyed() {}
     void GameChanged(std::string title, std::string path, std::string serial, u32 disc_crc, u32 crc) {}
 }
 
@@ -114,7 +113,7 @@ namespace GSTextureReplacements {
     void GameChanged() {}
     void ReloadReplacementMap() {}
     void Shutdown() {}
-    void UpdateConfig(Pcsx2Config::GSOptions&) {}
+    void UpdateConfig(class Pcsx2Config::GSOptions&) {}
 }
 
 // ── SaveStateSelectorUI ─────────────────────────────────────────────
@@ -163,13 +162,8 @@ namespace USB {
     void SetDeviceBindValue(u32, u32, float) {}
 }
 
-// ── Host callbacks (additional to Host_iOS.mm) ────────────────────
+// ── Host callbacks (only those NOT in Host_iOS.mm) ──────────────────
 namespace Host {
-    void OnSaveStateSaved(std::string_view filename) {}
-    void OnVMDestroyed() {}
-    void OnGameChanged(const std::string& title, const std::string& elf_override, 
-                     const std::string& disc_path, const std::string& disc_serial, 
-                     u32 disc_crc, u32 current_crc) {}
     void ReleaseRenderWindow() {}
     void SetMouseMode(bool, bool) {}
 }
