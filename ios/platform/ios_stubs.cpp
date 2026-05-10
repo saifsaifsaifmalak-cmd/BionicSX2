@@ -5,32 +5,40 @@
 // Each stub is marked with the Phase that will implement the real version.
 
 #include "common/Pcsx2Defs.h"
-#include "pcsx2/pcsx2/Recording/InputRecording.h"
-#include "pcsx2/pcsx2/GS.h"
-#include "pcsx2/pcsx2/SIO/Memcard/MemoryCardProtocol.h"
-#include "pcsx2/pcsx2/SIO/Multitap/MultitapProtocol.h"
-#include "pcsx2/pcsx2/DebugTools/SymbolGuardian.h"
-#include "pcsx2/pcsx2/DebugTools/SymbolImporter.h"
-#include "pcsx2/pcsx2/DEV9/DEV9.h"
+#include <array>
 
 #if defined(PCSX2_TARGET_IOS)
 
+// Forward declarations - types defined in PCSX2 headers
+class InputRecording;
+class MemoryCardProtocol;
+class MultitapProtocol;
+class SymbolGuardian;
+class SymbolImporter;
+
+namespace SIO { enum : int { PORTS = 4 }; }
+
 // g_InputRecording — Input recording/playing (TODO Phase 6)
+class InputRecording {};
 InputRecording g_InputRecording;
 
 // g_RealGSMem — GS registers (TODO Phase 5: Metal renderer)
-alignas(16) u8 g_RealGSMem[Ps2MemSize::GSregs] = {};
+// Size matches Ps2MemSize::GSregs (0x4000 = 16KB)
+alignas(16) u8 g_RealGSMem[0x4000] = {};
 
-// g_MemoryCardProtocol — Memory cardprotocol (TODO Phase 7)
+// g_MemoryCardProtocol — Memory card protocol (TODO Phase 7)
+class MemoryCardProtocol {};
 MemoryCardProtocol g_MemoryCardProtocol;
 
 // g_MultitapArr — Multitap controller protocol (TODO Phase 7)
-std::array<MultitapProtocol, SIO::PORTS> g_MultitapArr;
+std::array<MultitapProtocol, 4> g_MultitapArr;
 
 // R3000SymbolGuardian — MIPS symbol database (TODO: not needed for interpreter)
+class SymbolGuardian {};
 SymbolGuardian R3000SymbolGuardian;
 
 // R5900SymbolImporter — ELF symbol importer (TODO: not needed for interpreter)
+class SymbolImporter {};
 SymbolImporter R5900SymbolImporter;
 
 // DEV9 stubs — PS2 expansion port peripheral (TODO Phase 7)
