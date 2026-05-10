@@ -24,7 +24,7 @@ bool EmulatorBridge_Init(void) {
     NSString* biosDir = [docs stringByAppendingPathComponent:@"bios"];
     EmuConfig.BaseFilenames.Bios = biosDir.UTF8String;
 
-    Console.WriteLn("[BionicSX2] BIOS dir: %s", EmuConfig.BiosFilename.c_str());
+    Console.WriteLn("[BionicSX2] BIOS dir: %s", EmuConfig.BaseFilenames.Bios.c_str());
     return true;
 }
 
