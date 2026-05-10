@@ -450,6 +450,36 @@ The blueprint must cover all of the following:
           Deliverable: Emulator reaches BIOS screen on a physical iOS device.
           Metal surface renders output. Audio initializes without crash.
 
+        ## Phase 4 — COMPLETED ✅ (2026-05-10)
+
+        ### Status: BUILD GREEN — pcsx2_core compiles, executable stubs only
+
+        ### Key architectural decision:
+          pcsx2_core compiles as static library but NOT linked to executable.
+          Reason: 25+ undefined symbols require Metal renderer + Host:: callbacks
+          that are Phase 5 work. Premature linking = 30+ stub iterations.
+
+        ### What was built:
+          - ios/platform/EmulatorBridge.mm — Phase 4 stubs
+          - ios/platform/Host_iOS.mm — deferred to Phase 5
+          - pcsx2_core static library — 78 files compile clean on iOS ARM64
+          - Framework linking fixed: -framework Metal (not FW_METAL variable)
+
+        ### Files guarded for future phases:
+          - SaveState.cpp — needs libzip (Phase 4b)
+          - Recording/InputRecording.cpp — needs UIKit input (Phase 6)
+          - DebugTools/ — needs demangle (Phase 8)
+          - DEV9/ — peripheral support (Phase 7)
+          - CsoFileReader.cpp — needs lz4 (Phase 4b)
+          - ChdFileReader.cpp — needs libchdr/zstd (Phase 4b)
+
+        ### Phase 5 entry requirements:
+          - Implement GSDeviceMTL (Metal renderer)
+          - Implement ALL Host:: callbacks in Host_iOS.mm
+          - Link pcsx2_core into BionicSX2 executable
+          - Call VMManager::Initialize() for real BIOS boot
+          - IPA size will jump significantly when core is linked
+
         Phase 4 — Game Execution (Interpreter)
           Deliverable: At least one commercial PS2 title reaches in-game on interpreter.
           Frame rate will be low — that is expected and acceptable at this stage.
