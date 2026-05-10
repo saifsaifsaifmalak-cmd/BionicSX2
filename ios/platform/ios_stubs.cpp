@@ -5,7 +5,7 @@
 // Each stub is marked with the Phase that will implement the real version.
 
 #include "common/Pcsx2Defs.h"
-#include <array>
+#include <cstddef>
 
 #if defined(PCSX2_TARGET_IOS)
 
@@ -15,8 +15,6 @@ class MemoryCardProtocol;
 class MultitapProtocol;
 class SymbolGuardian;
 class SymbolImporter;
-
-namespace SIO { enum : int { PORTS = 4 }; }
 
 // g_InputRecording — Input recording/playing (TODO Phase 6)
 class InputRecording {};
@@ -31,7 +29,8 @@ class MemoryCardProtocol {};
 MemoryCardProtocol g_MemoryCardProtocol;
 
 // g_MultitapArr — Multitap controller protocol (TODO Phase 7)
-std::array<MultitapProtocol, 4> g_MultitapArr;
+// Use pointer to avoid incomplete type error
+MultitapProtocol* g_MultitapArr[4] = {};
 
 // R3000SymbolGuardian — MIPS symbol database (TODO: not needed for interpreter)
 class SymbolGuardian {};
