@@ -1,6 +1,12 @@
 // SPDX-FileCopyrightText: 2002-2026 PCSX2 Dev Team
 // SPDX-License-Identifier: GPL-3.0+
 
+// IOCtlSrc uses macOS IOKit — physical disc drive access
+// Not available on iOS (no physical disc drives)
+// ISO files are loaded via CDVDisoReader.cpp — already in build
+
+#if !defined(PCSX2_TARGET_IOS)
+
 #include "CDVDdiscReader.h"
 #include "CDVD/CDVD.h"
 #include "Host.h"
@@ -568,6 +574,8 @@ const CDVD_API CDVDapi_Disc =
 
 		DISCnewDiskCB,
 
-		DISCreadSector,
-		DISCgetDualInfo,
+DISCreadSector,
+	DISCgetDualInfo,
 };
+
+#endif // !PCSX2_TARGET_IOS

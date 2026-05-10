@@ -33,6 +33,9 @@ struct InputBindingInfo;
 struct SettingInfo;
 struct ButtonData;
 
+enum class AudioBackend { Null = 0, Cubeb, SDL, Count };
+enum class AudioExpansionMode { Disabled = 0, StereoLFE, Quadraphonic, QuadraphonicLFE, Surround51, Surround71, Count };
+
 // ── DEV9 ────────────────────────────────────────────────────────────
 void DEV9shutdown() {}
 s32 DEV9open() { return 0; }
@@ -119,10 +122,24 @@ namespace GameList {
     void AddPlayedTimeForSerial(const std::string&, long, long) {}
 }
 
+// ── AudioStream stubs (minimal — SPU2 audio deferred) ──────────────
+namespace AudioStream {
+    const char* GetBackendName(int) { return "Null"; }
+    std::optional<AudioBackend> ParseBackendName(const char*) { return std::nullopt; }
+    const char* GetBackendDisplayName(AudioBackend) { return "Null (No Output)"; }
+    const char* GetExpansionModeName(AudioExpansionMode) { return "Disabled"; }
+    const char* GetExpansionModeDisplayName(AudioExpansionMode) { return "Disabled (Stereo)"; }
+    std::optional<AudioExpansionMode> ParseExpansionMode(const char*) { return std::nullopt; }
+}
+
 // ── AudioStreamParameters ───────────────────────────────────────────
 class AudioStreamParameters {
 public:
     void LoadSave(SettingsWrapper&, const char*) {}
+    static constexpr AudioExpansionMode DEFAULT_EXPANSION_MODE = AudioExpansionMode::Disabled;
+    static constexpr bool DEFAULT_OUTPUT_LATENCY_MINIMAL = false;
+    static constexpr u16 DEFAULT_BUFFER_MS = 512;
+    static constexpr u16 DEFAULT_OUTPUT_LATENCY_MS = 192;
 };
 
 // ── USB extended stubs ─────────────────────────────────────────────

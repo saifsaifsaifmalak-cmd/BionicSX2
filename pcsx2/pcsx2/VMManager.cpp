@@ -1676,8 +1676,10 @@ void VMManager::Shutdown(bool save_resume_state)
 	}
 
 	// end input recording before clearing state
+#if !defined(PCSX2_TARGET_IOS)
 	if (g_InputRecording.isActive())
 		g_InputRecording.stop();
+#endif
 
 	SaveSessionTime(s_disc_serial);
 	s_elf_override = {};
@@ -1804,11 +1806,13 @@ void VMManager::Reset()
 	cpuReset();
 	hwReset();
 
+#if !defined(PCSX2_TARGET_IOS)
 	if (g_InputRecording.isActive())
 	{
 		g_InputRecording.handleReset();
 		MTGS::PresentCurrentFrame();
 	}
+#endif
 
 	ResetFrameLimiter();
 
@@ -1909,11 +1913,13 @@ bool VMManager::DoLoadState(const char* filename, Error* error)
 		return false;
 
 	Host::OnSaveStateLoaded(filename, true);
+#if !defined(PCSX2_TARGET_IOS)
 	if (g_InputRecording.isActive())
 	{
 		g_InputRecording.handleLoadingSavestate();
 		MTGS::PresentCurrentFrame();
 	}
+#endif
 
 	MemcardBusy::CheckSaveStateDependency();
 	return true;
@@ -2938,6 +2944,7 @@ void VMManager::Internal::PollInputOnCPUThread()
 	Host::PumpMessagesOnCPUThread();
 	InputManager::PollSources();
 
+#if !defined(PCSX2_TARGET_IOS)
 	if (EmuConfig.EnableRecordingTools)
 	{
 		// This code is called _before_ Counter's vsync end, and _after_ vsync start
@@ -2954,6 +2961,7 @@ void VMManager::Internal::PollInputOnCPUThread()
 		// so we can either read from it, or overwrite it!
 		g_InputRecording.handleControllerDataUpdate();
 	}
+#endif
 }
 
 void VMManager::CheckForCPUConfigChanges(const Pcsx2Config& old_config)

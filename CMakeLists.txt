@@ -58,12 +58,6 @@ add_subdirectory(pcsx2/3rdparty/ryml EXCLUDE_FROM_ALL)
 
 # ── Image Libraries (built from source for iOS ARM64) ──────────────────
 
-# freesurround — audio expansion library
-add_subdirectory(pcsx2/3rdparty/freesurround EXCLUDE_FROM_ALL)
-
-# soundtouch — audio timestretching library
-add_subdirectory(pcsx2/3rdparty/soundtouch EXCLUDE_FROM_ALL)
-
 # libjpeg-turbo — native ARM64 SIMD, supports CMake cross-compile
 set(ENABLE_SHARED     OFF CACHE BOOL "" FORCE)
 set(ENABLE_STATIC     ON  CACHE BOOL "" FORCE)
@@ -145,11 +139,6 @@ set(PCSX2_COMMON_SOURCES
     ios/platform/CocoaTools.mm
     ios/platform/AudioStream_iOS.mm
     ios/platform/Filesystem_iOS.mm
-
-    # Darwin Threading (no macOS dependencies - pure Mach/pthread)
-    # Note: DarwinMisc excluded - uses macOS-only APIs (ApplicationServices, IOPMLib)
-    # InhibitScreensaver and CPUInfo re-implemented in HostSys_iOS.cpp
-    pcsx2/common/Darwin/DarwinThreads.cpp
 
     # EXCLUDED — DO NOT ADD:
     # pcsx2/common/HostSys.cpp        (replaced by HostSys_iOS.cpp)
@@ -331,11 +320,6 @@ pcsx2/pcsx2/SPU2/RegTable.cpp
     pcsx2/pcsx2/Pcsx2Config.cpp
     pcsx2/pcsx2/VMManager.cpp
     pcsx2/pcsx2/Host.cpp
-    pcsx2/pcsx2/Host/AudioStream.cpp
-    pcsx2/pcsx2/GameDatabase.cpp
-    pcsx2/pcsx2/Recording/InputRecording.cpp
-    pcsx2/pcsx2/Recording/InputRecordingControls.cpp
-    pcsx2/pcsx2/Recording/InputRecordingFile.cpp
 
     # Input Manager
     # pcsx2/pcsx2/Input/InputManager.cpp  # Commented - causes more issues
@@ -391,8 +375,6 @@ target_include_directories(pcsx2_core PUBLIC
     ${CMAKE_SOURCE_DIR}/3rdparty/libjpeg-turbo
     ${CMAKE_SOURCE_DIR}/3rdparty/libpng
     ${CMAKE_SOURCE_DIR}/3rdparty/libwebp
-    ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/freesurround/include
-    ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/soundtouch/soundtouch
 )
 
 target_compile_definitions(pcsx2_core PUBLIC
@@ -411,51 +393,11 @@ target_compile_definitions(pcsx2_core PUBLIC
 target_link_libraries(pcsx2_core PUBLIC
     freesurround
     SoundTouch::SoundTouch
-    "-framework Metal"
+"-framework Metal"
     "-framework MetalKit"
     "-framework AVFoundation"
     "-framework AudioToolbox"
 )
-
-# ─── iOS Platform Layer ────────────────────────────────────────────────────
-set(IOS_PLATFORM_SOURCES
-    ios/platform/EmulatorBridge.h
-    ios/platform/EmulatorBridge.mm
-    ios/platform/AudioStream_iOS.mm
-    ios/platform/Filesystem_iOS.mm
-    ios/platform/EmulatorBridge.mm
-    ios/platform/Host_iOS.mm
-    ios/platform/PCSX2Stubs.mm
-)
-
-# ─── iOS UI Layer ──────────────────────────────────────────────────────────
-set(IOS_UI_SOURCES
-    ios/ui/AppDelegate.mm
-    ios/ui/MetalViewController.mm
-)
-
-# ─── Main Executable ───────────────────────────────────────────────────────
-add_executable(BionicSX2
-    ios/main.mm
-    ${IOS_UI_SOURCES}
-    ${IOS_PLATFORM_SOURCES}
-)
-
-target_include_directories(BionicSX2 PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/pcsx2
-    ${CMAKE_SOURCE_DIR}/pcsx2/pcsx2
-    ${CMAKE_SOURCE_DIR}/pcsx2/common
-    ${CMAKE_SOURCE_DIR}/ios
-    ${CMAKE_SOURCE_DIR}/ios/platform
-    ${CMAKE_SOURCE_DIR}/ios/ui
-)
-
-target_link_libraries(BionicSX2 PRIVATE
-    # Phase 6: Link pcsx2_core for real VM boot
-    pcsx2_common
-    pcsx2_core
-    "-framework Metal"
     "-framework MetalKit"
     "-framework AVFoundation"
     "-framework AudioToolbox"
