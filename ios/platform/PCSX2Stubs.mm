@@ -228,23 +228,6 @@ namespace GameDatabaseSchema {
     };
 }
 
-// ── iOS stub: AudioStream::GetBackendName ───────────────────────
-const char* AudioStream::GetBackendName(AudioBackend backend)
-{
-    switch (backend) {
-        case AudioBackend::Null: return "Null";
-        case AudioBackend::Cubeb: return "Cubeb";
-        case AudioBackend::SDL: return "SDL";
-        default: return "Unknown";
-    }
-}
-
-// ── iOS stub: AudioStreamParameters::LoadSave ─────────────────
-void AudioStreamParameters::LoadSave(SettingsWrapper& wrap, const char* section)
-{
-    // Phase 5: no persistence needed
-}
-
 // ── _g_RealGSMem ───────────────────────────────────────────────────
 u8* g_RealGSMem = nullptr;
 
