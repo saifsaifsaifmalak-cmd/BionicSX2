@@ -108,6 +108,9 @@ add_subdirectory(pcsx2/3rdparty/cpuinfo EXCLUDE_FROM_ALL)
 # freesurround — audio expander
 add_subdirectory(pcsx2/3rdparty/freesurround EXCLUDE_FROM_ALL)
 
+# SoundTouch — audio time stretch
+add_subdirectory(pcsx2/3rdparty/soundtouch EXCLUDE_FROM_ALL)
+
 # ─── pcsx2_common — platform-agnostic utilities ───────────────────────────
 
 set(PCSX2_COMMON_SOURCES
@@ -327,6 +330,9 @@ pcsx2/pcsx2/SPU2/RegTable.cpp
     pcsx2/pcsx2/VMManager.cpp
     pcsx2/pcsx2/Host.cpp
 
+    # Audio Stream
+    pcsx2/pcsx2/Host/AudioStream.cpp
+
     # Input Manager
     # pcsx2/pcsx2/Input/InputManager.cpp  # Commented - causes more issues
     pcsx2/pcsx2/INISettingsInterface.cpp
@@ -402,6 +408,7 @@ target_link_libraries(pcsx2_core PUBLIC
     "-framework AVFoundation"
     "-framework AudioToolbox"
     freesurround
+    SoundTouch::SoundTouch
 )
 
 # ─── iOS Platform Layer ────────────────────────────────────────────────────
