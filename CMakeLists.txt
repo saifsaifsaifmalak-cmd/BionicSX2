@@ -391,20 +391,10 @@ target_compile_definitions(pcsx2_core PUBLIC
 # Note: -framework flags work directly in Xcode/Apple toolchains
 
 target_link_libraries(pcsx2_core PUBLIC
-    freesurround
-    SoundTouch::SoundTouch
-"-framework Metal"
+    "-framework Metal"
     "-framework MetalKit"
     "-framework AVFoundation"
     "-framework AudioToolbox"
-)
-    "-framework MetalKit"
-    "-framework AVFoundation"
-    "-framework AudioToolbox"
-    "-framework UIKit"
-    "-framework Foundation"
-    "-framework QuartzCore"
-    "-framework CoreGraphics"
 )
 
 # ─── iOS Bundle Properties ─────────────────────────────────────────────────
