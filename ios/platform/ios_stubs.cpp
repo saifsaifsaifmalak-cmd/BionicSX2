@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
+#include <string>
 
 #if defined(PCSX2_TARGET_IOS)
 
@@ -53,13 +54,19 @@ void DEV9write8(u32 addr, u8 value) { (void)addr; (void)value; }
 void DEV9write16(u32 addr, u16 value) { (void)addr; (void)value; }
 void DEV9write32(u32 addr, u32 value) { (void)addr; (void)value; }
 
-// libzip stubs — TODO Phase 4b: build libzip or guard CDVD callers
-// These stubs satisfy the linker but return error codes
+// libzip stubs — required by Patch.cpp and CDVD
+// These satisfy the linker until we build libzip
 
 struct zip_t { int dummy; };
 struct zip_error_t { int code; char msg[256]; };
 struct zip_source_t { int dummy; };
 struct zip_stat_t { u64 valid; const char* name; };
+enum { ZIP_CREATE = 0, ZIP_EXCL = 0, ZIP_CHECKCONS = 0 };
+
+// ReadFileInZipToString — used by Patch.cpp to read patch files from ZIP
+int ReadFileInZipToString(zip_t*, const char*, std::string&) {
+    return -1;  // Return error - file not found
+}
 
 int zip_close(zip_t*) { return -1; }
 void zip_discard(zip_t*) {}
