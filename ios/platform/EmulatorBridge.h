@@ -17,6 +17,7 @@ void BionicSX2_SetMetalLayer(void* layer, void* device);
 bool EmulatorBridge_Init(void);
 void EmulatorBridge_Shutdown(void);
 bool EmulatorBridge_BootBIOS(const char* biosPath);
+bool EmulatorBridge_BootGame(const char* biosPath, const char* isoPath);
 void EmulatorBridge_RunFrame(void);
 bool EmulatorBridge_IsRunning(void);
 

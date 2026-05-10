@@ -425,6 +425,7 @@ set(IOS_PLATFORM_SOURCES
 set(IOS_UI_SOURCES
     ios/ui/AppDelegate.mm
     ios/ui/MetalViewController.mm
+    ios/ui/GameLibraryViewController.mm
 )
 
 # ─── Main Executable ───────────────────────────────────────────────────────

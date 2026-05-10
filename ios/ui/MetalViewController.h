@@ -5,6 +5,7 @@
 
 @interface MetalViewController : UIViewController <MTKViewDelegate>
 
+@property (nonatomic, strong) NSString* isoPath;
 @property (nonatomic, strong) MTKView*            metalView;
 @property (nonatomic, strong) id<MTLDevice>       device;
 @property (nonatomic, strong) id<MTLCommandQueue> commandQueue;

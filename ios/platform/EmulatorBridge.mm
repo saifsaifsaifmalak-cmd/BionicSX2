@@ -40,6 +40,34 @@ bool EmulatorBridge_BootBIOS(const char* biosPath) {
     return true;
 }
 
+bool EmulatorBridge_BootGame(const char* biosPath, const char* isoPath) {
+    VMBootParameters params;
+
+    if (isoPath && strlen(isoPath) > 0) {
+        params.filename = isoPath;
+        params.source_type = CDVD_SourceType::Iso;
+        NSLog(@"[BionicSX2] Booting ISO: %s", isoPath);
+    } else {
+        params.filename = "";
+        params.source_type = CDVD_SourceType::NoDisc;
+        NSLog(@"[BionicSX2] Booting BIOS shell");
+    }
+
+    params.fast_boot = false;
+    params.fullscreen = false;
+
+    Error error;
+    VMBootResult result = VMManager::Initialize(params, &error);
+
+    if (result != VMBootResult::StartupSuccess) {
+        NSLog(@"[BionicSX2] Boot failed: %s", error.GetDescription().c_str());
+        return false;
+    }
+
+    NSLog(@"[BionicSX2] PS2 running");
+    return true;
+}
+
 void EmulatorBridge_RunFrame(void) {
     if (VMManager::GetState() == VMState::Running) {
         VMManager::Execute();

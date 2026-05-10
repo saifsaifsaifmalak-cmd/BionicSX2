@@ -53,11 +53,33 @@
 }
 
 - (void)initializeEmulator {
-    if (!EmulatorBridge_Init()) {
-        NSLog(@"[BionicSX2] EmulatorBridge_Init failed");
+    if (!EmulatorBridge_Init()) return;
+
+    NSString* docs = NSSearchPathForDirectoriesInDomains(
+        NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+    NSString* biosDir = [docs stringByAppendingPathComponent:@"bios"];
+    NSArray* files = [[NSFileManager defaultManager]
+        contentsOfDirectoryAtPath:biosDir error:nil];
+    NSString* bios = nil;
+    for (NSString* f in files) {
+        if ([f.pathExtension.lowercaseString isEqualToString:@"bin"]) {
+            bios = [biosDir stringByAppendingPathComponent:f];
+            break;
+        }
+    }
+
+    if (!bios) {
+        NSLog(@"[BionicSX2] No BIOS — add via Game Library");
         return;
     }
-    NSLog(@"[BionicSX2] Emulator initialized (stub mode)");
+
+    const char* isoC = self.isoPath ? self.isoPath.UTF8String : nullptr;
+
+    if (EmulatorBridge_BootGame(bios.UTF8String, isoC)) {
+        self.emulatorRunning = YES;
+        NSLog(@"[BionicSX2] Booting: %@",
+            self.isoPath ? self.isoPath.lastPathComponent : @"BIOS shell");
+    }
 }
 
 - (void)startEmulatorLoop {
