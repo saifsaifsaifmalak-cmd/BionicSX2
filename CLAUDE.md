@@ -480,6 +480,44 @@ The blueprint must cover all of the following:
           - Call VMManager::Initialize() for real BIOS boot
           - IPA size will jump significantly when core is linked
 
+        ## Phase 6 — COMPLETED ✅ (2026-05-10)
+
+        ### Status: BUILD GREEN — IPA 306KB (full PCSX2 core linked!)
+
+        ### Breakthrough symbols:
+          Threading: DarwinThreads.cpp (9 symbols)
+          GameDatabase: GameDatabase.cpp (2 symbols)
+          AudioStream: AudioStream.cpp + stubs (2 symbols)
+          freesurround + SoundTouch: required by AudioStream
+
+        ### Architecture now complete:
+          pcsx2_core    → LINKED (306KB IPA vs 5.7KB before)
+          Host_iOS.mm   → 60+ callbacks
+          PCSX2Stubs.mm → remaining subsystem stubs
+          EmulatorBridge → VMManager::Initialize ready
+          Threading     → DarwinThreads (Apple native)
+          Audio         → AVAudioEngine + AudioStream
+
+        ### VMManager::Initialize status:
+          Code path is ready.
+          Real boot requires BIOS file on device.
+          CI build = no BIOS = boot skipped (expected).
+
+        ### Phase 7 entry requirements:
+          - ISO file picker (UIDocumentPickerViewController)
+          - BIOS file management UI
+          - Load ISO → VMBootParameters::filename
+          - On-screen controller overlay
+          - First real game boot attempt on physical device
+
+        ### Guarded for future phases:
+          - CsoFileReader (lz4) — Phase 4b
+          - ChdFileReader (libchdr) — Phase 4b
+          - SaveState (libzip) — Phase 4b
+          - InputRecording — Phase 8
+          - DebugTools — Phase 8
+          - IOCtlSrc/CDVDdiscReader — iOS has no physical drive
+
         Phase 4 — Game Execution (Interpreter)
           Deliverable: At least one commercial PS2 title reaches in-game on interpreter.
           Frame rate will be low — that is expected and acceptable at this stage.
