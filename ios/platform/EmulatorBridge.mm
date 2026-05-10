@@ -8,9 +8,6 @@
 #include "VMManager.h"
 #include "Host.h"
 #include "common/Console.h"
-#include "SettingsInterface.h"
-
-static MemorySettingsInterface s_settings_interface;
 
 extern "C" {
 
@@ -20,13 +17,7 @@ bool EmulatorBridge_Init(void) {
     // Load startup settings
     VMManager::Internal::LoadStartupSettings();
     
-    // Configure BIOS settings
-    s_settings_interface.SetStringValue("BIOS", "BB_BIOS", "SCPH-10000.BIN");
-    
-    // Set settings layers
-    Host::Internal::SetBaseSettingsLayer(&s_settings_interface);
-    Host::Internal::SetSecretsSettingsLayer(&s_settings_interface);
-    
+    // Configure BIOS settings via Host:: (which will use defaults)
     VMManager::Internal::UpdateEmuFolders();
     
     // Perform hardware checks
