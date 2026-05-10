@@ -79,7 +79,7 @@ namespace GameDatabaseSchema {
     class GameEntry {
     public:
         void applyGSHardwareFixes(class Pcsx2Config::GSOptions&) const {}
-        void applyGameFixes(Pcsx2Config&, bool) const {}
+        void applyGameFixes(class Pcsx2Config&, bool) const {}
     };
 }
 
