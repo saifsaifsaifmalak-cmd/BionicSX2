@@ -161,6 +161,9 @@ target_include_directories(pcsx2_common PUBLIC
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/ryml/src
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/fmt/include
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/fast_float/include
+    ${CMAKE_SOURCE_DIR}/3rdparty/libjpeg-turbo
+    ${CMAKE_SOURCE_DIR}/3rdparty/libpng
+    ${CMAKE_SOURCE_DIR}/3rdparty/libwebp
 )
 
 target_compile_definitions(pcsx2_common PUBLIC
@@ -352,6 +355,9 @@ target_include_directories(pcsx2_core PUBLIC
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/fast_float/include
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/fmt/include
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/cpuinfo/include
+    ${CMAKE_SOURCE_DIR}/3rdparty/libjpeg-turbo
+    ${CMAKE_SOURCE_DIR}/3rdparty/libpng
+    ${CMAKE_SOURCE_DIR}/3rdparty/libwebp
 )
 
 target_compile_definitions(pcsx2_core PUBLIC
