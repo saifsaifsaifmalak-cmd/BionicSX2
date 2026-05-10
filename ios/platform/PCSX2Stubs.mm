@@ -28,6 +28,12 @@ class Pcsx2Config;
 struct ControllerInfo;
 struct InputBindingInfo;
 struct SettingInfo;
+struct ButtonData;
+
+// Forward declare nested types
+namespace Pcsx2Config {
+    class GSOptions;
+}
 
 // ── DEV9 ────────────────────────────────────────────────────────────
 void DEV9shutdown() {}
