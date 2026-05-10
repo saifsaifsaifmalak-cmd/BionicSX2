@@ -276,7 +276,9 @@ if(NOT PCSX2_TARGET_IOS)
   target_link_libraries(zip PRIVATE Zstd::Zstd)
 endif()
 
-target_link_libraries(zip PRIVATE ZLIB::ZLIB)
+if(NOT PCSX2_TARGET_IOS)
+  target_link_libraries(zip PRIVATE ZLIB::ZLIB)
+endif()
 target_include_directories(zip
   PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
