@@ -1,12 +1,18 @@
 // EmulatorBridge.h — C++ bridge for Objective-C callers
 // Hides all PCSX2 C++ from .mm files
-// Phase 4: init/shutdown/state query only
+// Phase 5: init/shutdown/state/metal layer
 
 #pragma once
+
+#ifdef __OBJC__
+#import <Metal/Metal.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+void BionicSX2_SetMetalLayer(void* layer, void* device);
 
 bool EmulatorBridge_Init(void);
 void EmulatorBridge_Shutdown(void);
