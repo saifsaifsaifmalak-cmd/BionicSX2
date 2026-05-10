@@ -1,10 +1,13 @@
 #import "MetalViewController.h"
 #import <AVFoundation/AVFoundation.h>
+#import <UIKit/UIKit.h>
 #include "platform/EmulatorBridge.h"
+#include "Input/InputManager.h"
+#include "Config.h"
 
 @interface MetalViewController ()
 @property (nonatomic, strong) AVAudioEngine*     audioEngine;
-@property (nonatomic, assign) BOOL               emulatorInitialized;
+@property (nonatomic, assign) BOOL               emulatorRunning;
 @end
 
 @implementation MetalViewController
@@ -52,10 +55,36 @@
 }
 
 - (void)initializeEmulator {
-    NSLog(@"[BionicSX2] initializeEmulator — Phase 4 stub (no core linked)");
+    if (!EmulatorBridge_Init()) {
+        NSLog(@"[BionicSX2] EmulatorBridge_Init failed");
+        return;
+    }
 
-    // Don't call any PCSX2 functions - bios check will be Phase 6
-    self.emulatorInitialized = YES;
+    NSString* docs = NSSearchPathForDirectoriesInDomains(
+        NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+    NSString* biosDir = [docs stringByAppendingPathComponent:@"bios"];
+    NSArray* files = [[NSFileManager defaultManager]
+                      contentsOfDirectoryAtPath:biosDir error:nil];
+
+    NSString* biosFile = nil;
+    for (NSString* f in files) {
+        if ([f.pathExtension.lowercaseString isEqualToString:@"bin"]) {
+            biosFile = [biosDir stringByAppendingPathComponent:f];
+            break;
+        }
+    }
+
+    if (!biosFile) {
+        NSLog(@"[BionicSX2] No BIOS in %@ — boot skipped", biosDir);
+        NSLog(@"[BionicSX2] Place SCPH-XXXXX.bin in Documents/bios/");
+        return;
+    }
+
+    NSLog(@"[BionicSX2] BIOS found: %@", biosFile);
+    if (EmulatorBridge_BootBIOS(biosFile.UTF8String)) {
+        self.emulatorRunning = YES;
+        NSLog(@"[BionicSX2] PS2 interpreter running");
+    }
 }
 
 - (void)startEmulatorLoop {
@@ -64,16 +93,60 @@
 
 - (void)stopEmulatorLoop {
     NSLog(@"[BionicSX2] Stopping emulator");
-    self.emulatorInitialized = NO;
+    self.emulatorRunning = NO;
+    EmulatorBridge_Shutdown();
 }
 
 - (void)drawMTKView:(MTKView*)view {
-    // Phase 4 stub - no rendering until Phase 6 GSDeviceMTL
-    // Just clear the drawable
+    if (self.emulatorRunning && EmulatorBridge_IsRunning()) {
+        EmulatorBridge_RunFrame();
+    }
 }
 
 - (void)mtkView:(MTKView*)view drawableSizeDidChange:(CGSize)size {
     NSLog(@"[BionicSX2] drawableSizeDidChange: %@", NSStringFromCGSize(size));
+}
+
+- (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
+    for (UITouch* t in touches) {
+        CGPoint pt = [t locationInView:self.view];
+        [self handleTouch:pt pressed:YES];
+    }
+}
+
+- (void)touchesEnded:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
+    for (UITouch* t in touches) {
+        CGPoint pt = [t locationInView:self.view];
+        [self handleTouch:pt pressed:NO];
+    }
+}
+
+- (void)touchesCancelled:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
+    [self touchesEnded:touches withEvent:event];
+}
+
+- (void)handleTouch:(CGPoint)pt pressed:(BOOL)pressed {
+    CGSize sz = self.view.bounds.size;
+    float value = pressed ? 1.0f : 0.0f;
+
+    if (pt.x < sz.width * 0.5f) {
+        CGPoint c = CGPointMake(sz.width * 0.25f, sz.height * 0.75f);
+        float dx = pt.x - c.x;
+        float dy = pt.y - c.y;
+        if (fabsf(dx) > fabsf(dy)) {
+            [self sendInput:(dx > 0) ? GenericInputBinding::DPadRight : GenericInputBinding::DPadLeft value:value];
+        } else {
+            [self sendInput:(dy > 0) ? GenericInputBinding::DPadDown : GenericInputBinding::DPadUp value:value];
+        }
+    } else {
+        if (pt.y > sz.height * 0.6f) {
+            [self sendInput:(pt.x > sz.width * 0.75f) ? GenericInputBinding::Circle : GenericInputBinding::Cross value:value];
+        }
+    }
+}
+
+- (void)sendInput:(GenericInputBinding)btn value:(float)val {
+    InputManager::InvokeEvents(InputBindingKey{}, val, btn);
 }
 
 @end
