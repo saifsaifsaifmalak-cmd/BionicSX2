@@ -37,7 +37,7 @@ void LoadSettings(SettingsInterface& si, std::unique_lock<std::mutex>& lock) {
 
     NSString* docs = NSSearchPathForDirectoriesInDomains(
         NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-    EmuConfig.Bios.Bios = [[docs stringByAppendingPathComponent:@"bios"] UTF8String];
+    EmuConfig.BaseFilenames.Bios = [[docs stringByAppendingPathComponent:@"bios"] UTF8String];
 
     EmuConfig.EnableRecordingTools = false;
     EmuConfig.EnablePatches = true;
