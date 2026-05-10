@@ -159,6 +159,7 @@ target_include_directories(pcsx2_common PUBLIC
     ${CMAKE_SOURCE_DIR}/pcsx2/common
     ${CMAKE_SOURCE_DIR}/ios/platform
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/ryml/src
+    ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/fmt/include
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/fast_float/include
 )
 
@@ -349,6 +350,7 @@ target_include_directories(pcsx2_core PUBLIC
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/imgui/include
     ${CMAKE_SOURCE_DIR}/ios/platform
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/fast_float/include
+    ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/fmt/include
 )
 
 target_compile_definitions(pcsx2_core PUBLIC
