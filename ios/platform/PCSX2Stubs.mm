@@ -23,8 +23,6 @@ class StateWrapper;
 class SettingsWrapper;
 class Pcsx2Config;
 
-extern "C" {
-
 // ── DEV9 ────────────────────────────────────────────────────────────
 void DEV9shutdown() {}
 s32 DEV9open() { return 0; }
@@ -44,8 +42,6 @@ void AbortWithMessage(const char* msg) {
 
 // ── MakeGSDeviceMTL ───────────────────────────────────────────────
 GSDevice* MakeGSDeviceMTL() { return nullptr; }
-
-} // extern "C"
 
 // ── Threading ────────────────────────────────────────────────────────
 namespace Threading {
