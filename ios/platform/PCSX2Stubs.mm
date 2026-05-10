@@ -78,12 +78,6 @@ namespace Threading {
 
 // ── SharedMemoryMappingArea - provided by HostSys_iOS.cpp ─────────────
 
-// ── IOCtlSrc (macOS only - stubbed for iOS) ──────────────────────────
-class IOCtlSrc {
-public:
-    __attribute__((weak_import)) ~IOCtlSrc() {}
-};
-
 // ── FullscreenUI ───────────────────────────────────────────────────
 namespace FullscreenUI {
     __attribute__((weak_import)) void OnVMDestroyed() {}
@@ -146,7 +140,7 @@ namespace USB {
 
 // ── InputRecording stubs ──────────────────────────────────────────
 namespace InputRecording {
-    bool isActive() const { return false; }
+    bool isActive() { return false; }
     void stop() {}
 }
 bool g_InputRecording = false;
@@ -156,9 +150,18 @@ class IOCtlSrc {
 public:
     ~IOCtlSrc() {}
 };
+
+// ── ImGuiManager stubs ──────────────────────────────────────────────
+class ImGuiManager {
+public:
+    void Initialize() {}
+    void Shutdown(bool) {}
+    void ReloadFonts() {}
+    void RequestScaleUpdate() {}
+    bool HasSoftwareCursor(u32) { return false; }
+};
 ImGuiManager* g_imGuiManager = nullptr;
 
-// ── GS classes ─────────────────────────────────────────────────────
 class GSRendererHW { public: GSRendererHW() {} };
 class GSRendererNull { public: GSRendererNull() {} };
 class GSDrawingContext {
