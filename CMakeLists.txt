@@ -419,8 +419,7 @@ target_include_directories(BionicSX2 PRIVATE
 )
 
 target_link_libraries(BionicSX2 PRIVATE
-    # Phase 5: Link pcsx2_core with Metal renderer
-    pcsx2_core
+    # pcsx2_core NOT linked - defer to Phase 6 when implementation complete
     pcsx2_common
     "-framework Metal"
     "-framework MetalKit"
