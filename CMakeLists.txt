@@ -323,8 +323,9 @@ pcsx2/pcsx2/SPU2/RegTable.cpp
     # Input Manager (for ReloadSources/ReloadBindings)
     pcsx2/pcsx2/Input/InputManager.cpp
 
-    # Host (AudioStream, INISettingsInterface)
-    pcsx2/pcsx2/Host/AudioStream.cpp
+    # Host - NOT AudioStream.cpp (needs FreeSurround/SoundTouch)
+    # pcsx2/pcsx2/Host/AudioStream.cpp
+
     pcsx2/pcsx2/INISettingsInterface.cpp
 
     # Game Database
