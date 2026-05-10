@@ -371,20 +371,6 @@ target_link_libraries(pcsx2_core PUBLIC
     "-framework AudioUnit"
 )
 
-target_link_libraries(BionicSX2 PRIVATE
-    pcsx2_core
-    pcsx2_common
-    "-framework Metal"
-    "-framework MetalKit"
-    "-framework AVFoundation"
-    "-framework AudioToolbox"
-    "-framework AudioUnit"
-    "-framework UIKit"
-    "-framework Foundation"
-    "-framework QuartzCore"
-    "-framework CoreGraphics"
-)
-
 # ─── iOS Platform Layer ────────────────────────────────────────────────────
 set(IOS_PLATFORM_SOURCES
     ios/platform/HostSys_iOS.cpp
@@ -421,14 +407,15 @@ target_include_directories(BionicSX2 PRIVATE
 target_link_libraries(BionicSX2 PRIVATE
     pcsx2_core
     pcsx2_common
-    ${FW_METAL}
-    ${FW_METALKIT}
-    ${FW_AVFOUNDATION}
-    ${FW_AUDIOTOOLBOX}
-    ${FW_UIKIT}
-    ${FW_FOUNDATION}
-    ${FW_QUARTZCORE}
-    ${FW_COREGRAPHICS}
+    "-framework Metal"
+    "-framework MetalKit"
+    "-framework AVFoundation"
+    "-framework AudioToolbox"
+    "-framework AudioUnit"
+    "-framework UIKit"
+    "-framework Foundation"
+    "-framework QuartzCore"
+    "-framework CoreGraphics"
 )
 
 # ─── iOS Bundle Properties ─────────────────────────────────────────────────
