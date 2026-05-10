@@ -45,6 +45,8 @@ void AbortWithMessage(const char* msg) {
 // ── MakeGSDeviceMTL ───────────────────────────────────────────────
 GSDevice* MakeGSDeviceMTL() { return nullptr; }
 
+} // extern "C"
+
 // ── Threading ────────────────────────────────────────────────────────
 namespace Threading {
     class KernelSemaphore {
@@ -75,8 +77,6 @@ public:
     ~SharedMemoryMappingArea() {}
     void Unmap(void* addr, u64 size, bool) {}
 };
-
-} // extern "C"
 
 // ── InputRecording ──────────────────────────────────────────────────
 namespace InputRecording {
