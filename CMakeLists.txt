@@ -397,6 +397,52 @@ target_link_libraries(pcsx2_core PUBLIC
     "-framework AudioToolbox"
 )
 
+# ─── iOS Platform Layer ────────────────────────────────────────────────────
+set(IOS_PLATFORM_SOURCES
+    ios/platform/EmulatorBridge.h
+    ios/platform/EmulatorBridge.mm
+    ios/platform/AudioStream_iOS.mm
+    ios/platform/Filesystem_iOS.mm
+    ios/platform/Host_iOS.mm
+    ios/platform/PCSX2Stubs.mm
+)
+
+# ─── iOS UI Layer ──────────────────────────────────────────────────────────
+set(IOS_UI_SOURCES
+    ios/ui/AppDelegate.mm
+    ios/ui/MetalViewController.mm
+)
+
+# ─── Main Executable ───────────────────────────────────────────────────────
+add_executable(BionicSX2
+    ios/main.mm
+    ${IOS_UI_SOURCES}
+    ${IOS_PLATFORM_SOURCES}
+)
+
+target_include_directories(BionicSX2 PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/pcsx2
+    ${CMAKE_SOURCE_DIR}/pcsx2/pcsx2
+    ${CMAKE_SOURCE_DIR}/pcsx2/common
+    ${CMAKE_SOURCE_DIR}/ios
+    ${CMAKE_SOURCE_DIR}/ios/platform
+    ${CMAKE_SOURCE_DIR}/ios/ui
+)
+
+target_link_libraries(BionicSX2 PRIVATE
+    pcsx2_common
+    pcsx2_core
+    "-framework Metal"
+    "-framework MetalKit"
+    "-framework AVFoundation"
+    "-framework AudioToolbox"
+    "-framework UIKit"
+    "-framework Foundation"
+    "-framework QuartzCore"
+    "-framework CoreGraphics"
+)
+
 # ─── iOS Bundle Properties ─────────────────────────────────────────────────
 set_target_properties(BionicSX2 PROPERTIES
     MACOSX_BUNDLE                   TRUE
