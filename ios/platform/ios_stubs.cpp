@@ -54,6 +54,23 @@ void DEV9write8(u32 addr, u8 value) { (void)addr; (void)value; }
 void DEV9write16(u32 addr, u16 value) { (void)addr; (void)value; }
 void DEV9write32(u32 addr, u32 value) { (void)addr; (void)value; }
 
+// VIF unpack stubs — VU interface (TODO Phase 5: VU JIT)
+void dVifUnpack_0(const u8*, bool) {}
+void dVifUnpack_1(const u8*, bool) {}
+
+// PGIF (128-bit) read/write stubs — GIF/VIF hardware (TODO Phase 5)
+void PGIFrQword(u32, void*) {}
+void PGIFwQword(u32, const void*) {}
+
+// GetCPUTicks — timing stub (TODO Phase 5: implement proper timing)
+u64 GetCPUTicks() { return 0; }
+
+// psxBiosCall — PSX bios call stub (TODO: implement PSX bios)
+void psxBiosCall() {}
+
+// psxBiosReset — PSX bios reset stub (TODO: implement PSX bios)
+void psxBiosReset() {}
+
 // libzip stubs — required by Patch.cpp and CDVD
 // These satisfy the linker until we build libzip
 
