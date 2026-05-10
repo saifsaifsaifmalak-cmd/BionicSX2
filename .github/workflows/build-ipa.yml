@@ -63,6 +63,15 @@ jobs:
           echo "Patched libjpeg-turbo CMakeLists.txt"
           grep "if(FALSE)" 3rdparty/libjpeg-turbo/CMakeLists.txt
 
+      # ─── 5b. Setup libpng includes ──────────────────────────────────────────
+      - name: Setup libpng include files
+        run: |
+          # libpng requires pnglibconf.h - copy from prebuilt if not generated
+          if [ ! -f 3rdparty/libpng/pnglibconf.h ]; then
+            cp 3rdparty/libpng/pnglibconf.h.prebuilt 3rdparty/libpng/pnglibconf.h
+            echo "Copied pnglibconf.h.prebuilt → pnglibconf.h"
+          fi
+
       # ─── 5. Patch c4core fast_float for iOS ─────────────────────────
       # Must run AFTER submodule init so the file exists with correct content
       - name: Patch c4core fast_float for iOS
