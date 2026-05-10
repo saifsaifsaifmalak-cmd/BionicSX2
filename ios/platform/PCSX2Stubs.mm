@@ -1,55 +1,223 @@
-// PCSX2Stubs.mm — minimal iOS stubs
+// PCSX2Stubs.mm — iOS stubs for all undefined symbols
+// Phase 6b: Complete stub implementation for VMManager::Initialize
 #import <Foundation/Foundation.h>
 #include <string>
+#include <memory>
 #include <optional>
+#include <vector>
 
+// Type aliases
 typedef unsigned int u32;
 typedef unsigned long long u64;
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef int s32;
 
+// Forward declarations
+class GSDevice;
+class SettingsInterface;
+class Error;
+class ArchiveEntryList;
+class SaveStateScreenshotData;
+class StateWrapper;
+class SettingsWrapper;
+class Pcsx2Config;
+
 extern "C" {
 
+// ── DEV9 ────────────────────────────────────────────────────────────
 void DEV9shutdown() {}
+s32 DEV9open() { return 0; }
 void DEV9close() {}
+
+// ── USB ─────────────────────────────────────────────────────────────
 void USBclose() {}
+
+// ── gsIrq ───────────────────────────────────────────────────────────
 void gsIrq() {}
 
+// ── AbortWithMessage ───────────────────────────────────────────────
 void AbortWithMessage(const char* msg) {
-    NSLog(@"[BionicSX2] ABORT: %s", msg ? msg : "unknown");
+    NSLog(@"[BionicSX2] ABORT: %s", msg ? msg : "(null)");
     abort();
 }
 
-// MakeGSDeviceMTL
-class GSDevice;
+// ── MakeGSDeviceMTL ───────────────────────────────────────────────
 GSDevice* MakeGSDeviceMTL() { return nullptr; }
 
-// Threading - keep as minimal shell
+// ── Threading ────────────────────────────────────────────────────────
 namespace Threading {
-    class KernelSemaphore { public: void Post() {} void Wait() {} };
-    class Thread { public: void Join() {} };
-    class ThreadHandle { public: void SetAffinity(unsigned long long) {} };
+    class KernelSemaphore {
+    public:
+        KernelSemaphore() {}
+        ~KernelSemaphore() {}
+        void Post() {}
+        void Wait() {}
+    };
+    class Thread {
+    public:
+        Thread() {}
+        ~Thread() {}
+        void Join() {}
+    };
+    class ThreadHandle {
+    public:
+        ThreadHandle() {}
+        ~ThreadHandle() {}
+        void SetAffinity(unsigned long long) {}
+    };
 }
 
-// SharedMemory
+// ── SharedMemoryMappingArea ─────────────────────────────────────────
 class SharedMemoryMappingArea {
 public:
-    void Unmap(void* a, unsigned long b, bool c) {}
+    SharedMemoryMappingArea() {}
+    ~SharedMemoryMappingArea() {}
+    void Unmap(void* addr, u64 size, bool) {}
 };
 
+// ── InputRecording ──────────────────────────────────────────────────
 namespace InputRecording {
     bool isActive() { return false; }
     void stop() {}
 }
 bool g_InputRecording = false;
 
-// Hotkey globals - define as empty
+// ── Hotkey globals ─────────────────────────────────────────────────
 struct HotkeyInfo {
     const char* name;
     const char* category;
     const char* display_name;
     void (*handler)(s32 pressed);
 };
+
+// ── FullscreenUI ───────────────────────────────────────────────────
+namespace FullscreenUI {
+    void OnVMDestroyed() {}
+    void GameChanged(std::string title, std::string path, std::string serial, u32 disc_crc, u32 crc) {}
+}
+
+// ── Achievements ───────────────────────────────────────────────────
+namespace Achievements {
+    void GameChanged(u32 disc_crc, u32 crc) {}
+    bool IsHardcoreModeActive() { return false; }
+}
+
+// ── GSCapture ───────────────────────────────────────────────────────
+namespace GSCapture {
+    void EndCapture() {}
+    bool IsCapturing() { return false; }
+}
+
+// ── GSTextureReplacements ───────────────────────────────────────────
+namespace GSTextureReplacements {
+    void GameChanged() {}
+    void ReloadReplacementMap() {}
+    void Shutdown() {}
+    void UpdateConfig(Pcsx2Config::GSOptions&) {}
+}
+
+// ── SaveStateSelectorUI ─────────────────────────────────────────────
+namespace SaveStateSelectorUI {
+    void Clear() {}
+}
+
+// ── GameDatabase ───────────────────────────────────────────────────
+namespace GameDatabase {
+    class GameEntry;
+    const GameEntry* findGame(std::string_view) { return nullptr; }
+}
+
+// ── GameList ───────────────────────────────────────────────────────
+namespace GameList {
+    void AddPlayedTimeForSerial(const std::string&, long, long) {}
+}
+
+// ── AudioStream ───────────────────────────────────────────────────
+namespace AudioStream {
+    const char* GetBackendName(int) { return "Null"; }
+    int ParseBackendName(const char*) { return 0; }
+}
+
+// ── AudioStreamParameters ───────────────────────────────────────────
+class AudioStreamParameters {
+public:
+    void LoadSave(SettingsWrapper&, const char*) {}
+};
+
+// ── Common::InhibitScreensaver ───────────────────────────────────────
+namespace Common {
+    void InhibitScreensaver(bool) {}
+}
+
+// ── USB extended stubs ─────────────────────────────────────────────
+namespace USB {
+    const char* GetConfigSection(int) { return nullptr; }
+    const char* DeviceTypeIndexToName(s32) { return nullptr; }
+    s32 DeviceTypeNameToIndex(std::string_view) { return 0; }
+    std::vector<std::pair<const char*, const char*>> GetDeviceTypes() { return {}; }
+    const char* GetConfigDevice(const SettingsInterface&, u32) { return nullptr; }
+    const char* GetConfigSubKey(std::string_view, std::string_view) { return nullptr; }
+    const char* GetConfigSubType(const SettingsInterface&, u32, std::string_view) { return nullptr; }
+    void GetDeviceBindings(std::string_view, u32) {}
+    void SetDeviceBindValue(u32, u32, float) {}
+}
+
+// ── Host callbacks (additional to Host_iOS.mm) ────────────────────
+namespace Host {
+    void OnSaveStateSaved(std::string_view filename) {}
+    void OnVMDestroyed() {}
+    void OnGameChanged(const std::string& title, const std::string& elf_override, 
+                     const std::string& disc_path, const std::string& disc_serial, 
+                     u32 disc_crc, u32 current_crc) {}
+    void ReleaseRenderWindow() {}
+    void SetMouseMode(bool, bool) {}
+}
+
+// ── ImGuiManager ───────────────────────────────────────────────────
+class ImGuiManager {
+public:
+    void Initialize() {}
+    void Shutdown(bool) {}
+    void ReloadFonts() {}
+    void RequestScaleUpdate() {}
+    bool HasSoftwareCursor(u32) { return false; }
+};
+ImGuiManager* g_imGuiManager = nullptr;
+
+// ── GS classes ─────────────────────────────────────────────────────
+class GSRendererHW { public: GSRendererHW() {} };
+class GSRendererNull { public: GSRendererNull() {} };
+class GSDrawingContext {
+public:
+    void Dump(const std::string&) const {}
+    void UpdateScissor() {}
+};
+class GSDrawingEnvironment {
+public:
+    void Dump(const std::string&) const {}
+};
+
+// ── GSPng ──────────────────────────────────────────────────────────
+namespace GSPng {
+    bool Save(int, const std::string&, const u8*, int, int, int, int, bool) { return false; }
+}
+
+// ── InputManager stubs ───────────────────────────────────────────────
+namespace InputManager {
+    std::string ConvertHostKeyboardCodeToString(u32) { return ""; }
+    std::optional<u32> ConvertHostKeyboardStringToCode(std::string_view) { return std::nullopt; }
+}
+
+// ── IOCtlSrc ───────────────────────────────────────────────────────
+class IOCtlSrc {
+public:
+    ~IOCtlSrc() {}
+};
+
+// ── SaveState stubs ────────────────────────────────────────────────
+void SaveState_ZipToDisk(std::unique_ptr<ArchiveEntryList>, std::unique_ptr<SaveStateScreenshotData>, const char*, Error*) {}
+void SaveState_DownloadState(Error*) {}
+void SaveState_SaveScreenshot() {}
 
 } // extern "C"
