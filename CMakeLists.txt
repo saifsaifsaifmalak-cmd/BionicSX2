@@ -159,6 +159,7 @@ target_include_directories(pcsx2_common PUBLIC
     ${CMAKE_SOURCE_DIR}/pcsx2/common
     ${CMAKE_SOURCE_DIR}/ios/platform
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/ryml/src
+    ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/ryml/ext/c4core/src
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/fmt/include
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/fast_float/include
     ${CMAKE_SOURCE_DIR}/3rdparty/libjpeg-turbo
@@ -344,6 +345,7 @@ target_include_directories(pcsx2_core PUBLIC
     ${CMAKE_SOURCE_DIR}/pcsx2/pcsx2
     ${CMAKE_SOURCE_DIR}/pcsx2/common
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/ryml/src
+    ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/ryml/ext/c4core/src
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/ccc/src
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/simpleini/include
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/include
