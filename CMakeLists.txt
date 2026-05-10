@@ -53,6 +53,9 @@ add_subdirectory(pcsx2/3rdparty/ryml EXCLUDE_FROM_ALL)
 # zlib — NOT FOUND in pcsx2/3rdparty
 # add_subdirectory(pcsx2/3rdparty/zlib EXCLUDE_FROM_ALL)  # Directory does not exist
 
+# libzip — required by CDVD for save state compression
+add_subdirectory(pcsx2/3rdparty/libzip EXCLUDE_FROM_ALL)
+
 # ── Image Libraries (built from source for iOS ARM64) ──────────────────
 
 # libjpeg-turbo — native ARM64 SIMD, supports CMake cross-compile
