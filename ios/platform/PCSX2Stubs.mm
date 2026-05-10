@@ -192,12 +192,6 @@ namespace InputManager {
     std::optional<u32> ConvertHostKeyboardStringToCode(std::string_view) { return std::nullopt; }
 }
 
-// ── IOCtlSrc ───────────────────────────────────────────────────────
-class IOCtlSrc {
-public:
-    ~IOCtlSrc() {}
-};
-
 // ── SaveState stubs ────────────────────────────────────────────────
 void SaveState_ZipToDisk(std::unique_ptr<ArchiveEntryList>, std::unique_ptr<SaveStateScreenshotData>, const char*, Error*) {}
 void SaveState_DownloadState(Error*) {}
