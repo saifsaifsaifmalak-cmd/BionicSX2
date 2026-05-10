@@ -45,7 +45,7 @@ bool EmulatorBridge_BootGame(const char* biosPath, const char* isoPath) {
     NSLog(@"[BionicSX2]   bios: %s", biosPath ? biosPath : "(null)");
     NSLog(@"[BionicSX2]   iso:  %s", isoPath ? isoPath : "(null)");
 
-#if 0
+#if 1
     VMBootParameters params;
 
     if (isoPath && strlen(isoPath) > 0) {
@@ -66,9 +66,11 @@ bool EmulatorBridge_BootGame(const char* biosPath, const char* isoPath) {
         NSLog(@"[BionicSX2] Boot failed: %s", error.GetDescription().c_str());
         return false;
     }
-#endif
 
+    NSLog(@"[BionicSX2] PS2 running");
+#else
     NSLog(@"[BionicSX2] VMManager stub — boot deferred to Phase 8");
+#endif
     return true;
 }
 
