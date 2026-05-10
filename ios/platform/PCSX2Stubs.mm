@@ -48,11 +48,9 @@ bool GetValidDrive(std::string& filename) { (void)filename; return false; }
 void PGIFrQword(u32 addr, void* data) { (void)addr; (void)data; }
 void PGIFwQword(u32 addr, void* data) { (void)addr; (void)data; }
 
-// dVifUnpack stubs - template functions
-namespace {
-template <int idx>
-void dVifUnpack(const u8* data, bool isFill) { (void)data; (void)isFill; }
-}
+// dVifUnpack stubs
+void dVifUnpack_0(const u8* data, bool isFill) { (void)data; (void)isFill; }
+void dVifUnpack_1(const u8* data, bool isFill) { (void)data; (void)isFill; }
 
 // ── GS stubs (graphics synth) ───────────────────────────────────────────────
 void gsSetVideoMode(GS::GS_VideoMode mode) { (void)mode; }
