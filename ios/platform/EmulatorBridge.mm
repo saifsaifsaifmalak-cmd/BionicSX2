@@ -81,8 +81,8 @@ bool EmulatorBridge_BootGame(const char* isoPath) {
     }
     BionicLogger::instance().flush();
 
-    // Redirect stderr to log file to capture raw PCSX2 output
-    StderrRedirect_Start();
+    // stderr redirect disabled temporarily for crash isolation
+    // StderrRedirect_Start();
 
     try {
         Watchdog_Start();
