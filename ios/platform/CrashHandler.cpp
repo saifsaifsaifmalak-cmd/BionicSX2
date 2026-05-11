@@ -5,6 +5,11 @@
 #include <cstdio>
 #include <cstring>
 
+// Saved at install time — avoids calling BionicLogger::instance() from signal handler
+static int          s_crash_log_fd   = -1;
+static const char*  s_crash_ring_buf = nullptr;
+static size_t       s_crash_buf_size = 0;
+
 static const char* SignalName(int sig) {
     switch(sig) {
         case SIGSEGV: return "SIGSEGV (Segmentation Fault)";
@@ -16,86 +21,75 @@ static const char* SignalName(int sig) {
     }
 }
 
-// Async-signal-safe write helper — only snprintf + write, no allocations
-static void RawCrashWrite(const char* msg) {
+// Async-signal-safe: only snprintf + write, no allocations
+static void RawWrite(const char* msg) {
     if (msg == nullptr) return;
     size_t len = strlen(msg);
     if (len == 0) return;
     write(STDERR_FILENO, msg, len);
+    if (s_crash_log_fd >= 0 && s_crash_log_fd != STDERR_FILENO)
+        write(s_crash_log_fd, msg, len);
 }
 
 static void CrashHandler(int sig, siginfo_t* info, void* /*ctx*/) {
-    // All output uses only snprintf + write — no BIONIC_FATAL macros,
-    // no BionicLogger::log() calls, no mutex, no allocations.
     char buf[512];
     int n;
 
     n = snprintf(buf, sizeof(buf),
-        "══════════════════════════════════\n"
+        "==================================================\n"
         "SIGNAL RECEIVED: %s (sig=%d)\n",
         SignalName(sig), sig);
-    if (n > 0) RawCrashWrite(buf);
+    if (n > 0 && n < (int)sizeof(buf)) RawWrite(buf);
 
     if (info) {
         n = snprintf(buf, sizeof(buf), "Fault address: %p\nSignal code:   %d\n",
                      info->si_addr, info->si_code);
-        if (n > 0) RawCrashWrite(buf);
+        if (n > 0 && n < (int)sizeof(buf)) RawWrite(buf);
     }
 
     void* frames[32];
     int count = backtrace(frames, 32);
-    char** symbols = backtrace_symbols(frames, count);
 
     n = snprintf(buf, sizeof(buf), "── Stack Trace (%d frames) ──────\n", count);
-    if (n > 0) RawCrashWrite(buf);
+    if (n > 0 && n < (int)sizeof(buf)) RawWrite(buf);
 
-    if (symbols) {
-        for (int i = 0; i < count; i++) {
-            n = snprintf(buf, sizeof(buf), "  [%02d] %s\n", i, symbols[i]);
-            if (n > 0) RawCrashWrite(buf);
-        }
-    } else {
-        for (int i = 0; i < count; i++) {
-            n = snprintf(buf, sizeof(buf), "  [%02d] %p\n", i, frames[i]);
-            if (n > 0) RawCrashWrite(buf);
-        }
-    }
+    // backtrace_symbols_fd is async-signal-safe (no malloc)
+    backtrace_symbols_fd(frames, count, STDERR_FILENO);
+    if (s_crash_log_fd >= 0 && s_crash_log_fd != STDERR_FILENO)
+        backtrace_symbols_fd(frames, count, s_crash_log_fd);
 
-    // Ring buffer dump — async-signal-safe
-    {
-        BionicLogger& log = BionicLogger::instance();
-        int fd = log.get_log_fd();
-        const char* ring = log.get_ring_buffer();
-        size_t pos = log.get_write_pos();
+    // Ring buffer dump
+    if (s_crash_ring_buf && s_crash_buf_size > 0) {
+        n = snprintf(buf, sizeof(buf), "\n══ RING BUFFER DUMP ══\n");
+        if (n > 0 && n < (int)sizeof(buf)) RawWrite(buf);
 
-        n = snprintf(buf, sizeof(buf),
-            "\n══ EMERGENCY DUMP (pos=%zu, size=%zu) ══\n", pos, BionicLogger::BUFFER_SIZE);
-        if (n > 0) {
-            write(STDERR_FILENO, buf, (size_t)n < sizeof(buf) ? (size_t)n : sizeof(buf));
-            if (fd >= 0 && fd != STDERR_FILENO)
-                write(fd, buf, (size_t)n < sizeof(buf) ? (size_t)n : sizeof(buf));
-        }
-
-        // Dump ring buffer content
-        write(STDERR_FILENO, ring, BionicLogger::BUFFER_SIZE);
-        if (fd >= 0 && fd != STDERR_FILENO)
-            write(fd, ring, BionicLogger::BUFFER_SIZE);
+        write(STDERR_FILENO, s_crash_ring_buf, s_crash_buf_size);
+        if (s_crash_log_fd >= 0 && s_crash_log_fd != STDERR_FILENO)
+            write(s_crash_log_fd, s_crash_ring_buf, s_crash_buf_size);
 
         n = snprintf(buf, sizeof(buf), "\n══ END DUMP ══\n");
-        if (n > 0) {
-            write(STDERR_FILENO, buf, (size_t)n < sizeof(buf) ? (size_t)n : sizeof(buf));
-            if (fd >= 0 && fd != STDERR_FILENO)
-                write(fd, buf, (size_t)n < sizeof(buf) ? (size_t)n : sizeof(buf));
-        }
-
-        log.flush();
+        if (n > 0 && n < (int)sizeof(buf)) RawWrite(buf);
     }
+
+    if (s_crash_log_fd >= 0 && s_crash_log_fd != STDERR_FILENO)
+        fsync(s_crash_log_fd);
 
     signal(sig, SIG_DFL);
     raise(sig);
 }
 
 void CrashHandler_Install() {
+    // Save BionicLogger state at install time — avoids calling into
+    // the logger from the signal handler (Meyer's singleton uses a
+    // mutex internally, which can deadlock in signal context).
+    {
+        BionicLogger& log = BionicLogger::instance();
+        s_crash_log_fd   = log.get_log_fd();
+        s_crash_ring_buf = log.get_ring_buffer();
+        // Use full buffer size for emergency dump
+        s_crash_buf_size = 65536;
+    }
+
     struct sigaction sa;
     memset(&sa, 0, sizeof(sa));
     sa.sa_sigaction = CrashHandler;
