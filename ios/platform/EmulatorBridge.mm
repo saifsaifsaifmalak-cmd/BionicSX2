@@ -42,6 +42,16 @@ bool EmulatorBridge_BootGame(const char* isoPath) {
         NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
     NSString* biosDir = [docs stringByAppendingPathComponent:@"bios"];
     BIONIC_INFO(CORE, "BIOS directory: %s", [biosDir UTF8String]);
+
+    NSFileManager* fm = [NSFileManager defaultManager];
+    NSArray* biosFiles = [fm contentsOfDirectoryAtPath:biosDir error:nil];
+    if (biosFiles.count > 0) {
+        for (NSString* f in biosFiles)
+            BIONIC_INFO(CORE, "  BIOS file: %s", [f UTF8String]);
+    } else {
+        BIONIC_INFO(CORE, "  BIOS directory is empty");
+    }
+
     if (isoPath) {
         BIONIC_INFO(CORE, "ISO path: %s", isoPath);
     } else {
