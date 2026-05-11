@@ -111,6 +111,21 @@ add_subdirectory(pcsx2/3rdparty/freesurround EXCLUDE_FROM_ALL)
 # SoundTouch — audio time stretch
 add_subdirectory(pcsx2/3rdparty/soundtouch EXCLUDE_FROM_ALL)
 
+# libzip — save states and patches
+# Build without external dependencies — libzip has bundled zlib/zstd sources
+set(LIBZIP_BUILD_TOOLS      OFF CACHE BOOL "" FORCE)
+set(LIBZIP_BUILD_REGRESS    OFF CACHE BOOL "" FORCE)
+set(LIBZIP_BUILD_EXAMPLES   OFF CACHE BOOL "" FORCE)
+set(LIBZIP_BUILD_DOC        OFF CACHE BOOL "" FORCE)
+set(LIBZIP_ENABLE_COMMONCRYPTO OFF CACHE BOOL "" FORCE)
+set(LIBZIP_ENABLE_GNUTLS   OFF CACHE BOOL "" FORCE)
+set(LIBZIP_ENABLE_MBEDTLS   OFF CACHE BOOL "" FORCE)
+set(LIBZIP_ENABLE_OPENSSL   OFF CACHE BOOL "" FORCE)
+set(LIBZIP_ENABLE_WINDOWS_CRYPTO OFF CACHE BOOL "" FORCE)
+# zlib is in iOS SDK; libzip will find it via find_package
+find_package(ZLIB REQUIRED)
+add_subdirectory(pcsx2/3rdparty/libzip EXCLUDE_FROM_ALL)
+
 # ─── pcsx2_common — platform-agnostic utilities ───────────────────────────
 
 set(PCSX2_COMMON_SOURCES
@@ -146,8 +161,9 @@ set(PCSX2_COMMON_SOURCES
     ios/platform/AudioStream_iOS.mm
     ios/platform/Filesystem_iOS.mm
 
-    # Darwin threading (works on iOS)
-    pcsx2/common/Darwin/DarwinThreads.cpp
+    # Darwin (macOS/iOS) — GetCPUTicks, GetTickFrequency, Sleep
+    # DarwinMisc.cpp is shared between macOS and iOS for mach_time APIs
+    pcsx2/common/Darwin/DarwinMisc.cpp
 
     # EXCLUDED — DO NOT ADD:
     # pcsx2/common/HostSys.cpp        (replaced by HostSys_iOS.cpp)
@@ -156,7 +172,7 @@ set(PCSX2_COMMON_SOURCES
     # pcsx2/common/emitter/*          (x86 only)
     # pcsx2/common/Windows/*          (Windows only)
     # pcsx2/common/Linux/*            (Linux only)
-    # pcsx2/common/Darwin/DarwinMisc.cpp (macOS-specific, excluded)
+    # pcsx2/common/Darwin/DarwinMisc.cpp (INCLUDED ABOVE — shared macOS/iOS)
     # pcsx2/common/CocoaTools.mm      (macOS — we have iOS replacement)
     # pcsx2/common/HTTPDownloaderCurl.cpp (no libcurl on iOS)
 )
@@ -241,11 +257,9 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/Memory.cpp
     pcsx2/pcsx2/MTGS.cpp
     pcsx2/pcsx2/MTVU.cpp
-    # Patch.cpp — requires libzip (TODO Phase 4b)
-    # pcsx2/pcsx2/Patch.cpp
+    pcsx2/pcsx2/Patch.cpp
     pcsx2/pcsx2/PINE.cpp
-    # SaveState.cpp — requires libzip (TODO Phase 4b)
-    # pcsx2/pcsx2/SaveState.cpp
+    pcsx2/pcsx2/SaveState.cpp
     pcsx2/pcsx2/Sif.cpp
     pcsx2/pcsx2/Sif0.cpp
     pcsx2/pcsx2/Sif1.cpp
@@ -259,6 +273,24 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/Vif0_Dma.cpp
     pcsx2/pcsx2/Vif1_Dma.cpp
     pcsx2/pcsx2/Vif1_MFIFO.cpp
+
+    # ARM64 VU/VIF (replaces x86 dynarec)
+    pcsx2/pcsx2/arm64/Vif_Dynarec.cpp
+    pcsx2/pcsx2/arm64/Vif_UnpackNEON.cpp
+    pcsx2/pcsx2/arm64/AsmHelpers.cpp
+
+    # PS2 hardware access (pgif, VU, etc.)
+    pcsx2/pcsx2/ps2/pgif.cpp
+
+    # MIPS debugger/assembler (needed for debug builds)
+    pcsx2/pcsx2/DebugTools/ExpressionParser.cpp
+    pcsx2/pcsx2/DebugTools/MipsAssembler.cpp
+    pcsx2/pcsx2/DebugTools/MipsAssemblerTables.cpp
+    pcsx2/pcsx2/DebugTools/MipsStackWalk.cpp
+    pcsx2/pcsx2/DebugTools/MIPSAnalyst.cpp
+    pcsx2/pcsx2/DebugTools/DebugInterface.cpp
+    pcsx2/pcsx2/DebugTools/BiosDebugData.cpp
+    pcsx2/pcsx2/DebugTools/Breakpoints.cpp
     pcsx2/pcsx2/vtlb.cpp
     pcsx2/pcsx2/Elfheader.cpp
 
@@ -314,14 +346,57 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/SIO/Memcard/MemoryCardFile.cpp
     pcsx2/pcsx2/SIO/Memcard/MemoryCardFolder.cpp
 
-    # SPU2
-    pcsx2/pcsx2/SPU2/Dma.cpp
-    pcsx2/pcsx2/SPU2/Mixer.cpp
-pcsx2/pcsx2/SPU2/RegTable.cpp
-    pcsx2/pcsx2/SPU2/Reverb.cpp
-    pcsx2/pcsx2/SPU2/ReverbResample.cpp
-    pcsx2/pcsx2/SPU2/spu2.cpp
-    pcsx2/pcsx2/SPU2/spu2sys.cpp
+# SPU2 — ADSR and ReadInput (missing from build)
+    pcsx2/pcsx2/SPU2/ADSR.cpp
+    pcsx2/pcsx2/SPU2/ReadInput.cpp
+    pcsx2/pcsx2/SPU2/spu2freeze.cpp
+    pcsx2/pcsx2/SPU2/Debug.cpp
+    pcsx2/pcsx2/SPU2/Wavedump_wav.cpp
+
+    # IOP hardware — missing IopHw files
+    pcsx2/pcsx2/ps2/Iop/IopHwRead.cpp
+    pcsx2/pcsx2/ps2/Iop/IopHwWrite.cpp
+    pcsx2/pcsx2/ps2/Iop/PsxBios.cpp
+
+    # Debug Tools / Disassemblers (required by IopBios, VMManager)
+    pcsx2/pcsx2/DebugTools/DisR5900asm.cpp
+    pcsx2/pcsx2/DebugTools/DisR3000A.cpp
+    pcsx2/pcsx2/DebugTools/SymbolGuardian.cpp
+    pcsx2/pcsx2/DebugTools/SymbolImporter.cpp
+    pcsx2/pcsx2/DebugTools/DisassemblyManager.cpp
+    pcsx2/pcsx2/DebugTools/DisassemblyManager.h
+    pcsx2/pcsx2/DebugTools/DisASM.h
+    pcsx2/pcsx2/DebugTools/DisVU0Micro.cpp
+    pcsx2/pcsx2/DebugTools/DisVU1Micro.cpp
+    pcsx2/pcsx2/DebugTools/DisVUmicro.h
+    pcsx2/pcsx2/DebugTools/DisVUops.h
+
+    # ccc symbol library (required by SymbolGuardian/SymbolImporter)
+    pcsx2/3rdparty/ccc/src/ccc/ast.cpp
+    pcsx2/3rdparty/ccc/src/ccc/elf.cpp
+    pcsx2/3rdparty/ccc/src/ccc/elf_symtab.cpp
+    pcsx2/3rdparty/ccc/src/ccc/importer_flags.cpp
+    pcsx2/3rdparty/ccc/src/ccc/mdebug_analysis.cpp
+    pcsx2/3rdparty/ccc/src/ccc/mdebug_importer.cpp
+    pcsx2/3rdparty/ccc/src/ccc/mdebug_section.cpp
+    pcsx2/3rdparty/ccc/src/ccc/mdebug_symbols.cpp
+    pcsx2/3rdparty/ccc/src/ccc/sndll.cpp
+    pcsx2/3rdparty/ccc/src/ccc/stabs.cpp
+    pcsx2/3rdparty/ccc/src/ccc/stabs_to_ast.cpp
+    pcsx2/3rdparty/ccc/src/ccc/symbol_database.cpp
+    pcsx2/3rdparty/ccc/src/ccc/symbol_file.cpp
+    pcsx2/3rdparty/ccc/src/ccc/symbol_table.cpp
+    pcsx2/3rdparty/ccc/src/ccc/util.cpp
+
+    # CDVD / ISO
+    pcsx2/pcsx2/CDVD/IsoReader.cpp
+    pcsx2/pcsx2/CDVD/IsoHasher.cpp
+
+    # SIO / Memory Card
+    pcsx2/pcsx2/SIO/Memcard/MemoryCardProtocol.cpp
+
+    # GS Capture (audio/frame capture)
+    pcsx2/pcsx2/GS/GSCapture.cpp
 
     # Logging
     pcsx2/pcsx2/SourceLog.cpp
@@ -408,6 +483,7 @@ target_link_libraries(pcsx2_core PUBLIC
     "-framework MetalKit"
     "-framework AVFoundation"
     "-framework AudioToolbox"
+    zip
     freesurround
     SoundTouch::SoundTouch
 )
