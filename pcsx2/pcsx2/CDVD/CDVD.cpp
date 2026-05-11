@@ -36,6 +36,7 @@
 #endif
 #include <memory>
 #include <unistd.h>
+#include <cstdio>
 
 cdvdStruct cdvd;
 
@@ -708,18 +709,30 @@ static void cdvdDetectDisk()
 {
 	Console.WriteLn("cdvdDetectDisk: entering...");
 	Console.WriteLn("cdvdDetectDisk: about to scan for media...");
+
+	// TEMP: bypass PCSX2 logging for crash isolation
+	fprintf(stderr, "[BYPASS] cdvdDetectDisk: before DoCDVDdetectDiskType\n");
+	fflush(stderr);
 	cdvd.DiscType = DoCDVDdetectDiskType();
+	fprintf(stderr, "[BYPASS] cdvdDetectDisk: after DoCDVDdetectDiskType type=%d\n", cdvd.DiscType);
+	fflush(stderr);
+
 	Console.WriteLn("cdvdDetectDisk: scan returned type %d", cdvd.DiscType);
 
 	if (cdvd.DiscType != 0)
 	{
 		Console.WriteLn("cdvdDetectDisk: getting TD...");
 		cdvdTD td;
-		CDVD->getTD(0, &td);
+		if (CDVD)
+			CDVD->getTD(0, &td);
+		else
+			Console.Error("cdvdDetectDisk: CDVD is null, cannot get TD");
 		cdvd.MaxSector = td.lsn;
 		Console.WriteLn("cdvdDetectDisk: TD done, maxSector=%u", cdvd.MaxSector);
 	}
 
+	fprintf(stderr, "[BYPASS] cdvdDetectDisk: complete\n");
+	fflush(stderr);
 	Console.WriteLn("cdvdDetectDisk: completed successfully.");
 }
 
