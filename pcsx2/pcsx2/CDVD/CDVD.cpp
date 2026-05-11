@@ -706,21 +706,21 @@ s32 cdvdReadSubQ(s32 lsn, cdvdSubQ* subq) noexcept
 
 static void cdvdDetectDisk()
 {
-	// Raw write — no Console/Log/fmt to avoid nullptr dereference
-	write(STDERR_FILENO, "[RAW] cdvdDetectDisk: start\n", 30);
+	Console.WriteLn("cdvdDetectDisk: entering...");
+	Console.WriteLn("cdvdDetectDisk: about to scan for media...");
 	cdvd.DiscType = DoCDVDdetectDiskType();
-	write(STDERR_FILENO, "[RAW] cdvdDetectDisk: DoCDVDdetectDiskType returned\n", 54);
+	Console.WriteLn("cdvdDetectDisk: scan returned type %d", cdvd.DiscType);
 
 	if (cdvd.DiscType != 0)
 	{
-		write(STDERR_FILENO, "[RAW] cdvdDetectDisk: getting TD\n", 34);
+		Console.WriteLn("cdvdDetectDisk: getting TD...");
 		cdvdTD td;
 		CDVD->getTD(0, &td);
 		cdvd.MaxSector = td.lsn;
-		write(STDERR_FILENO, "[RAW] cdvdDetectDisk: TD done\n", 31);
+		Console.WriteLn("cdvdDetectDisk: TD done, maxSector=%u", cdvd.MaxSector);
 	}
 
-	write(STDERR_FILENO, "[RAW] cdvdDetectDisk: complete\n", 32);
+	Console.WriteLn("cdvdDetectDisk: completed successfully.");
 }
 
 static void cdvdUpdateStatus(cdvdStatus NewStatus) noexcept
