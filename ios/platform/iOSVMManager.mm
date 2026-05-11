@@ -2,12 +2,16 @@
 // Phase 8: Stub mode — builds, real init deferred
 
 #import <Foundation/Foundation.h>
+#include <string>
 #include "common/Console.h"
 #include "common/Error.h"
 #include "VMManager.h"
 #include "Memory.h"
 #include "R5900.h"
 #include "Config.h"
+
+#include "CDVD/CDVDcommon.h"
+#include "CDVD/CDVD.h"
 
 extern "C" {
 
@@ -18,10 +22,15 @@ bool iOSVM_Initialize(const char* isoPath) {
 
     Console.WriteLn("[BionicSX2] iOSVM_Initialize start");
 
+    VMBootParameters boot_params;
+    boot_params.filename = isoPath ? isoPath : "";
+    boot_params.source_type = CDVD_SourceType::Iso;
+
     // Phase 8: Full VMManager::Initialize - diagnostic symbol dump
     Console.WriteLn("[BionicSX2] Calling VMManager::Initialize...");
-    if (!VMManager::Initialize()) {
-        Console.WriteLn("[BionicSX2] VMManager::Initialize failed");
+    VMBootResult result = VMManager::Initialize(boot_params);
+    if (result != VMBootResult::StartupSuccess) {
+        Console.WriteLn("[BionicSX2] VMManager::Initialize failed: %d", (int)result);
         return false;
     }
 
