@@ -185,9 +185,9 @@ namespace InputManager {
 }
 
 // ── SaveState stubs ────────────────────────────────────────────────
-void SaveState_ZipToDisk(std::unique_ptr<ArchiveEntryList>, std::unique_ptr<SaveStateScreenshotData>, const char*, Error*) {}
-void SaveState_DownloadState(Error*) {}
-void SaveState_SaveScreenshot() {}
+std::unique_ptr<ArchiveEntryList> SaveState_ZipToDisk(std::unique_ptr<ArchiveEntryList>, std::unique_ptr<SaveStateScreenshotData>, const char*, Error*) { return nullptr; }
+std::unique_ptr<ArchiveEntryList> SaveState_DownloadState(Error* error) { return nullptr; }
+std::unique_ptr<SaveStateScreenshotData> SaveState_SaveScreenshot() { return nullptr; }
 
 // ── Host callbacks ──────────────────────────────────────────────────
 namespace Host {
