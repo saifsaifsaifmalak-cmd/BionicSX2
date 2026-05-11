@@ -108,9 +108,9 @@ namespace SPU2 {
 
 // ── USB stubs (required by Pcsx2Config) ──────────────────────────────
 namespace USB {
-    const char* GetConfigSection(int) { return nullptr; }
-    const char* DeviceTypeIndexToName(int) { return nullptr; }
-    int DeviceTypeNameToIndex(std::string_view) { return 0; }
+    std::string GetConfigSection(int) { return ""; }
+    const char* DeviceTypeIndexToName(s32) { return nullptr; }
+    s32 DeviceTypeNameToIndex(std::string_view) { return 0; }
 }
 
 // ── FullscreenUI::GameChanged stub ───────────────────────────────────
