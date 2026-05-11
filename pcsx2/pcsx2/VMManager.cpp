@@ -411,8 +411,8 @@ bool VMManager::Internal::CPUThreadInitialize()
 	Console.WriteLn("[CHECKPOINT] VMManager: Starting memory allocation");
 	if (!SysMemory::Allocate())
 	{
-		Error::SetString(error, TRANSLATE_STR("VMManager", "Failed to allocate memory for the VM."));
-		return VMBootResult::StartupFailure;
+		Console.Error("Failed to allocate memory for the VM.");
+		return false;
 	}
 	Console.WriteLn("[CHECKPOINT] VMManager: Memory allocation done");
 
