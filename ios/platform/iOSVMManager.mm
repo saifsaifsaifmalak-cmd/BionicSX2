@@ -8,6 +8,8 @@
 #include "R5900.h"
 #include "Config.h"
 
+extern "C" {
+
 static bool s_iOSVM_initialized = false;
 
 bool iOSVM_Initialize(const char* isoPath) {
@@ -45,3 +47,5 @@ void iOSVM_Shutdown(void) {
     SysMemory::Release();
     s_iOSVM_initialized = false;
 }
+
+} // extern "C"
