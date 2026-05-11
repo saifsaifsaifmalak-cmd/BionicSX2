@@ -36,6 +36,7 @@
 #endif
 #include <memory>
 #include <unistd.h>
+#include <cstring>
 #include <cstdio>
 
 cdvdStruct cdvd;
@@ -705,34 +706,44 @@ s32 cdvdReadSubQ(s32 lsn, cdvdSubQ* subq) noexcept
 	return ret;
 }
 
+// Raw write helper — bypasses stderr FILE* buffering and fmt entirely
+static void RawMsg(const char* msg) {
+	if (msg) write(STDERR_FILENO, msg, strlen(msg));
+}
+
 static void cdvdDetectDisk()
 {
+	RawMsg("[RAW] cdvdDetectDisk: entering...\n");
 	Console.WriteLn("cdvdDetectDisk: entering...");
+
+	RawMsg("[RAW] cdvdDetectDisk: about to scan for media...\n");
 	Console.WriteLn("cdvdDetectDisk: about to scan for media...");
 
-	// TEMP: bypass PCSX2 logging for crash isolation
-	fprintf(stderr, "[BYPASS] cdvdDetectDisk: before DoCDVDdetectDiskType\n");
-	fflush(stderr);
+	RawMsg("[RAW] cdvdDetectDisk: step A - before DoCDVDdetectDiskType\n");
 	cdvd.DiscType = DoCDVDdetectDiskType();
-	fprintf(stderr, "[BYPASS] cdvdDetectDisk: after DoCDVDdetectDiskType type=%d\n", cdvd.DiscType);
-	fflush(stderr);
+	RawMsg("[RAW] cdvdDetectDisk: step A - after DoCDVDdetectDiskType\n");
 
+	RawMsg("[RAW] cdvdDetectDisk: scan type logged to Console\n");
 	Console.WriteLn("cdvdDetectDisk: scan returned type %d", cdvd.DiscType);
 
 	if (cdvd.DiscType != 0)
 	{
+		RawMsg("[RAW] cdvdDetectDisk: step B - getting TD\n");
 		Console.WriteLn("cdvdDetectDisk: getting TD...");
 		cdvdTD td;
-		if (CDVD)
+		if (CDVD) {
+			RawMsg("[RAW] cdvdDetectDisk: step B2 - calling CDVD->getTD\n");
 			CDVD->getTD(0, &td);
-		else
+			RawMsg("[RAW] cdvdDetectDisk: step B3 - getTD returned\n");
+		} else {
 			Console.Error("cdvdDetectDisk: CDVD is null, cannot get TD");
+		}
 		cdvd.MaxSector = td.lsn;
 		Console.WriteLn("cdvdDetectDisk: TD done, maxSector=%u", cdvd.MaxSector);
+		RawMsg("[RAW] cdvdDetectDisk: TD block complete\n");
 	}
 
-	fprintf(stderr, "[BYPASS] cdvdDetectDisk: complete\n");
-	fflush(stderr);
+	RawMsg("[RAW] cdvdDetectDisk: complete, returning\n");
 	Console.WriteLn("cdvdDetectDisk: completed successfully.");
 }
 
