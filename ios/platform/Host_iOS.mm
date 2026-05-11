@@ -15,6 +15,7 @@
 #include "common/Console.h"
 #include "common/SmallString.h"
 #include "SettingsInterface.h"
+#include "BionicLogger.hpp"
 
 static CAMetalLayer* s_metal_layer = nullptr;
 static id<MTLDevice> s_metal_device = nullptr;
@@ -213,6 +214,34 @@ s32 GetTranslatedStringImpl(const std::string_view context, const std::string_vi
 } // namespace Internal
 
 } // namespace Host
+
+// ── PCSX2 Core Log → BionicLogger ─────────────────────────────────────────
+
+void PCSX2Log_Init() {
+    static bool s_registered = false;
+    if (s_registered) return;
+    s_registered = true;
+
+    Log::SetHostOutputLevel(LOGLEVEL_DEV, [](LOGLEVEL level, ConsoleColors /*color*/, std::string_view message) {
+        const char* level_str = "INFO ";
+        switch (level) {
+            case LOGLEVEL_ERROR:   level_str = "ERROR"; break;
+            case LOGLEVEL_WARNING: level_str = "WARN "; break;
+            default: break;
+        }
+
+        char msg[1024];
+        size_t len = message.size();
+        if (len > sizeof(msg) - 1)
+            len = sizeof(msg) - 1;
+        memcpy(msg, message.data(), len);
+        msg[len] = '\0';
+
+        BionicLogger::instance().log(level_str, "PCSX2", msg);
+    });
+
+    BionicLogger::instance().log("INFO ", "CORE ", "PCSX2 log routing registered");
+}
 
 // VMManager Host callbacks (these are separate namespace)
 namespace VMManager {

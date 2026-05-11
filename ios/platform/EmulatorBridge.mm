@@ -8,11 +8,13 @@
 #include "iOSVMManager.h"
 #include "Watchdog.hpp"
 #include "BionicLogger.hpp"
+#include "PCSX2LogRedirect.h"
 
 extern "C" {
 
 bool EmulatorBridge_Init(void) {
     NSLog(@"[BionicSX2] EmulatorBridge_Init");
+    PCSX2Log_Init();
     return true;
 }
 
@@ -31,6 +33,7 @@ bool EmulatorBridge_BootGame(const char* isoPath) {
     Watchdog_Start();
     bool result = iOSVM_Initialize(isoPath);
 
+    BionicLogger::instance().log("INFO ", "CORE ", "iOSVM_Initialize returned.");
     if (result) {
         NSLog(@"[BionicSX2] iOSVM initialized — PS2 running");
     } else {
