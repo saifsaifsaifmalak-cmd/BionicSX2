@@ -90,6 +90,24 @@ namespace FullscreenUI {
 namespace Achievements {
     __attribute__((weak_import)) void GameChanged(unsigned int, unsigned int) {}
     __attribute__((weak_import)) bool IsHardcoreModeActive() { return false; }
+    __attribute__((weak_import)) bool IsActive() { return false; }
+    __attribute__((weak_import)) void OnVMPaused(bool) {}
+    __attribute__((weak_import)) void FrameUpdate() {}
+    __attribute__((weak_import)) void DisableHardcoreMode() {}
+    __attribute__((weak_import)) void ResetHardcoreMode(bool) {}
+    __attribute__((weak_import)) void UpdateSettings(const void*) {}
+    __attribute__((weak_import)) void LoadState(std::span<const unsigned char>) {}
+    __attribute__((weak_import)) void SaveState(void*) {}
+}
+
+// ── SPU2 ────────────────────────────────────────────────────────────
+namespace SPU2 {
+    __attribute__((weak_import)) void Close() {}
+}
+
+// ── USB ──────────────────────────────────────────────────────────────
+namespace USB {
+    __attribute__((weak_import)) void DoState(void*) {}
 }
 
 // ── GSCapture ───────────────────────────────────────────────────────

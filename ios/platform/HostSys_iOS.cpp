@@ -196,3 +196,45 @@ void HostSys_Free(void* ptr, size_t size) {
                   reinterpret_cast<vm_address_t>(ptr),
                   size);
 }
+
+// ── Shared Memory ──────────────────────────────────────────────────────────
+// iOS implementation using Darwin XNU named regions
+
+std::string HostSys::GetFileMappingName(const char* prefix)
+{
+    return std::string(prefix) + "_ios_shm";
+}
+
+void* HostSys::CreateSharedMemory(const char* name, size_t size)
+{
+    return HostSys_Alloc(size);
+}
+
+void HostSys::DestroySharedMemory(void* ptr)
+{
+    if (ptr)
+    {
+        vm_deallocate(mach_task_self(), reinterpret_cast<vm_address_t>(ptr), 0);
+    }
+}
+
+// ── Page Fault Handler ──────────────────────────────────────────────────────
+// For interpreter mode, page fault handler is a no-op
+// Full implementation requires Darwin mach exception ports
+
+namespace PageFaultHandler
+{
+static bool s_installed = false;
+
+bool Install(Error* error)
+{
+    (void)error;
+    s_installed = true;
+    return true;
+}
+
+bool InstallSecondaryThread()
+{
+    return true;
+}
+} // namespace PageFaultHandler

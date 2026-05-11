@@ -165,9 +165,8 @@ set(PCSX2_COMMON_SOURCES
     ios/platform/AudioStream_iOS.mm
     ios/platform/Filesystem_iOS.mm
 
-    # Darwin — disabled (uses macOS-specific APIs like ApplicationServices/IOKit)
-    # DarwinMisc.cpp — excluded for iOS; GetCPUTicks/Threading::Sleep provided by HostSys_iOS.cpp
-    # DarwinThreads.cpp — already present above
+    # Darwin threading + misc (macOS/iOS shared)
+    pcsx2/common/Darwin/DarwinThreads.cpp
 
     # EXCLUDED — DO NOT ADD:
     # pcsx2/common/HostSys.cpp        (replaced by HostSys_iOS.cpp)
@@ -361,6 +360,9 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/ps2/Iop/IopHwRead.cpp
     pcsx2/pcsx2/ps2/Iop/IopHwWrite.cpp
     pcsx2/pcsx2/ps2/Iop/PsxBios.cpp
+
+    # ShiftJIS conversion
+    pcsx2/pcsx2/ShiftJisToUnicode.cpp
 
     # Debug Tools / Disassemblers (required by IopBios, VMManager)
     pcsx2/pcsx2/DebugTools/DisR5900asm.cpp
