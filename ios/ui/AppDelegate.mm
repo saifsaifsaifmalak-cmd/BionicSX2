@@ -3,7 +3,6 @@
 #import "MetalViewController.h"
 #include "BionicLogger.hpp"
 #include "CrashHandler.hpp"
-#include "Watchdog.hpp"
 
 @interface BionicSX2AppDelegate () <GameLibraryDelegate>
 @property (nonatomic, strong) MetalViewController* emulatorVC;
@@ -16,7 +15,6 @@
 
     BionicLog_Init();
     CrashHandler_Install();
-    Watchdog_Start();
     BIONIC_INFO(CORE, "BionicSX2 started — logging active");
     BIONIC_INFO(CORE, "Log file: %s", BionicLog_GetPath().c_str());
 

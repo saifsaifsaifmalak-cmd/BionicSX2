@@ -6,6 +6,7 @@
 #include "Config.h"
 #include "common/Error.h"
 #include "iOSVMManager.h"
+#include "Watchdog.hpp"
 
 extern "C" {
 
@@ -19,17 +20,20 @@ void EmulatorBridge_Shutdown(void) {
     if (VMManager::GetState() != VMState::Shutdown) {
         VMManager::Shutdown(false);
     }
+    Watchdog_Stop();
 }
 
 bool EmulatorBridge_BootGame(const char* isoPath) {
     NSLog(@"[BionicSX2] EmulatorBridge_BootGame: %s", isoPath ? isoPath : "(null)");
 
+    Watchdog_Start();
     bool result = iOSVM_Initialize(isoPath);
 
     if (result) {
         NSLog(@"[BionicSX2] iOSVM initialized — PS2 running");
     } else {
         NSLog(@"[BionicSX2] iOSVM_Initialize failed");
+        Watchdog_Stop();
     }
 
     return result;
