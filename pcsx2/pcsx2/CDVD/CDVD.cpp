@@ -35,6 +35,7 @@
 #include <time.h>
 #endif
 #include <memory>
+#include <unistd.h>
 
 cdvdStruct cdvd;
 
@@ -705,15 +706,21 @@ s32 cdvdReadSubQ(s32 lsn, cdvdSubQ* subq) noexcept
 
 static void cdvdDetectDisk()
 {
-	Console.WriteLn("[CHECKPOINT] cdvdDetectDisk start");
+	// Raw write — no Console/Log/fmt to avoid nullptr dereference
+	write(STDERR_FILENO, "[RAW] cdvdDetectDisk: start\n", 30);
 	cdvd.DiscType = DoCDVDdetectDiskType();
+	write(STDERR_FILENO, "[RAW] cdvdDetectDisk: DoCDVDdetectDiskType returned\n", 54);
 
 	if (cdvd.DiscType != 0)
 	{
+		write(STDERR_FILENO, "[RAW] cdvdDetectDisk: getting TD\n", 34);
 		cdvdTD td;
 		CDVD->getTD(0, &td);
 		cdvd.MaxSector = td.lsn;
+		write(STDERR_FILENO, "[RAW] cdvdDetectDisk: TD done\n", 31);
 	}
+
+	write(STDERR_FILENO, "[RAW] cdvdDetectDisk: complete\n", 32);
 }
 
 static void cdvdUpdateStatus(cdvdStatus NewStatus) noexcept
