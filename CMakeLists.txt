@@ -111,16 +111,6 @@ add_subdirectory(pcsx2/3rdparty/freesurround EXCLUDE_FROM_ALL)
 # SoundTouch — audio time stretch
 add_subdirectory(pcsx2/3rdparty/soundtouch EXCLUDE_FROM_ALL)
 
-# libzip — save state compression
-set(LIBZIP_BUILD_TOOLS      OFF CACHE BOOL "" FORCE)
-set(LIBZIP_BUILD_REGRESS     OFF CACHE BOOL "" FORCE)
-set(LIBZIP_BUILD_EXAMPLES    OFF CACHE BOOL "" FORCE)
-set(LIBZIP_ENABLE_GNUTLS     OFF CACHE BOOL "" FORCE)
-set(LIBZIP_ENABLE_MBEDTLS   OFF CACHE BOOL "" FORCE)
-set(LIBZIP_ENABLE_OPENSSL   OFF CACHE BOOL "" FORCE)
-set(LIBZIP_ENABLE_WINDOWS_CRYPTO OFF CACHE BOOL "" FORCE)
-add_subdirectory(pcsx2/3rdparty/libzip EXCLUDE_FROM_ALL)
-
 # ─── pcsx2_common — platform-agnostic utilities ───────────────────────────
 
 set(PCSX2_COMMON_SOURCES
@@ -251,9 +241,10 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/Memory.cpp
     pcsx2/pcsx2/MTGS.cpp
     pcsx2/pcsx2/MTVU.cpp
-    pcsx2/pcsx2/Patch.cpp
+    # Patch.cpp — requires libzip (TODO Phase 4b)
+    # pcsx2/pcsx2/Patch.cpp
     pcsx2/pcsx2/PINE.cpp
-    # SaveState.cpp — guarded: requires libzip (TODO Phase 4b)
+    # SaveState.cpp — requires libzip (TODO Phase 4b)
     # pcsx2/pcsx2/SaveState.cpp
     pcsx2/pcsx2/Sif.cpp
     pcsx2/pcsx2/Sif0.cpp
@@ -419,7 +410,6 @@ target_link_libraries(pcsx2_core PUBLIC
     "-framework AudioToolbox"
     freesurround
     SoundTouch::SoundTouch
-    libzip
 )
 
 # ─── iOS Platform Layer ────────────────────────────────────────────────────
