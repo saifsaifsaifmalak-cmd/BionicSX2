@@ -75,7 +75,7 @@
 
     const char* isoC = self.isoPath ? self.isoPath.UTF8String : nullptr;
 
-    if (EmulatorBridge_BootGame(bios.UTF8String, isoC)) {
+    if (EmulatorBridge_BootGame(isoC)) {
         self.emulatorRunning = YES;
         NSLog(@"[BionicSX2] Booting: %@",
             self.isoPath ? self.isoPath.lastPathComponent : @"BIOS shell");
