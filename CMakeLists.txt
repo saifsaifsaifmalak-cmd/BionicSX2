@@ -165,9 +165,9 @@ set(PCSX2_COMMON_SOURCES
     ios/platform/AudioStream_iOS.mm
     ios/platform/Filesystem_iOS.mm
 
-    # Darwin (macOS/iOS) — GetCPUTicks, GetTickFrequency, Sleep
-    # DarwinMisc.cpp is shared between macOS and iOS for mach_time APIs
-    pcsx2/common/Darwin/DarwinMisc.cpp
+    # Darwin — disabled (uses macOS-specific APIs like ApplicationServices/IOKit)
+    # DarwinMisc.cpp — excluded for iOS; GetCPUTicks/Threading::Sleep provided by HostSys_iOS.cpp
+    # DarwinThreads.cpp — already present above
 
     # EXCLUDED — DO NOT ADD:
     # pcsx2/common/HostSys.cpp        (replaced by HostSys_iOS.cpp)
@@ -176,7 +176,7 @@ set(PCSX2_COMMON_SOURCES
     # pcsx2/common/emitter/*          (x86 only)
     # pcsx2/common/Windows/*          (Windows only)
     # pcsx2/common/Linux/*            (Linux only)
-    # pcsx2/common/Darwin/DarwinMisc.cpp (INCLUDED ABOVE — shared macOS/iOS)
+    # pcsx2/common/Darwin/DarwinMisc.cpp (macOS-specific — excluded)
     # pcsx2/common/CocoaTools.mm      (macOS — we have iOS replacement)
     # pcsx2/common/HTTPDownloaderCurl.cpp (no libcurl on iOS)
 )

@@ -5,9 +5,12 @@
 
 #include <mach/mach.h>
 #include <mach/vm_map.h>
+#include <mach/mach_time.h>
 #include <pthread.h>
 #include <sys/mman.h>
 #include <sys/sysctl.h>
+#include <unistd.h>
+#include <ctime>
 
 #include "common/HostSys.h"
 #include "common/Pcsx2Defs.h"
@@ -22,24 +25,66 @@ bool Common::InhibitScreensaver(bool inhibit)
 	return true;
 }
 
+// ── GetCPUTicks / GetTickFrequency ──────────────────────────────────────────
+// Uses mach_absolute_time() — available on iOS, same as macOS Darwin
+
+static mach_timebase_info_data_t s_timebase_info;
+static const u64 tickfreq = []() {
+	if (mach_timebase_info(&s_timebase_info) != KERN_SUCCESS)
+		abort();
+	return (u64)1e9 * (u64)s_timebase_info.denom / (u64)s_timebase_info.numer;
+}();
+
+u64 GetTickFrequency()
+{
+	return tickfreq;
+}
+
+u64 GetCPUTicks()
+{
+	return mach_absolute_time();
+}
+
+// ── Threading Sleep ────────────────────────────────────────────────────────
+
+void Threading::Sleep(int ms)
+{
+	usleep(1000 * static_cast<useconds_t>(ms));
+}
+
+void Threading::SleepUntil(u64 ticks)
+{
+	const s64 diff = static_cast<s64>(ticks - GetCPUTicks());
+	if (diff <= 0)
+		return;
+
+	const u64 nanos = (static_cast<u64>(diff) * static_cast<u64>(s_timebase_info.denom)) / static_cast<u64>(s_timebase_info.numer);
+	if (nanos == 0)
+		return;
+
+	struct timespec ts;
+	ts.tv_sec = static_cast<time_t>(nanos / 1000000000ULL);
+	ts.tv_nsec = static_cast<long>(nanos % 1000000000ULL);
+	nanosleep(&ts, nullptr);
+}
+
+// ── GetCPUInfo ─────────────────────────────────────────────────────────────
+
 static CPUInfo CalcCPUInfo()
 {
 	CPUInfo out;
 	out.name = "Apple Silicon";
 	
-	// Get CPU brand string
 	char cpu_name[256] = {0};
 	size_t name_size = sizeof(cpu_name);
 	sysctlbyname("machdep.cpu.brand_string", cpu_name, &name_size, nullptr, 0);
 	out.name = cpu_name;
 	
-	// Get physical cpu count
 	size_t phys_size = sizeof(u32);
 	u32 physcpu = 0;
 	sysctlbyname("hw.physicalcpu", &physcpu, &phys_size, nullptr, 0);
 	out.num_big_cores = physcpu;
 	
-	// Get logical cpu count
 	size_t log_size = sizeof(u32);
 	u32 logcpu = 0;
 	sysctlbyname("hw.logicalcpu", &logcpu, &log_size, nullptr, 0);
