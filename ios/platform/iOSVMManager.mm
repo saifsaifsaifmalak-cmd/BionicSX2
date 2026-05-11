@@ -4,6 +4,7 @@
 #import <Foundation/Foundation.h>
 #include "common/Console.h"
 #include "common/Error.h"
+#include "VMManager.h"
 #include "Memory.h"
 #include "R5900.h"
 #include "Config.h"
@@ -17,16 +18,12 @@ bool iOSVM_Initialize(const char* isoPath) {
 
     Console.WriteLn("[BionicSX2] iOSVM_Initialize start");
 
-    // Phase 8: Stub - just allocate memory
-    Console.WriteLn("[BionicSX2] Allocating memory...");
-    if (!SysMemory::Allocate()) {
-        Console.WriteLn("[BionicSX2] SysMemory::Allocate failed");
+    // Phase 8: Full VMManager::Initialize - diagnostic symbol dump
+    Console.WriteLn("[BionicSX2] Calling VMManager::Initialize...");
+    if (!VMManager::Initialize()) {
+        Console.WriteLn("[BionicSX2] VMManager::Initialize failed");
         return false;
     }
-
-    // CPU reset
-    Console.WriteLn("[BionicSX2] Resetting CPU...");
-    cpuReset();
 
     // TODO Phase 9: GS Metal, SPU2, CDVD real init
     Console.WriteLn("[BionicSX2] GS/SPU2/CDVD init deferred to Phase 9");
