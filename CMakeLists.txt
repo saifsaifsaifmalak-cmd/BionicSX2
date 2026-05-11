@@ -120,7 +120,6 @@ set(LIBZIP_ENABLE_MBEDTLS   OFF CACHE BOOL "" FORCE)
 set(LIBZIP_ENABLE_OPENSSL   OFF CACHE BOOL "" FORCE)
 set(LIBZIP_ENABLE_WINDOWS_CRYPTO OFF CACHE BOOL "" FORCE)
 add_subdirectory(pcsx2/3rdparty/libzip EXCLUDE_FROM_ALL)
-add_library(zip STATIC ALIAS zip)
 
 # ─── pcsx2_common — platform-agnostic utilities ───────────────────────────
 
@@ -420,7 +419,7 @@ target_link_libraries(pcsx2_core PUBLIC
     "-framework AudioToolbox"
     freesurround
     SoundTouch::SoundTouch
-    zip
+    libzip
 )
 
 # ─── iOS Platform Layer ────────────────────────────────────────────────────
