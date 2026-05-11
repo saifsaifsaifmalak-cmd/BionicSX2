@@ -415,6 +415,7 @@ target_link_libraries(pcsx2_core PUBLIC
 set(IOS_PLATFORM_SOURCES
     ios/platform/EmulatorBridge.h
     ios/platform/EmulatorBridge.mm
+    ios/platform/iOSVMManager.mm
     ios/platform/AudioStream_iOS.mm
     ios/platform/Filesystem_iOS.mm
     ios/platform/Host_iOS.mm

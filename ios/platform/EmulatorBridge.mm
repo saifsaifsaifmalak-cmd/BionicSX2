@@ -5,7 +5,7 @@
 #include "VMManager.h"
 #include "Config.h"
 #include "common/Error.h"
-#include "CDVD/CDVDcommon.h"
+#include "iOSVMManager.h"
 
 extern "C" {
 
@@ -21,64 +21,18 @@ void EmulatorBridge_Shutdown(void) {
     }
 }
 
-bool EmulatorBridge_BootBIOS(const char* biosPath) {
-    NSLog(@"[BionicSX2] BootBIOS: %s", biosPath ? biosPath : "(null)");
+bool EmulatorBridge_BootGame(const char* isoPath) {
+    NSLog(@"[BionicSX2] EmulatorBridge_BootGame: %s", isoPath ? isoPath : "(null)");
 
-    VMBootParameters params;
-    params.filename = "";
-    params.fast_boot = false;
+    bool result = iOSVM_Initialize(isoPath);
 
-    Error error;
-    VMBootResult result = VMManager::Initialize(params, &error);
-
-    if (result != VMBootResult::StartupSuccess) {
-        NSLog(@"[BionicSX2] Initialize failed: %s", error.GetDescription().c_str());
-        return false;
-    }
-
-    VMManager::SetState(VMState::Running);
-    NSLog(@"[BionicSX2] VMManager::Initialize SUCCESS");
-    return true;
-}
-
-bool EmulatorBridge_BootGame(const char* biosPath, const char* isoPath) {
-    NSLog(@"[BionicSX2] EmulatorBridge_BootGame called");
-    NSLog(@"[BionicSX2]   bios: %s", biosPath ? biosPath : "(null)");
-    NSLog(@"[BionicSX2]   iso:  %s", isoPath ? isoPath : "(null)");
-
-#if 0
-    // VMManager::Initialize pulls 454+ undefined symbols:
-    // - DEV9 (PS2 network)
-    // - CDVD Disc (drive)
-    // - Full IOP bios
-    // - GS renderer (not Metal for iOS yet)
-    // - DebugTools (CCC)
-    // - SaveState (libzip)
-    // - Memory card
-    // Defer to Phase 8+ when all iOS stubs exist
-
-    VMBootParameters params;
-    if (isoPath && strlen(isoPath) > 0) {
-        params.filename = isoPath;
-        params.source_type = CDVD_SourceType::Iso;
+    if (result) {
+        NSLog(@"[BionicSX2] iOSVM initialized — PS2 running");
     } else {
-        params.filename = "";
-        params.source_type = CDVD_SourceType::NoDisc;
+        NSLog(@"[BionicSX2] iOSVM_Initialize failed");
     }
-    params.fast_boot = false;
-    params.fullscreen = false;
 
-    Error error;
-    VMBootResult result = VMManager::Initialize(params, &error);
-    if (result != VMBootResult::StartupSuccess) {
-        NSLog(@"[BionicSX2] Boot failed: %s", error.GetDescription().c_str());
-        return false;
-    }
-    NSLog(@"[BionicSX2] PS2 running");
-#else
-    NSLog(@"[BionicSX2] VMManager stub — boot deferred to Phase 8");
-#endif
-    return true;
+    return result;
 }
 
 void EmulatorBridge_RunFrame(void) {
