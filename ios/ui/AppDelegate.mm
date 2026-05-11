@@ -11,6 +11,8 @@
 - (BOOL)application:(UIApplication*)app
     didFinishLaunchingWithOptions:(NSDictionary*)opts {
 
+    [self createFolderStructure];
+
     self.window = [[UIWindow alloc]
         initWithFrame:UIScreen.mainScreen.bounds];
 
@@ -28,6 +30,29 @@
     return YES;
 }
 
+- (void)createFolderStructure {
+    NSString* docs = NSSearchPathForDirectoriesInDomains(
+        NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+
+    NSFileManager* fm = [NSFileManager defaultManager];
+    NSArray* folders = @[
+        @"bios",
+        @"games",
+        @"memcards",
+        @"sstates",
+        @"cheats",
+    ];
+
+    for (NSString* folder in folders) {
+        NSString* path = [docs stringByAppendingPathComponent:folder];
+        [fm createDirectoryAtPath:path
+            withIntermediateDirectories:YES
+                           attributes:nil error:nil];
+    }
+
+    NSLog(@"[BionicSX2] Folder structure ready at: %@", docs);
+}
+
 - (void)gameLibraryDidSelectISO:(NSString*)isoPath {
     self.emulatorVC = [[MetalViewController alloc] init];
     self.emulatorVC.isoPath = isoPath;
@@ -39,7 +64,7 @@
 
 - (void)gameLibraryDidSelectBIOS:(NSString*)biosPath {
     UIAlertController* a = [UIAlertController
-        alertControllerWithTitle:@"BIOS Imported ✓"
+        alertControllerWithTitle:@"BIOS Detected ✓"
                          message:biosPath.lastPathComponent
                   preferredStyle:UIAlertControllerStyleAlert];
     [a addAction:[UIAlertAction

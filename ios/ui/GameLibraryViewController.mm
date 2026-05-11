@@ -1,8 +1,8 @@
 #import "GameLibraryViewController.h"
-#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 @interface GameLibraryViewController ()
 @property (nonatomic, strong) UITableView* tableView;
+@property (nonatomic, strong) NSString* detectedBIOS;
 @end
 
 @implementation GameLibraryViewController
@@ -13,19 +13,18 @@
     self.title = @"BionicSX2 — Select Game";
     self.isoFiles = [NSMutableArray array];
 
-    UIBarButtonItem* importISO = [[UIBarButtonItem alloc]
-        initWithTitle:@"＋ ISO"
+    UIBarButtonItem* helpBtn = [[UIBarButtonItem alloc]
+        initWithTitle:@"?"
                 style:UIBarButtonItemStylePlain
                target:self
-               action:@selector(importISO)];
+               action:@selector(showBIOSInstructions)];
 
-    UIBarButtonItem* importBIOS = [[UIBarButtonItem alloc]
-        initWithTitle:@"BIOS"
-                style:UIBarButtonItemStylePlain
-               target:self
-               action:@selector(importBIOS)];
+    UIBarButtonItem* refreshBtn = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
+                             target:self
+                             action:@selector(scanForGames)];
 
-    self.navigationItem.rightBarButtonItems = @[importISO, importBIOS];
+    self.navigationItem.rightBarButtonItems = @[refreshBtn, helpBtn];
 
     self.tableView = [[UITableView alloc]
         initWithFrame:self.view.bounds
@@ -48,87 +47,84 @@
 - (void)scanForGames {
     NSString* docs = NSSearchPathForDirectoriesInDomains(
         NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-    NSArray* contents = [[NSFileManager defaultManager]
-        contentsOfDirectoryAtPath:docs error:nil];
+
     [self.isoFiles removeAllObjects];
-    NSArray* exts = @[@"iso", @"bin", @"img"];
+    NSArray* exts = @[@"iso", @"bin", @"img", @"chd"];
+    NSFileManager* fm = [NSFileManager defaultManager];
+
+    NSArray* contents = [fm contentsOfDirectoryAtPath:docs error:nil];
     for (NSString* f in contents) {
-        if ([exts containsObject:f.pathExtension.lowercaseString]) {
+        NSString* ext = f.pathExtension.lowercaseString;
+        if ([exts containsObject:ext] && ![f.lowercaseString hasPrefix:@"scph"]) {
             [self.isoFiles addObject:[docs stringByAppendingPathComponent:f]];
         }
     }
+
+    NSString* gamesDir = [docs stringByAppendingPathComponent:@"games"];
+    [fm createDirectoryAtPath:gamesDir
+        withIntermediateDirectories:YES
+                       attributes:nil error:nil];
+    NSArray* games = [fm contentsOfDirectoryAtPath:gamesDir error:nil];
+    for (NSString* f in games) {
+        if ([exts containsObject:f.pathExtension.lowercaseString]) {
+            [self.isoFiles addObject:[gamesDir stringByAppendingPathComponent:f]];
+        }
+    }
+
     [self.tableView reloadData];
+    [self updateBIOSStatus];
 }
 
-- (void)importISO {
-    UIDocumentPickerViewController* picker;
-    if (@available(iOS 14.0, *)) {
-        picker = [[UIDocumentPickerViewController alloc]
-            initForOpeningContentTypes:@[
-                [UTType typeWithIdentifier:@"public.data"],
-                [UTType typeWithIdentifier:@"public.iso-image"]
-            ]];
-    } else {
-        picker = [[UIDocumentPickerViewController alloc]
-            initWithDocumentTypes:@[@"public.data"]
-                           inMode:UIDocumentPickerModeImport];
-    }
-    picker.delegate = self;
-    [self presentViewController:picker animated:YES completion:nil];
-}
-
-- (void)importBIOS {
-    UIDocumentPickerViewController* picker;
-    if (@available(iOS 14.0, *)) {
-        picker = [[UIDocumentPickerViewController alloc]
-            initForOpeningContentTypes:@[[UTType typeWithIdentifier:@"public.data"]]];
-    } else {
-        picker = [[UIDocumentPickerViewController alloc]
-            initWithDocumentTypes:@[@"public.data"]
-                           inMode:UIDocumentPickerModeImport];
-    }
-    picker.delegate = self;
-    [self presentViewController:picker animated:YES completion:nil];
-}
-
-- (void)documentPicker:(UIDocumentPickerViewController*)ctrl
-    didPickDocumentsAtURLs:(NSArray<NSURL*>*)urls {
-    NSURL* url = urls.firstObject;
-    if (!url) return;
-    [url startAccessingSecurityScopedResource];
-
+- (void)updateBIOSStatus {
     NSString* docs = NSSearchPathForDirectoriesInDomains(
         NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
-    NSString* ext = url.pathExtension.lowercaseString;
-    NSString* name = url.lastPathComponent.lowercaseString;
+    NSString* biosDir = [docs stringByAppendingPathComponent:@"bios"];
 
-    BOOL isBIOS = [ext isEqualToString:@"bin"] && [name hasPrefix:@"scph"];
-    NSString* destDir = isBIOS
-        ? [docs stringByAppendingPathComponent:@"bios"]
-        : docs;
-
-    [[NSFileManager defaultManager]
-        createDirectoryAtPath:destDir
+    NSFileManager* fm = [NSFileManager defaultManager];
+    [fm createDirectoryAtPath:biosDir
         withIntermediateDirectories:YES
-                   attributes:nil error:nil];
+                       attributes:nil error:nil];
 
-    NSString* dest = [destDir stringByAppendingPathComponent:url.lastPathComponent];
-
-    if (![[NSFileManager defaultManager] fileExistsAtPath:dest]) {
-        NSError* err;
-        [[NSFileManager defaultManager]
-            copyItemAtPath:url.path toPath:dest error:&err];
-        if (err) NSLog(@"[BionicSX2] Copy error: %@", err);
+    NSArray* files = [fm contentsOfDirectoryAtPath:biosDir error:nil];
+    NSString* bios = nil;
+    for (NSString* f in files) {
+        if ([f.pathExtension.lowercaseString isEqualToString:@"bin"]) {
+            bios = f;
+            break;
+        }
     }
 
-    [url stopAccessingSecurityScopedResource];
+    self.detectedBIOS = bios;
 
-    if (isBIOS) {
-        [self.delegate gameLibraryDidSelectBIOS:dest];
+    if (bios) {
+        self.navigationItem.title = [NSString stringWithFormat:@"BionicSX2 ✓ %@", bios];
     } else {
-        [self.delegate gameLibraryDidSelectISO:dest];
+        self.navigationItem.title = @"BionicSX2 — No BIOS";
     }
-    [self scanForGames];
+}
+
+- (void)showBIOSInstructions {
+    NSString* key = @"bios_instructions_shown";
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:key]) {
+        return;
+    }
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:key];
+
+    UIAlertController* a = [UIAlertController
+        alertControllerWithTitle:@"BIOS Required"
+                         message:
+        @"To run PS2 games:\n\n"
+        @"1. Connect iPhone to Mac/PC\n"
+        @"2. Open Finder → iPhone → Files → BionicSX2\n"
+        @"3. Copy SCPH-XXXXX.bin to 'bios' folder\n"
+        @"4. Copy ISO files to 'games' folder\n\n"
+        @"Or use Files app → On My iPhone → BionicSX2"
+        preferredStyle:UIAlertControllerStyleAlert];
+    [a addAction:[UIAlertAction
+        actionWithTitle:@"Got it"
+                  style:UIAlertActionStyleDefault
+                handler:nil]];
+    [self presentViewController:a animated:YES completion:nil];
 }
 
 - (NSInteger)tableView:(UITableView*)tv numberOfRowsInSection:(NSInteger)s {
@@ -147,7 +143,7 @@
         cell.detailTextLabel.textColor = UIColor.grayColor;
     }
     if (self.isoFiles.count == 0) {
-        cell.textLabel.text = @"No games — tap ＋ ISO to import";
+        cell.textLabel.text = @"No games — add ISOs to Documents/games/";
         cell.detailTextLabel.text = @"";
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     } else {
@@ -166,7 +162,11 @@
 - (void)tableView:(UITableView*)tv didSelectRowAtIndexPath:(NSIndexPath*)ip {
     [tv deselectRowAtIndexPath:ip animated:YES];
     if (ip.row < self.isoFiles.count) {
-        [self.delegate gameLibraryDidSelectISO:self.isoFiles[ip.row]];
+        if (self.detectedBIOS) {
+            [self.delegate gameLibraryDidSelectISO:self.isoFiles[ip.row]];
+        } else {
+            [self showBIOSInstructions];
+        }
     }
 }
 
