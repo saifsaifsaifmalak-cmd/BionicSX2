@@ -112,7 +112,8 @@ add_subdirectory(pcsx2/3rdparty/freesurround EXCLUDE_FROM_ALL)
 add_subdirectory(pcsx2/3rdparty/soundtouch EXCLUDE_FROM_ALL)
 
 # libzip — save states and patches
-# Build without external dependencies — libzip has bundled zlib/zstd sources
+# Disable zstd on iOS — not available in iOS SDK
+set(HAVE_LIBZSTD FALSE CACHE BOOL "" FORCE)
 set(LIBZIP_BUILD_TOOLS      OFF CACHE BOOL "" FORCE)
 set(LIBZIP_BUILD_REGRESS    OFF CACHE BOOL "" FORCE)
 set(LIBZIP_BUILD_EXAMPLES   OFF CACHE BOOL "" FORCE)

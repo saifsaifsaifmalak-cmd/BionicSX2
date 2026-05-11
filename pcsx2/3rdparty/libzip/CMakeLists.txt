@@ -10,7 +10,12 @@ project(libzip
   LANGUAGES C)
 
 set(ENABLE_FDOPEN ON)
-set(HAVE_LIBZSTD TRUE)
+# iOS: disable zstd - not available in iOS SDK
+if(PCSX2_TARGET_IOS)
+  set(HAVE_LIBZSTD FALSE)
+else()
+  set(HAVE_LIBZSTD TRUE)
+endif()
 set(ZIP_STATIC TRUE)
 
 include(CheckFunctionExists)
@@ -271,14 +276,13 @@ else(WIN32)
     )
 endif(WIN32)
 
-target_sources(zip PRIVATE lib/zip_algorithm_zstd.c)
 if(NOT PCSX2_TARGET_IOS)
+  target_sources(zip PRIVATE lib/zip_algorithm_zstd.c)
   target_link_libraries(zip PRIVATE Zstd::Zstd)
 endif()
 
-if(NOT PCSX2_TARGET_IOS)
-  target_link_libraries(zip PRIVATE ZLIB::ZLIB)
-endif()
+# zlib is found in parent CMakeLists.txt before add_subdirectory
+target_link_libraries(zip PRIVATE ZLIB::ZLIB)
 target_include_directories(zip
   PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/lib>
