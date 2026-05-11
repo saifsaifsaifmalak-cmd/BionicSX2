@@ -48,12 +48,12 @@ bool EmulatorBridge_BootGame(const char* isoPath) {
 
         return result;
     } catch (const std::exception& e) {
-        BionicLogger::instance().log("ERROR", "CORE ", "Boot exception: %s", e.what());
+        BIONIC_FATAL(CORE, "Boot exception: %s", e.what());
         BionicLogger::instance().flush();
         Watchdog_Stop();
         return false;
     } catch (...) {
-        BionicLogger::instance().log("FATAL", "CORE ", "Boot exception: unknown");
+        BIONIC_FATAL(CORE, "Boot exception: unknown");
         BionicLogger::instance().flush();
         Watchdog_Stop();
         return false;
