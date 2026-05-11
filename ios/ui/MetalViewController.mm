@@ -76,8 +76,7 @@
 }
 
 - (void)drawMTKView:(MTKView*)view {
-    if (self.emulatorRunning)
-        EmulatorBridge_RunFrame();
+    // Frame loop deferred — requires full subsystem stubs (SPU2, DEV9, USB, GS...)
 }
 
 - (void)mtkView:(MTKView*)view drawableSizeDidChange:(CGSize)size {
