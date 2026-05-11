@@ -988,7 +988,6 @@ void cdvdReset()
 	}
 #ifndef PCSX2_TARGET_IOS
 	else if (g_InputRecording.isActive())
-#endif
 	{
 		// Default input recording value (2020-03-04 00:00:00) if manual RTC is off. Well beyond any PS2 game's release date.
 		// Some games require a valid date in terms of when the PS2 / game actually came out (see: MGS3).
@@ -1009,6 +1008,7 @@ void cdvdReset()
 		gmtime_r(&resulting_time, &resulting_tm);
 #endif
 	}
+#endif
 	else
 	{
 		// User must set time zone and winter/summer DST in the BIOS for correct time.
