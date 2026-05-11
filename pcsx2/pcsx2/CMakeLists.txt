@@ -956,12 +956,15 @@ set(pcsx2RDebugHeaders
 set(rec_src "Recording")
 set(rec_vp_src "${rec_src}/VirtualPad")
 set(pcsx2RecordingSources
-	${rec_src}/InputRecording.cpp
 	${rec_src}/InputRecordingControls.cpp
 	${rec_src}/InputRecordingFile.cpp
 	${rec_src}/PadData.cpp
 	${rec_src}/Utilities/InputRecordingLogger.cpp
 )
+# Phase 8: InputRecording.cpp requires stub for isActive() - guard for iOS
+if(NOT PCSX2_TARGET_IOS)
+	list(APPEND pcsx2RecordingSources ${rec_src}/InputRecording.cpp)
+endif()
 
 # Recording headers
 set(pcsx2RecordingHeaders
