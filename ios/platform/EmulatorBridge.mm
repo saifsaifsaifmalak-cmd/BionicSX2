@@ -21,7 +21,6 @@ bool EmulatorBridge_Init(void) {
     NSLog(@"[BionicSX2] EmulatorBridge_Init");
     PCSX2Log_Init();
     std::atexit(BionicExitHandler);
-    std::at_quick_exit(BionicExitHandler);
     return true;
 }
 
