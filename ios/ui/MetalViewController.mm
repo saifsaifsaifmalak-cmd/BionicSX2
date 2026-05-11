@@ -28,6 +28,10 @@
 
     [self.view insertSubview:self.metalView atIndex:0];
 
+    // Register the Metal layer for the GS device
+    CAMetalLayer* layer = (CAMetalLayer*)self.metalView.layer;
+    BionicSX2_SetMetalLayer(layer, self.device);
+
     [self initializeEmulator];
 }
 
@@ -72,7 +76,8 @@
 }
 
 - (void)drawMTKView:(MTKView*)view {
-    // Stub - no rendering yet
+    if (self.emulatorRunning)
+        EmulatorBridge_RunFrame();
 }
 
 - (void)mtkView:(MTKView*)view drawableSizeDidChange:(CGSize)size {

@@ -213,6 +213,45 @@ s32 GetTranslatedStringImpl(const std::string_view context, const std::string_vi
 
 } // namespace Internal
 
+// ── GS Render Window ─────────────────────────────────────────────────────
+std::optional<WindowInfo> AcquireRenderWindow(bool recreate_window) {
+    if (!s_metal_layer) {
+        BionicLogger::instance().log("INFO ", "GS   ", "AcquireRenderWindow: no layer, returning Surfaceless");
+        WindowInfo wi;
+        wi.type = WindowInfo::Type::Surfaceless;
+        wi.surface_width = 640;
+        wi.surface_height = 480;
+        wi.surface_scale = 1.0f;
+        wi.surface_refresh_rate = 60.0f;
+        return wi;
+    }
+    BionicLogger::instance().log("INFO ", "GS   ", "AcquireRenderWindow: returning Metal layer");
+    WindowInfo wi;
+    wi.type = WindowInfo::Type::MacOS;
+    wi.surface_handle = (__bridge void*)s_metal_layer;
+    u32 w = (u32)(s_metal_layer.bounds.size.width * s_metal_layer.contentsScale);
+    u32 h = (u32)(s_metal_layer.bounds.size.height * s_metal_layer.contentsScale);
+    wi.surface_width = (w > 0) ? w : 640;
+    wi.surface_height = (h > 0) ? h : 480;
+    wi.surface_scale = s_metal_layer.contentsScale;
+    wi.surface_refresh_rate = 60.0f;
+    return wi;
+}
+
+void BeginPresentFrame() {}
+
+void ReleaseRenderWindow() {}
+
+bool IsFullscreen() { return false; }
+
+void SetFullscreen(bool enabled) {}
+
+void OnCaptureStarted(const std::string& filename) {}
+
+void OnCaptureStopped() {}
+
+void PumpMessagesOnCPUThread() {}
+
 } // namespace Host
 
 // ── PCSX2 Core Log → BionicLogger ─────────────────────────────────────────
