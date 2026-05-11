@@ -95,6 +95,29 @@ namespace FullscreenUI {
 // Note: Achievements, SPU2, USB namespaces are now provided by their headers
 // When SaveState.cpp is guarded, these compilation units ARE linked
 
+// ── Achievements stubs (required by VMManager) ────────────────────────
+namespace Achievements {
+    void GameChanged(unsigned int, unsigned int) {}
+    bool IsHardcoreModeActive() { return false; }
+}
+
+// ── SPU2 stubs (required by VMManager) ────────────────────────────────
+namespace SPU2 {
+    void Close() {}
+}
+
+// ── USB stubs (required by Pcsx2Config) ──────────────────────────────
+namespace USB {
+    const char* GetConfigSection(int) { return nullptr; }
+    const char* DeviceTypeIndexToName(int) { return nullptr; }
+    int DeviceTypeNameToIndex(std::string_view) { return 0; }
+}
+
+// ── FullscreenUI::GameChanged stub ───────────────────────────────────
+namespace FullscreenUI {
+    void GameChanged(std::string title, std::string path, std::string serial, u32 disc_crc, u32 crc) {}
+}
+
 // ── GSCapture ───────────────────────────────────────────────────────
 namespace GSCapture {
     void EndCapture() {}
