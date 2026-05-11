@@ -5,6 +5,7 @@
 #include "VMManager.h"
 #include "Config.h"
 #include "common/Error.h"
+#include "CDVD/CDVDcommon.h"
 
 extern "C" {
 
