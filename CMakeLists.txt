@@ -111,6 +111,9 @@ add_subdirectory(pcsx2/3rdparty/freesurround EXCLUDE_FROM_ALL)
 # SoundTouch — audio time stretch
 add_subdirectory(pcsx2/3rdparty/soundtouch EXCLUDE_FROM_ALL)
 
+# demangler — symbol demangling (required by SymbolImporter)
+add_subdirectory(pcsx2/3rdparty/demangler EXCLUDE_FROM_ALL)
+
 # libzip — save states and patches
 # Disable zstd on iOS — not available in iOS SDK
 set(HAVE_LIBZSTD FALSE CACHE BOOL "" FORCE)
@@ -451,6 +454,7 @@ target_include_directories(pcsx2_core PUBLIC
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/ryml/src
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/ryml/ext/c4core/src
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/ccc/src
+    ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/demangler/include
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/simpleini/include
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/include
     ${CMAKE_SOURCE_DIR}/pcsx2/3rdparty/libzip/lib
@@ -485,6 +489,7 @@ target_link_libraries(pcsx2_core PUBLIC
     "-framework AVFoundation"
     "-framework AudioToolbox"
     zip
+    demanglegnu
     freesurround
     SoundTouch::SoundTouch
 )
