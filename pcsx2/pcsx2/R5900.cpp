@@ -58,6 +58,7 @@ uptr g_argPtrs[kMaxArgs];
 
 void cpuReset()
 {
+	Console.WriteLn("[CHECKPOINT] cpuReset start");
 	std::memset(&cpuRegs, 0, sizeof(cpuRegs));
 	std::memset(&fpuRegs, 0, sizeof(fpuRegs));
 	std::memset(&tlb, 0, sizeof(tlb));

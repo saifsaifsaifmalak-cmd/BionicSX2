@@ -408,11 +408,13 @@ bool VMManager::Internal::CPUThreadInitialize()
 
 	LogCPUCapabilities();
 
+	Console.WriteLn("[CHECKPOINT] VMManager: Starting memory allocation");
 	if (!SysMemory::Allocate())
 	{
-		Host::ReportErrorAsync("Error", "Failed to allocate VM memory.");
-		return false;
+		Error::SetString(error, TRANSLATE_STR("VMManager", "Failed to allocate memory for the VM."));
+		return VMBootResult::StartupFailure;
 	}
+	Console.WriteLn("[CHECKPOINT] VMManager: Memory allocation done");
 
 	InitializeCPUProviders();
 
@@ -1437,6 +1439,7 @@ VMBootResult VMManager::Initialize(const VMBootParameters& boot_params, Error* e
 	if (!GSDumpReplayer::IsReplayingDump())
 	{
 		Console.WriteLn("Loading BIOS...");
+	Console.WriteLn("[CHECKPOINT] VMManager: Calling LoadBIOS");
 		if (!LoadBIOS())
 		{
 			Error::SetStringFmt(error,

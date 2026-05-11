@@ -260,6 +260,7 @@ static std::string FindBiosImage()
 	Console.WriteLn("Searching for a BIOS image in '%s'...", EmuFolders::Bios.c_str());
 
 	FileSystem::FindResultsArray results;
+	Console.WriteLn("[CHECKPOINT] BIOS: Searching in: %s", EmuFolders::Bios.c_str());
 	if (!FileSystem::FindFiles(EmuFolders::Bios.c_str(), "*", FILESYSTEM_FIND_FILES, &results))
 		return std::string();
 
@@ -319,6 +320,7 @@ bool LoadBIOS()
 	pxAssertMsg(eeMem->ROM, "PS2 system memory has not been initialized yet.");
 
 	std::string path = EmuConfig.FullpathToBios();
+	Console.WriteLn("[CHECKPOINT] BIOS: Attempting path: %s", path.c_str());
 	if (path.empty() || !FileSystem::FileExists(path.c_str()))
 	{
 		if (!path.empty())

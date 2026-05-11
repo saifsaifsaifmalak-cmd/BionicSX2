@@ -705,6 +705,7 @@ s32 cdvdReadSubQ(s32 lsn, cdvdSubQ* subq) noexcept
 
 static void cdvdDetectDisk()
 {
+	Console.WriteLn("[CHECKPOINT] cdvdDetectDisk start");
 	cdvd.DiscType = DoCDVDdetectDiskType();
 
 	if (cdvd.DiscType != 0)

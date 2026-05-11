@@ -174,10 +174,12 @@ void SysMemory::ReleaseMemoryMap()
 
 bool SysMemory::Allocate()
 {
+	Console.WriteLn("[CHECKPOINT] SysMemory::Allocate start");
 	DevCon.WriteLn(Color_StrongBlue, "Allocating host memory for virtual systems...");
 
 	if (!AllocateMemoryMap())
 		return false;
+	Console.WriteLn("[CHECKPOINT] SysMemory::AllocateMap done");
 
 	memAllocate();
 	iopMemAlloc();
