@@ -104,6 +104,7 @@ namespace Achievements {
 namespace SPU2 {
     __attribute__((weak_import)) void Close() {}
 }
+s32 SPU2freeze(void*, void*) { return 0; }
 
 // ── USB ──────────────────────────────────────────────────────────────
 namespace USB {

@@ -100,6 +100,11 @@ const CPUInfo& GetCPUInfo()
 	return info;
 }
 
+size_t HostSys::GetRuntimePageSize()
+{
+    return static_cast<size_t>(getpagesize());
+}
+
 // ── SharedMemoryMappingArea ────────────────────────────────────────────────────
 // iOS implementation using Darwin XNU vm_allocate
 // For interpreter mode, allocates simple memory without JIT protections
