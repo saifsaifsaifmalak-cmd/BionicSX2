@@ -10,7 +10,10 @@
 #include "SIO/Sio.h"
 #include "Elfheader.h"
 #include "ps2/BiosTools.h"
+// Phase 8: InputRecording requires stub - guard for iOS
+#ifndef PCSX2_TARGET_IOS
 #include "Recording/InputRecording.h"
+#endif
 #include "Host.h"
 #include "R3000A.h"
 #include "Common.h"
@@ -951,7 +954,11 @@ void cdvdReset()
 	DevCon.WriteLn(Color_StrongGreen, "Time Format: %s-Hour", configParams2.timeFormat ? "12" : "24");
  	DevCon.WriteLn(Color_StrongGreen, "Date Format: %s", configParams2.dateFormat ? (configParams2.dateFormat == 2 ? "DD/MM/YYYY" : "MM/DD/YYYY") : "YYYY/MM/DD");
 	DevCon.WriteLn(Color_StrongGreen, "System Time Basis: %s",
+#ifndef PCSX2_TARGET_IOS
 				   EmuConfig.ManuallySetRealTimeClock ? "Manual RTC" : g_InputRecording.isActive() ? "Default Input Recording Time" : "Operating System Time");
+#else
+				   EmuConfig.ManuallySetRealTimeClock ? "Manual RTC" : "Operating System Time");
+#endif
 
 	std::tm input_tm{};
 	std::tm resulting_tm{};
@@ -979,7 +986,9 @@ void cdvdReset()
 		gmtime_r(&input_time, &input_tm);
 #endif
 	}
+#ifndef PCSX2_TARGET_IOS
 	else if (g_InputRecording.isActive())
+#endif
 	{
 		// Default input recording value (2020-03-04 00:00:00) if manual RTC is off. Well beyond any PS2 game's release date.
 		// Some games require a valid date in terms of when the PS2 / game actually came out (see: MGS3).
