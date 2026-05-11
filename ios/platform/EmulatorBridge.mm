@@ -9,6 +9,7 @@
 #include "Watchdog.hpp"
 #include "BionicLogger.hpp"
 #include "PCSX2LogRedirect.h"
+#include "PCSX2FatalExit.h"
 
 extern "C" {
 
@@ -20,6 +21,17 @@ static void BionicExitHandler() {
 bool EmulatorBridge_Init(void) {
     NSLog(@"[BionicSX2] EmulatorBridge_Init");
     PCSX2Log_Init();
+
+    // Set EmuFolders::DataRoot to iOS Documents sandbox so BIOS/search paths resolve correctly.
+    // Without this, PCSX2 looks in macOS paths (~/Library/...) which don't exist on iOS.
+    NSString* docs = NSSearchPathForDirectoriesInDomains(
+        NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+    EmuFolders::DataRoot = std::string([docs UTF8String]);
+    BIONIC_INFO(CORE, "EmuFolders::DataRoot = %s", EmuFolders::DataRoot.c_str());
+    EmuFolders::Bios = EmuFolders::DataRoot + "/bios";
+    BIONIC_INFO(CORE, "EmuFolders::Bios = %s", EmuFolders::Bios.c_str());
+    BionicLogger::instance().flush();
+
     std::atexit(BionicExitHandler);
     return true;
 }
