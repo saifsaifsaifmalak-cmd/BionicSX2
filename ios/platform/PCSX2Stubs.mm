@@ -39,8 +39,8 @@ struct InputBindingInfo;
 struct SettingInfo;
 struct ButtonData;
 
-enum class AudioBackend { Null = 0, Cubeb, SDL, Count };
-enum class AudioExpansionMode { Disabled = 0, StereoLFE, Quadraphonic, QuadraphonicLFE, Surround51, Surround71, Count };
+// Note: AudioBackend and AudioExpansionMode enums are now provided by SPU2 headers
+// Do not redefine here - they conflict with real implementations
 
 // ── DEV9 ────────────────────────────────────────────────────────────
 void DEV9shutdown() {}
@@ -92,30 +92,8 @@ namespace FullscreenUI {
     __attribute__((weak_import)) void OnVMDestroyed() {}
 }
 
-// ── Achievements ───────────────────────────────────────────────────
-namespace Achievements {
-    __attribute__((weak_import)) void GameChanged(unsigned int, unsigned int) {}
-    __attribute__((weak_import)) bool IsHardcoreModeActive() { return false; }
-    __attribute__((weak_import)) bool IsActive() { return false; }
-    __attribute__((weak_import)) void OnVMPaused(bool) {}
-    __attribute__((weak_import)) void FrameUpdate() {}
-    __attribute__((weak_import)) void DisableHardcoreMode() {}
-    __attribute__((weak_import)) void ResetHardcoreMode(bool) {}
-    __attribute__((weak_import)) void UpdateSettings(const void*) {}
-    __attribute__((weak_import)) void LoadState(std::span<const unsigned char>) {}
-    __attribute__((weak_import)) void SaveState(void*) {}
-}
-
-// ── SPU2 ────────────────────────────────────────────────────────────
-namespace SPU2 {
-    __attribute__((weak_import)) void Close() {}
-}
-s32 SPU2freeze(void*, void*) { return 0; }
-
-// ── USB ──────────────────────────────────────────────────────────────
-namespace USB {
-    __attribute__((weak_import)) void DoState(void*) {}
-}
+// Note: Achievements, SPU2, USB namespaces are now provided by their headers
+// When SaveState.cpp is guarded, these compilation units ARE linked
 
 // ── GSCapture ───────────────────────────────────────────────────────
 namespace GSCapture {
@@ -147,38 +125,9 @@ namespace GameList {
     void AddPlayedTimeForSerial(const std::string&, long, long) {}
 }
 
-// ── AudioStream stubs (minimal — SPU2 audio deferred) ──────────────
-namespace AudioStream {
-    const char* GetBackendName(int) { return "Null"; }
-    std::optional<AudioBackend> ParseBackendName(const char*) { return std::nullopt; }
-    const char* GetBackendDisplayName(AudioBackend) { return "Null (No Output)"; }
-    const char* GetExpansionModeName(AudioExpansionMode) { return "Disabled"; }
-    const char* GetExpansionModeDisplayName(AudioExpansionMode) { return "Disabled (Stereo)"; }
-    std::optional<AudioExpansionMode> ParseExpansionMode(const char*) { return std::nullopt; }
-}
-
-// ── AudioStreamParameters ───────────────────────────────────────────
-class AudioStreamParameters {
-public:
-    void LoadSave(SettingsWrapper&, const char*) {}
-    static constexpr AudioExpansionMode DEFAULT_EXPANSION_MODE = AudioExpansionMode::Disabled;
-    static constexpr bool DEFAULT_OUTPUT_LATENCY_MINIMAL = false;
-    static constexpr u16 DEFAULT_BUFFER_MS = 512;
-    static constexpr u16 DEFAULT_OUTPUT_LATENCY_MS = 192;
-};
-
-// ── USB extended stubs ─────────────────────────────────────────────
-namespace USB {
-    const char* GetConfigSection(int) { return nullptr; }
-    const char* DeviceTypeIndexToName(s32) { return nullptr; }
-    s32 DeviceTypeNameToIndex(std::string_view) { return 0; }
-    std::vector<std::pair<const char*, const char*>> GetDeviceTypes() { return {}; }
-    const char* GetConfigDevice(const SettingsInterface&, u32) { return nullptr; }
-    std::string GetConfigSubKey(std::string_view, std::string_view) { return ""; }
-    u32 GetConfigSubType(const SettingsInterface&, u32, std::string_view) { return 0; }
-    void GetDeviceBindings(std::string_view, u32) {}
-    void SetDeviceBindValue(u32, u32, float) {}
-}
+// Note: AudioStream namespace now provided by SPU2 headers - don't redefine
+// Note: AudioStreamParameters class now provided by SPU2 headers - don't redefine
+// Note: USB namespace functions now provided by USB.h - don't redefine
 
 // ── InputRecording stubs ──────────────────────────────────────────
 class InputRecording {
@@ -230,17 +179,15 @@ namespace GSPng {
 namespace InputManager {
     std::string ConvertHostKeyboardCodeToString(u32) { return ""; }
     std::optional<u32> ConvertHostKeyboardStringToCode(std::string_view) { return std::nullopt; }
+    void ReloadSources(SettingsInterface&, std::unique_lock<std::mutex>&) {}
+    void ReloadBindings(SettingsInterface&, SettingsInterface&, SettingsInterface&, bool, bool) {}
+    void SetPadVibrationIntensity(u32 port, float large, float small) {}
 }
 
 // ── SaveState stubs ────────────────────────────────────────────────
 void SaveState_ZipToDisk(std::unique_ptr<ArchiveEntryList>, std::unique_ptr<SaveStateScreenshotData>, const char*, Error*) {}
 void SaveState_DownloadState(Error*) {}
 void SaveState_SaveScreenshot() {}
-
-// ── FullscreenUI::GameChanged ───────────────────────────────────────
-namespace FullscreenUI {
-    void GameChanged(std::string title, std::string path, std::string serial, u32 disc_crc, u32 crc) {}
-}
 
 // ── Host callbacks ──────────────────────────────────────────────────
 namespace Host {
@@ -260,12 +207,5 @@ namespace GameDatabaseSchema {
 
 // ── _g_RealGSMem ───────────────────────────────────────────────────
 u8* g_RealGSMem = nullptr;
-
-// ── InputManager stubs ─────────────────────────────────────────────
-namespace InputManager {
-    void ReloadSources(SettingsInterface&, std::unique_lock<std::mutex>&) {}
-    void ReloadBindings(SettingsInterface&, SettingsInterface&, SettingsInterface&, bool, bool) {}
-    void SetPadVibrationIntensity(u32 port, float large, float small) {}
-}
 
 // ── Pad base class ─────────────────────────────────────────────────
