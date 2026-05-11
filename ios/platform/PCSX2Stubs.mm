@@ -9,6 +9,12 @@
 
 #include "common/Pcsx2Defs.h"
 #include "common/HostSys.h"
+#include "pcsx2/SaveState.h"
+#include "pcsx2/StateWrapper.h"
+#include "pcsx2/Achievements.h"
+#include "pcsx2/USB/USB.h"
+#include "pcsx2/Input/InputRecording.h"
+#include "pcsx2/SPU2/spu2.h"
 
 // Type aliases
 typedef unsigned int u32;
@@ -175,11 +181,16 @@ namespace USB {
 }
 
 // ── InputRecording stubs ──────────────────────────────────────────
-namespace InputRecording {
-    bool isActive() { return false; }
+class InputRecording {
+public:
+    bool isActive() const { return false; }
     void stop() {}
-}
-bool g_InputRecording = false;
+    void incFrameCounter() {}
+    u32 getFrameCounter() const { return 0; }
+    void setStartingFrame(u32) {}
+    u32 getStartingFrame() { return 0; }
+};
+InputRecording g_InputRecording;
 
 // ── IOCtlSrc (macOS only - stubbed for iOS) ──────────────────────────
 class IOCtlSrc {

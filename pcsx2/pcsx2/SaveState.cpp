@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: 2002-2026 PCSX2 Dev Team
 // SPDX-License-Identifier: GPL-3.0+
 
+// Phase 8: SaveState requires SPU2freeze, USB::DoState, Achievements::SaveState
+// TODO Phase 9: implement save states on iOS with libzip
+#if !defined(PCSX2_TARGET_IOS)
+
 #include "Achievements.h"
 #include "BuildVersion.h"
 #include "CDVD/CDVD.h"
@@ -1278,3 +1282,5 @@ void SaveState_ReportSaveErrorOSD(const std::string& message, std::optional<s32>
 	Host::AddIconOSDMessage("SaveState", ICON_FA_TRIANGLE_EXCLAMATION,
 		full_message, Host::OSD_WARNING_DURATION);
 }
+
+#endif // !PCSX2_TARGET_IOS
