@@ -399,8 +399,8 @@ set(PCSX2_CORE_SOURCES
     # SIO / Memory Card
     pcsx2/pcsx2/SIO/Memcard/MemoryCardProtocol.cpp
 
-    # GS Capture (audio/frame capture)
-    pcsx2/pcsx2/GS/GSCapture.cpp
+    # GS Capture (audio/frame capture) — requires ffmpeg, disabled for iOS
+    # pcsx2/pcsx2/GS/GSCapture.cpp
 
     # Logging
     pcsx2/pcsx2/SourceLog.cpp
