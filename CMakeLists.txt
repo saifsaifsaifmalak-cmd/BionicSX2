@@ -505,6 +505,12 @@ set(IOS_PLATFORM_SOURCES
     ios/platform/Filesystem_iOS.mm
     ios/platform/Host_iOS.mm
     ios/platform/PCSX2Stubs.mm
+    ios/platform/BionicLogger.hpp
+    ios/platform/BionicLogger.mm
+    ios/platform/CrashHandler.hpp
+    ios/platform/CrashHandler.cpp
+    ios/platform/Watchdog.hpp
+    ios/platform/Watchdog.cpp
 )
 
 # ─── iOS UI Layer ──────────────────────────────────────────────────────────
@@ -512,6 +518,7 @@ set(IOS_UI_SOURCES
     ios/ui/AppDelegate.mm
     ios/ui/MetalViewController.mm
     ios/ui/GameLibraryViewController.mm
+    ios/ui/LogViewerController.mm
 )
 
 # ─── Main Executable ───────────────────────────────────────────────────────

@@ -1,6 +1,9 @@
 #import "AppDelegate.h"
 #import "GameLibraryViewController.h"
 #import "MetalViewController.h"
+#include "BionicLogger.hpp"
+#include "CrashHandler.hpp"
+#include "Watchdog.hpp"
 
 @interface BionicSX2AppDelegate () <GameLibraryDelegate>
 @property (nonatomic, strong) MetalViewController* emulatorVC;
@@ -10,6 +13,12 @@
 
 - (BOOL)application:(UIApplication*)app
     didFinishLaunchingWithOptions:(NSDictionary*)opts {
+
+    BionicLog_Init();
+    CrashHandler_Install();
+    Watchdog_Start();
+    BIONIC_INFO(CORE, "BionicSX2 started — logging active");
+    BIONIC_INFO(CORE, "Log file: %s", BionicLog_GetPath().c_str());
 
     [self createFolderStructure];
 
