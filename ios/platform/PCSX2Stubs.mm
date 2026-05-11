@@ -13,7 +13,7 @@
 #include "pcsx2/StateWrapper.h"
 #include "pcsx2/Achievements.h"
 #include "pcsx2/USB/USB.h"
-#include "pcsx2/Input/InputRecording.h"
+// InputRecording.h - stub class provided below
 #include "pcsx2/SPU2/spu2.h"
 
 // Type aliases
