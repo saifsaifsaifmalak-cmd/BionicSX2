@@ -33,6 +33,10 @@ void AudioStream_InitSession() {
 // Sample rate: 48000 Hz (PS2 SPU2 native)
 // Format: PCM float32, stereo (2 channels)
 void AudioStream_Start() {
+    AVAudioSession* session = [AVAudioSession sharedInstance];
+    [session setCategory:AVAudioSessionCategoryPlayback error:nil];
+    [session setActive:YES error:nil];
+
     g_engine = [[AVAudioEngine alloc] init];
     g_playerNode = [[AVAudioPlayerNode alloc] init];
     [g_engine attachNode:g_playerNode];

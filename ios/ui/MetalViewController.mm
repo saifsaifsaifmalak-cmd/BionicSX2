@@ -1,10 +1,8 @@
 #import "MetalViewController.h"
-#import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 #include "platform/EmulatorBridge.h"
 
 @interface MetalViewController ()
-@property (nonatomic, strong) AVAudioEngine*     audioEngine;
 @property (nonatomic, assign) BOOL               emulatorRunning;
 @end
 
@@ -30,26 +28,7 @@
 
     [self.view insertSubview:self.metalView atIndex:0];
 
-    [self setupAudioEngine];
     [self initializeEmulator];
-}
-
-- (void)setupAudioEngine {
-    NSError* error = nil;
-
-    [[AVAudioSession sharedInstance]
-        setCategory:AVAudioSessionCategoryPlayback
-              error:&error];
-    [[AVAudioSession sharedInstance] setActive:YES error:&error];
-
-    self.audioEngine = [[AVAudioEngine alloc] init];
-
-    [self.audioEngine startAndReturnError:&error];
-    if (error) {
-        NSLog(@"[BionicSX2] AudioEngine start error: %@", error);
-    } else {
-        NSLog(@"[BionicSX2] AudioEngine running (silent)");
-    }
 }
 
 - (void)initializeEmulator {
