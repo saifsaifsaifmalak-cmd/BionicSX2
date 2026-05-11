@@ -6,6 +6,7 @@
 #include <optional>
 #include <vector>
 #include <span>
+#include "BionicLogger.hpp"
 
 #include "common/Pcsx2Defs.h"
 #include "common/HostSys.h"
@@ -55,7 +56,8 @@ void gsIrq() {}
 
 // ── AbortWithMessage ───────────────────────────────────────────────
 void AbortWithMessage(const char* msg) {
-    NSLog(@"[BionicSX2] ABORT: %s", msg ? msg : "(null)");
+    BionicLogger::instance().log("FATAL", "PCSX2", msg ? msg : "Unknown abort");
+    BionicLogger::instance().flush();
     abort();
 }
 

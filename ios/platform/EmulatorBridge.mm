@@ -12,9 +12,16 @@
 
 extern "C" {
 
+static void BionicExitHandler() {
+    BionicLogger::instance().log("FATAL", "CORE ", "Application exiting via exit()/quick_exit()");
+    BionicLogger::instance().flush();
+}
+
 bool EmulatorBridge_Init(void) {
     NSLog(@"[BionicSX2] EmulatorBridge_Init");
     PCSX2Log_Init();
+    std::atexit(BionicExitHandler);
+    std::at_quick_exit(BionicExitHandler);
     return true;
 }
 
@@ -32,6 +39,17 @@ bool EmulatorBridge_BootGame(const char* isoPath) {
     BionicLogger::instance().log("INFO ", "CORE ", "EmulatorBridge_BootGame: starting VMManager");
     BionicLogger::instance().flush();
 
+    NSString* docs = NSSearchPathForDirectoriesInDomains(
+        NSDocumentDirectory, NSUserDomainMask, YES).firstObject;
+    NSString* biosDir = [docs stringByAppendingPathComponent:@"bios"];
+    BIONIC_INFO(CORE, "BIOS directory: %s", [biosDir UTF8String]);
+    if (isoPath) {
+        BIONIC_INFO(CORE, "ISO path: %s", isoPath);
+    } else {
+        BIONIC_INFO(CORE, "No ISO — BIOS-only mode");
+    }
+    BionicLogger::instance().flush();
+
     try {
         Watchdog_Start();
         bool result = iOSVM_Initialize(isoPath);
@@ -44,6 +62,11 @@ bool EmulatorBridge_BootGame(const char* isoPath) {
         } else {
             NSLog(@"[BionicSX2] iOSVM_Initialize failed");
             Watchdog_Stop();
+        }
+
+        if (!VMManager::HasValidVM()) {
+            BionicLogger::instance().log("WARN ", "CORE ", "VM is not valid after init");
+            BionicLogger::instance().flush();
         }
 
         return result;
