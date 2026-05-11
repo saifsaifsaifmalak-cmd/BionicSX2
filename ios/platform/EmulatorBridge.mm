@@ -46,9 +46,18 @@ bool EmulatorBridge_BootGame(const char* biosPath, const char* isoPath) {
     NSLog(@"[BionicSX2]   bios: %s", biosPath ? biosPath : "(null)");
     NSLog(@"[BionicSX2]   iso:  %s", isoPath ? isoPath : "(null)");
 
-#if 1
-    VMBootParameters params;
+#if 0
+    // VMManager::Initialize pulls 454+ undefined symbols:
+    // - DEV9 (PS2 network)
+    // - CDVD Disc (drive)
+    // - Full IOP bios
+    // - GS renderer (not Metal for iOS yet)
+    // - DebugTools (CCC)
+    // - SaveState (libzip)
+    // - Memory card
+    // Defer to Phase 8+ when all iOS stubs exist
 
+    VMBootParameters params;
     if (isoPath && strlen(isoPath) > 0) {
         params.filename = isoPath;
         params.source_type = CDVD_SourceType::Iso;
@@ -56,18 +65,15 @@ bool EmulatorBridge_BootGame(const char* biosPath, const char* isoPath) {
         params.filename = "";
         params.source_type = CDVD_SourceType::NoDisc;
     }
-
     params.fast_boot = false;
     params.fullscreen = false;
 
     Error error;
     VMBootResult result = VMManager::Initialize(params, &error);
-
     if (result != VMBootResult::StartupSuccess) {
         NSLog(@"[BionicSX2] Boot failed: %s", error.GetDescription().c_str());
         return false;
     }
-
     NSLog(@"[BionicSX2] PS2 running");
 #else
     NSLog(@"[BionicSX2] VMManager stub — boot deferred to Phase 8");
