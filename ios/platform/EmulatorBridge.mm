@@ -13,6 +13,16 @@
 
 extern "C" {
 
+// Redirect stderr to the BionicLogger log file, capturing any raw
+// fprintf(stderr, ...) output from PCSX2.
+#include <unistd.h>
+
+static void StderrRedirect_Start(void) {
+    int log_fd = BionicLogger::instance().get_log_fd();
+    if (log_fd >= 0 && log_fd != STDERR_FILENO)
+        dup2(log_fd, STDERR_FILENO);
+}
+
 static void BionicExitHandler() {
     BionicLogger::instance().log("FATAL", "CORE ", "Application exiting via exit()/quick_exit()");
     BionicLogger::instance().flush();
@@ -70,6 +80,9 @@ bool EmulatorBridge_BootGame(const char* isoPath) {
         BIONIC_INFO(CORE, "No ISO — BIOS-only mode");
     }
     BionicLogger::instance().flush();
+
+    // Redirect stderr to log file to capture raw PCSX2 output
+    StderrRedirect_Start();
 
     try {
         Watchdog_Start();

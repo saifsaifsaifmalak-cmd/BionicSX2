@@ -511,6 +511,7 @@ set(IOS_PLATFORM_SOURCES
     ios/platform/CrashHandler.cpp
     ios/platform/Watchdog.hpp
     ios/platform/Watchdog.cpp
+    ios/platform/ExitWrapper.c
 )
 
 # ─── iOS UI Layer ──────────────────────────────────────────────────────────
