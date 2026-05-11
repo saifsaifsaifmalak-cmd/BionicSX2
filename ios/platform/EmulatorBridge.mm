@@ -7,6 +7,7 @@
 #include "common/Error.h"
 #include "iOSVMManager.h"
 #include "Watchdog.hpp"
+#include "BionicLogger.hpp"
 
 extern "C" {
 
@@ -26,6 +27,7 @@ void EmulatorBridge_Shutdown(void) {
 bool EmulatorBridge_BootGame(const char* isoPath) {
     NSLog(@"[BionicSX2] EmulatorBridge_BootGame: %s", isoPath ? isoPath : "(null)");
 
+    BionicLogger::instance().log("INFO ", "CORE ", "EmulatorBridge_BootGame: starting VMManager");
     Watchdog_Start();
     bool result = iOSVM_Initialize(isoPath);
 

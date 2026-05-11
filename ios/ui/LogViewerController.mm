@@ -1,6 +1,5 @@
 #import <UIKit/UIKit.h>
 #include "BionicLogger.hpp"
-#include <string>
 
 @interface LogViewerController : UIViewController
 @end
@@ -32,8 +31,8 @@
 
 - (void)loadLog {
     BionicLog_Flush();
-    std::string path = BionicLog_GetPath();
-    NSString* nspath = [NSString stringWithUTF8String:path.c_str()];
+    const char* path = BionicLog_GetPath();
+    NSString* nspath = [NSString stringWithUTF8String:path];
     NSString* content = [NSString stringWithContentsOfFile:nspath
                         encoding:NSUTF8StringEncoding error:nil];
     if (!content) content = @"[Log file not found or empty]";

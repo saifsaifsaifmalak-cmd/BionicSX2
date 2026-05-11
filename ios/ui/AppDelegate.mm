@@ -16,7 +16,7 @@
     BionicLog_Init();
     CrashHandler_Install();
     BIONIC_INFO(CORE, "BionicSX2 started — logging active");
-    BIONIC_INFO(CORE, "Log file: %s", BionicLog_GetPath().c_str());
+    BIONIC_INFO(CORE, "Log file: %s", BionicLog_GetPath());
 
     [self createFolderStructure];
 
