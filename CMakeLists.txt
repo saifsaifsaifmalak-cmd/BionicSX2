@@ -449,7 +449,11 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/GS/Renderers/SW/GSRasterizer.cpp
     pcsx2/pcsx2/GS/Renderers/SW/GSTextureCacheSW.cpp
 
-    # GS Null Renderer (required for BIOS-safe GS without HW renderer stack)
+    # GS HW Renderer (Metal backend — BIOS screen output)
+    pcsx2/pcsx2/GS/Renderers/HW/GSRendererHW.cpp
+    pcsx2/pcsx2/GS/Renderers/HW/GSTextureCache.cpp
+
+    # GS Null Renderer (fallback)
     pcsx2/pcsx2/GS/Renderers/Null/GSRendererNull.cpp
 
     # GS Metal Renderer (required for iOS Metal GS device)

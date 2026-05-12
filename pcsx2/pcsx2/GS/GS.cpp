@@ -217,19 +217,11 @@ static bool OpenGSRenderer(GSRendererType renderer, u8* basemem)
 	else if (renderer != GSRendererType::SW)
 	{
 		GSClampUpscaleMultiplier(GSConfig);
-#if !defined(PCSX2_TARGET_IOS)
 		g_gs_renderer = std::make_unique<GSRendererHW>();
-#else
-		g_gs_renderer = std::make_unique<GSRendererNull>();
-#endif
 	}
 	else
 	{
-#if !defined(PCSX2_TARGET_IOS)
 		g_gs_renderer = std::unique_ptr<GSRenderer>(MULTI_ISA_SELECT(makeGSRendererSW)(GSConfig.SWExtraThreads));
-#else
-		g_gs_renderer = std::make_unique<GSRendererNull>();
-#endif
 	}
 
 	g_gs_renderer->SetRegsMem(basemem);
