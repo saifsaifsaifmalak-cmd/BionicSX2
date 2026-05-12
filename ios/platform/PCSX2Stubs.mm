@@ -48,12 +48,31 @@ struct ButtonData;
 void DEV9shutdown() {}
 s32 DEV9open() { return 0; }
 void DEV9close() {}
+void DEV9irqHandler() {}
+void DEV9CheckChanges(const Pcsx2Config&) {}
+u8 DEV9read8(u32) { return 0; }
+u16 DEV9read16(u32) { return 0; }
+u32 DEV9read32(u32) { return 0; }
+void DEV9write8(u32, u8) {}
+void DEV9write16(u32, u16) {}
+void DEV9write32(u32, u32) {}
+void DEV9readDMA8Mem(u32*, int) {}
+void DEV9writeDMA8Mem(u32*, int) {}
 
 // ── USB ─────────────────────────────────────────────────────────────
 void USBclose() {}
+u8 USBread8(u32) { return 0; }
+u16 USBread16(u32) { return 0; }
+u32 USBread32(u32) { return 0; }
+void USBwrite8(u32, u8) {}
+void USBwrite16(u32, u16) {}
+void USBwrite32(u32, u32) {}
+void USBsetRAM(void*) {}
 
 // ── gsIrq ───────────────────────────────────────────────────────────
 void gsIrq() {}
+void gsSetVideoMode(GS_VideoMode) {}
+GS_VideoMode gsVideoMode = GS_VideoMode::Uninitialized;
 
 // ── AbortWithMessage ───────────────────────────────────────────────
 void AbortWithMessage(const char* msg) {
@@ -112,6 +131,10 @@ namespace SPU2 {
     bool Open() { return true; }
     void Close() {}
 }
+void SPU2readDMA4Mem(u16*, u32) {}
+void SPU2writeDMA4Mem(u16*, u32) {}
+void SPU2readDMA7Mem(u16*, u32) {}
+void SPU2writeDMA7Mem(u16*, u32) {}
 
 // ── USB stubs (required by Pcsx2Config) ──────────────────────────────
 namespace USB {
@@ -238,5 +261,10 @@ namespace GameDatabaseSchema {
 // Must be an array, not a pointer — MTGS.cpp writes to PS2MEM_GS[i] = g_RealGSMem[i]
 #include "MemoryTypes.h"
 alignas(16) u8 g_RealGSMem[Ps2MemSize::GSregs] = {};
+
+// ── CDVDapi_Disc ────────────────────────────────────────────────────
+// Physical disc drive — not available on iOS. Referenced by CDVDcommon.cpp switch.
+#include "CDVD/CDVDcommon.h"
+const CDVD_API CDVDapi_Disc = {};
 
 // ── Pad base class ─────────────────────────────────────────────────
