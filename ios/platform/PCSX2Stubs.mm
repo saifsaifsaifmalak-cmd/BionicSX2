@@ -284,9 +284,13 @@ void gsPostVsyncStart() {}
 u32 gsNonMirroredRead(u32) { return 0; }
 
 // ── GSLocalMemory (via isa_native for single-ISA) ──────────────────
+#include "GS/GSLocalMemory.h"
 namespace isa_native {
-    void GSLocalMemoryPopulateFunctions(void*) {}
-    void* makeGSRendererSW(int) { return nullptr; }
+    void GSLocalMemoryPopulateFunctions(GSLocalMemory&) {}
+}
+#include "GS/Renderers/Common/GSRenderer.h"
+namespace isa_native {
+    GSRenderer* makeGSRendererSW(int) { return nullptr; }
 }
 
 // ── HostSys stubs ──────────────────────────────────────────────────
