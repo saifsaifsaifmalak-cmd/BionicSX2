@@ -161,11 +161,11 @@ namespace FullscreenUI {
 namespace GSCapture {
     void EndCapture() {}
     bool IsCapturing() { return false; }
+    bool IsCapturingVideo() { return false; }
     bool BeginCapture(float, int, float, std::string) { return false; }
     void DeliverVideoFrame(void*) {}
-    std::string GetNextCaptureFileName() { return {}; }
     int GetSize() { return 0; }
-    bool IsCapturingVideo() { return false; }
+    std::string GetNextCaptureFileName() { return {}; }
 }
 
 // ── GSTextureReplacements ───────────────────────────────────────────
@@ -174,6 +174,7 @@ namespace GSTextureReplacements {
     void ReloadReplacementMap() {}
     void Shutdown() {}
     void UpdateConfig(void*) {}
+    void UpdateConfig(const void*) {}
 }
 
 // ── SaveStateSelectorUI ─────────────────────────────────────────────
