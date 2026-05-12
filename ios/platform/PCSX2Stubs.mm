@@ -435,10 +435,7 @@ void dVifUnpack(const u8* data, bool isFill)
     // VIF JIT (arm64/Vif_Dynarec.cpp) uses VIXL for ARM64 code emission,
     // which is not set up on iOS. The interpreter path handles all VIF
     // unpack operations correctly, just slower.
-    // Using vifXRegs instead of MTVU_VifXRegs because THREAD_VU1=false on iOS.
-    auto& vif = MTVU_VifX;
     VIFregisters& vifRegs = vifXRegs;
-    vif.cl = 0;
     _nVifUnpack(idx, data, vifRegs.mode, isFill);
 }
 template void dVifUnpack<0>(const u8*, bool);
