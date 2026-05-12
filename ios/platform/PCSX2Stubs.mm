@@ -17,6 +17,7 @@
 // InputRecording.h - stub class provided below
 #include "pcsx2/SPU2/spu2.h"
 #include "pcsx2/GS/GS.h"
+#include "GS.h"
 
 // Type aliases
 typedef unsigned int u32;
