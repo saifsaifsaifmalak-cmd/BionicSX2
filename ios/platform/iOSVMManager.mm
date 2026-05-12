@@ -4,8 +4,6 @@
 #import <Foundation/Foundation.h>
 
 #include "VMManager.h"
-#include "Vif.h"
-#include "Vif_Dynarec.h"
 #include "CDVD/CDVD.h"
 #include "CDVD/CDVDcommon.h"
 #include "Config.h"
@@ -99,6 +97,12 @@ bool iOSVM_Initialize(const char* isoPath) {
     Console.WriteLn("[BionicSX2] Subsystems initialized");
     BionicLogger::instance().flush();
 
+    resetNewVif(0);
+    resetNewVif(1);
+
+    // Initialize VIF state before starting EE thread
+    // nVif[0/1] must be initialized or dVifUnpack crashes on uninit vifBlocks
+    extern void resetNewVif(int idx);
     resetNewVif(0);
     resetNewVif(1);
 
