@@ -48,9 +48,7 @@ bool EmulatorBridge_Init(void) {
 
 void EmulatorBridge_Shutdown(void) {
     NSLog(@"[BionicSX2] EmulatorBridge_Shutdown");
-    if (VMManager::GetState() != VMState::Shutdown) {
-        VMManager::Shutdown(false);
-    }
+    iOSVM_Shutdown();
     Watchdog_Stop();
 }
 
@@ -95,15 +93,14 @@ bool EmulatorBridge_BootGame(const char* isoPath) {
         BionicLogger::instance().flush();
 
         if (result) {
-            NSLog(@"[BionicSX2] iOSVM initialized — PS2 running");
+            if (VMManager::HasValidVM()) {
+                NSLog(@"[BionicSX2] iOSVM initialized — PS2 running");
+            } else {
+                NSLog(@"[BionicSX2] iOSVM initialized but VM is not valid");
+            }
         } else {
             NSLog(@"[BionicSX2] iOSVM_Initialize failed");
             Watchdog_Stop();
-        }
-
-        if (!VMManager::HasValidVM()) {
-            BionicLogger::instance().log("WARN ", "CORE ", "VM is not valid after init");
-            BionicLogger::instance().flush();
         }
 
         return result;
@@ -121,9 +118,7 @@ bool EmulatorBridge_BootGame(const char* isoPath) {
 }
 
 void EmulatorBridge_RunFrame(void) {
-    if (VMManager::GetState() == VMState::Running) {
-        VMManager::Execute();
-    }
+    iOSVM_RunFrame();
 }
 
 bool EmulatorBridge_IsRunning(void) {

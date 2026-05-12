@@ -31,7 +31,7 @@ namespace Host {
 
 // ── LoadSettings ─────────────────────────────────────────────────────────
 void LoadSettings(SettingsInterface& si, std::unique_lock<std::mutex>& lock) {
-    NSLog(@"[BionicSX2] Host::LoadSettings - stub");
+    NSLog(@"[BionicSX2] Host::LoadSettings");
 }
 
 // ── Translation (stub) ───────────────────────────────────────────────────

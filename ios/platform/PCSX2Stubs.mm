@@ -242,6 +242,9 @@ namespace GameDatabaseSchema {
 }
 
 // ── _g_RealGSMem ───────────────────────────────────────────────────
-u8* g_RealGSMem = nullptr;
+// Real declaration: alignas(16) extern u8 g_RealGSMem[Ps2MemSize::GSregs];
+// Must be an array, not a pointer — MTGS.cpp writes to PS2MEM_GS[i] = g_RealGSMem[i]
+#include "MemoryTypes.h"
+alignas(16) u8 g_RealGSMem[Ps2MemSize::GSregs] = {};
 
 // ── Pad base class ─────────────────────────────────────────────────
