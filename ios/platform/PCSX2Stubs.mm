@@ -225,18 +225,6 @@ public:
 };
 ImGuiManager* g_imGuiManager = nullptr;
 
-class GSDrawingContext {
-public:
-    void Dump(const std::string&) const {}
-    void UpdateScissor() {}
-    void Reset() {}
-};
-class GSDrawingEnvironment {
-public:
-    void Dump(const std::string&) const {}
-    void Reset() {}
-};
-
 // ── GSPng ──────────────────────────────────────────────────────────
 namespace GSPng {
     enum class Format : u8 { PNG = 0 };
@@ -281,14 +269,15 @@ namespace GameDatabaseSchema {
 
 // ── GS functions ──────────────────────────────────────────────────
 void gsPostVsyncStart() {}
-u32 gsNonMirroredRead(u32) { return 0; }
+#include "GS.h"
+u128 gsNonMirroredRead(u32) { return u128::zero(); }
 
 // ── GSLocalMemory (via isa_native for single-ISA) ──────────────────
 #include "GS/GSLocalMemory.h"
 namespace isa_native {
     void GSLocalMemoryPopulateFunctions(GSLocalMemory&) {}
 }
-#include "GS/Renderers/Common/GSRenderer.h"
+#include "GS/MultiISA.h"
 namespace isa_native {
     GSRenderer* makeGSRendererSW(int) { return nullptr; }
 }
