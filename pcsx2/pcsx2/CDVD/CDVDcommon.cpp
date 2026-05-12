@@ -227,15 +227,25 @@ static int FindDiskType(int mType)
 	return iCDType;
 }
 
+// TEMP: CDVDcommon raw bypass for crash isolation
+#include <unistd.h>
+#include <cstring>
+#define RAW(x) do { if (x) write(STDERR_FILENO, x, strlen(x)); } while(0)
+
 static void DetectDiskType()
 {
+	RAW("[RAW-CDVD] DetectDiskType: calling getTrayStatus\n");
 	if (CDVD->getTrayStatus() == CDVD_TRAY_OPEN)
 	{
+		RAW("[RAW-CDVD] DetectDiskType: tray open, returning NODISC\n");
 		diskTypeCached = CDVD_TYPE_NODISC;
 		return;
 	}
+	RAW("[RAW-CDVD] DetectDiskType: getTrayStatus done\n");
 
+	RAW("[RAW-CDVD] DetectDiskType: calling getDiskType\n");
 	int baseMediaType = CDVD->getDiskType();
+	RAW("[RAW-CDVD] DetectDiskType: getDiskType returned\n");
 	int mType = -1;
 
 	switch (baseMediaType)
@@ -262,11 +272,14 @@ static void DetectDiskType()
 #endif
 
 		case CDVD_TYPE_NODISC:
+			RAW("[RAW-CDVD] DetectDiskType: NODISC, returning\n");
 			diskTypeCached = CDVD_TYPE_NODISC;
 			return;
 	}
 
+	RAW("[RAW-CDVD] DetectDiskType: calling FindDiskType\n");
 	diskTypeCached = FindDiskType(mType);
+	RAW("[RAW-CDVD] DetectDiskType: FindDiskType done\n");
 }
 
 static std::string m_SourceFilename[3];
