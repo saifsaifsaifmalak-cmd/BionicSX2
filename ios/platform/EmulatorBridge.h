@@ -13,6 +13,7 @@ extern "C" {
 #endif
 
 void BionicSX2_SetMetalLayer(void* layer, void* device);
+void BionicSX2_SetCurrentISO(const char* path);
 
 bool EmulatorBridge_Init(void);
 void EmulatorBridge_Shutdown(void);

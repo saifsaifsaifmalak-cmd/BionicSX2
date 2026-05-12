@@ -81,6 +81,9 @@ bool EmulatorBridge_BootGame(const char* isoPath) {
     }
     BionicLogger::instance().flush();
 
+    // Save ISO path for VMManager settings queries
+    BionicSX2_SetCurrentISO(isoPath);
+
     // stderr redirect disabled temporarily for crash isolation
     // StderrRedirect_Start();
 

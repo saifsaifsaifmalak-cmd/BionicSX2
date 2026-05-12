@@ -19,6 +19,7 @@
 
 static CAMetalLayer* s_metal_layer = nullptr;
 static id<MTLDevice> s_metal_device = nullptr;
+static std::string s_currentIso;
 
 extern "C" void BionicSX2_SetMetalLayer(CAMetalLayer* layer, id<MTLDevice> device) {
     s_metal_layer = layer;
@@ -111,6 +112,10 @@ std::string GetHTTPUserAgent() {
 
 // ── Base Settings ────────────────────────────────────────────────────
 std::string GetBaseStringSettingValue(const char* section, const char* key, const char* default_value) {
+    if (section && key) {
+        if (strcmp(section, "EmuCore") == 0 && strcmp(key, "CurrentIso") == 0 && !s_currentIso.empty())
+            return s_currentIso;
+    }
     return default_value ? default_value : "";
 }
 SmallString GetBaseSmallStringSettingValue(const char* section, const char* key, const char* default_value) {
@@ -119,19 +124,40 @@ SmallString GetBaseSmallStringSettingValue(const char* section, const char* key,
 TinyString GetBaseTinyStringSettingValue(const char* section, const char* key, const char* default_value) {
     return default_value ? default_value : "";
 }
-bool GetBaseBoolSettingValue(const char* section, const char* key, bool default_value) { return default_value; }
+bool GetBaseBoolSettingValue(const char* section, const char* key, bool default_value) {
+    if (section && key) {
+        if (strcmp(section, "EmuCore") == 0) {
+            if (strcmp(key, "EnableCheats") == 0 || strcmp(key, "EnableWideScreenPatches") == 0)
+                return false;
+            if (strcmp(key, "EnableEERecompiler") == 0 || strcmp(key, "EnableVURecompiler") == 0)
+                return false;
+        }
+    }
+    return default_value;
+}
 int GetBaseIntSettingValue(const char* section, const char* key, int default_value) { return default_value; }
 uint GetBaseUIntSettingValue(const char* section, const char* key, uint default_value) { return default_value; }
 float GetBaseFloatSettingValue(const char* section, const char* key, float default_value) { return default_value; }
 double GetBaseDoubleSettingValue(const char* section, const char* key, double default_value) { return default_value; }
 std::vector<std::string> GetBaseStringListSetting(const char* section, const char* key) { return {}; }
 
+// ── Expose s_currentIso for EmulatorBridge ─────────────────────────
+extern "C" void BionicSX2_SetCurrentISO(const char* path) {
+    if (path) s_currentIso = path;
+    else s_currentIso.clear();
+}
+
 // ── Base Settings Write ────────────────────────────────────────────
 void SetBaseBoolSettingValue(const char* section, const char* key, bool value) {}
 void SetBaseIntSettingValue(const char* section, const char* key, int value) {}
 void SetBaseUIntSettingValue(const char* section, const char* key, uint value) {}
 void SetBaseFloatSettingValue(const char* section, const char* key, float value) {}
-void SetBaseStringSettingValue(const char* section, const char* key, const char* value) {}
+void SetBaseStringSettingValue(const char* section, const char* key, const char* value) {
+    if (section && key && value) {
+        if (strcmp(section, "EmuCore") == 0 && strcmp(key, "CurrentIso") == 0)
+            s_currentIso = value;
+    }
+}
 void SetBaseStringListSettingValue(const char* section, const char* key, const std::vector<std::string>& values) {}
 bool AddBaseValueToStringList(const char* section, const char* key, const char* value) { return false; }
 bool RemoveBaseValueFromStringList(const char* section, const char* key, const char* value) { return false; }

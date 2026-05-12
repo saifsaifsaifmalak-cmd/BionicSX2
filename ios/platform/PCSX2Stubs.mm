@@ -16,6 +16,7 @@
 #include "pcsx2/USB/USB.h"
 // InputRecording.h - stub class provided below
 #include "pcsx2/SPU2/spu2.h"
+#include "pcsx2/GS/GS.h"
 
 // Type aliases
 typedef unsigned int u32;
@@ -61,6 +62,15 @@ void AbortWithMessage(const char* msg) {
     abort();
 }
 
+// ── GSopen stub (required by VMManager) ────────────────────────────
+bool GSopen(const Pcsx2Config::GSOptions&, GSRendererType, u8*, GSVSyncMode, bool) { return true; }
+
+// ── DEV9init stub ──────────────────────────────────────────────
+s32 DEV9init() { return 0; }
+
+// ── USBinit stub ──────────────────────────────────────────────
+void USBinit() {}
+
 // ── MakeGSDeviceMTL ───────────────────────────────────────────────
 GSDevice* MakeGSDeviceMTL() { return nullptr; }
 
@@ -105,6 +115,7 @@ namespace Achievements {
 
 // ── SPU2 stubs (required by VMManager) ────────────────────────────────
 namespace SPU2 {
+    bool Open() { return true; }
     void Close() {}
 }
 

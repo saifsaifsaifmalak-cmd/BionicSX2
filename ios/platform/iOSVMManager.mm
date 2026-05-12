@@ -8,6 +8,10 @@
 #include "R5900.h"
 #include "Config.h"
 #include "BionicLogger.hpp"
+#include "GS/GS.h"
+#include "SPU2/spu2.h"
+#include "DEV9/DEV9.h"
+#include "USB/USB.h"
 
 extern "C" {
 
@@ -34,8 +38,12 @@ bool iOSVM_Initialize(const char* isoPath) {
     BionicLogger::instance().flush();
     cpuReset();
 
-    // TODO Phase 9: GS Metal, SPU2, CDVD real init
-    Console.WriteLn("[BionicSX2] GS/SPU2/CDVD init deferred to Phase 9");
+    // Initialize subsystems so VMManager sees init as complete
+    USBinit();
+    DEV9init();
+    SPU2::Open();
+    GSopen(EmuConfig.GS, EmuConfig.GS.Renderer, SysMemory::GetEEMem(), GSVSyncMode::GSVSyncMode_SyncToHost, true);
+    Console.WriteLn("[BionicSX2] Subsystems initialized (stub)");
     BionicLogger::instance().flush();
 
     s_iOSVM_initialized = true;
