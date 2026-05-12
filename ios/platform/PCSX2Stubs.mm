@@ -353,6 +353,20 @@ bool GSDumpBase::VSync(int, bool, const GSPrivRegSet*) { return false; }
 #include "CDVD/CDVDcommon.h"
 const CDVD_API CDVDapi_Disc = {};
 
+// ── GSDumpReplayer (referenced by VMManager.cpp) ────────────────────
+#include "GSDumpReplayer.h"
+namespace GSDumpReplayer {
+    bool IsReplayingDump() { return false; }
+    bool IsRunner() { return false; }
+    void RenderUI() {}
+    void Shutdown() {}
+    bool Initialize(const char*, Error*) { return false; }
+    std::string GetDumpSerial() { return {}; }
+    u32 GetDumpCRC() { return 0; }
+    bool ChangeDump(const char*) { return false; }
+    void SetLoopCount(s32) {}
+}
+
 // ── GSDumpReplayerCpu (referenced by VMManager.cpp extern) ─────────
 #include "R5900.h"
 static void _gsDumpDummy() {}
@@ -366,8 +380,45 @@ R5900cpu GSDumpReplayerCpu = {
 #include "GS/Renderers/SW/GSVertexSW.h"
 void GSVertexSW::InitStatic() {}
 
-// ── GSRendererHW constructor stub ─────────────────────────────────
-class GSRendererHW { public: GSRendererHW() {} };
+// ── GSVertexTrace ──────────────────────────────────────────────────
+#include "GS/Renderers/Common/GSVertexTrace.h"
+GSVertexTrace::GSVertexTrace(const GSState*) {}
+void GSVertexTrace::Update(const void*, const u16*, int, int, GS_PRIM_CLASS) {}
+
+// ── GSCapture (referenced by GS/GS.cpp) ──────────────────────────
+#include "GS/GSCapture.h"
+namespace GSCapture {
+    bool BeginCapture(float, GSVector2i, float, std::string) { return false; }
+    void DeliverVideoFrame(GSTexture*) {}
+    std::string GetNextCaptureFileName() { return {}; }
+    GSVector2i GetSize() { return {}; }
+}
+
+// ── ImGui (stubs for GS/GS.cpp — now guarded for iOS, but stubs keep linker happy) ──
+namespace ImGui {
+    void EndFrame() {}
+    void Render() {}
+    ImDrawData* GetDrawData() { return nullptr; }
+    ImPlatformIO& GetPlatformIO() { static ImPlatformIO p; return p; }
+}
+
+// ── SPU2 ──────────────────────────────────────────────────────────
+namespace SPU2 {
+    void CheckForConfigChanges(const Pcsx2Config&) {}
+}
+
+// ── USB ──────────────────────────────────────────────────────────
+namespace USB {
+    void CheckForConfigChanges(const Pcsx2Config&) {}
+}
+
+// ── Multitap ──────────────────────────────────────────────────────
+MultitapProtocol _g_MultitapArr[2];
+namespace MultitapProtocol {
+    int GetPadSlot() { return 0; }
+    int GetMemcardSlot() { return 0; }
+    void SendToMultitap() {}
+}
 
 // ── dVifUnpack / dVifReset (from guarded Vif_Dynarec) ────────────
 template<int idx> void dVifUnpack(const u8* data, bool isFill) {}

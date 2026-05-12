@@ -145,9 +145,11 @@ static bool OpenGSDevice(GSRendererType renderer, bool clear_state_on_fail, bool
 	bool okay = g_gs_device->Create(vsync_mode, allow_present_throttle);
 	if (okay)
 	{
+#if !defined(PCSX2_TARGET_IOS)
 		okay = ImGuiManager::Initialize();
 		if (!okay)
 			Console.Error("Failed to initialize ImGuiManager");
+#endif
 	}
 	else
 	{
@@ -156,7 +158,9 @@ static bool OpenGSDevice(GSRendererType renderer, bool clear_state_on_fail, bool
 
 	if (!okay)
 	{
+#if !defined(PCSX2_TARGET_IOS)
 		ImGuiManager::Shutdown(clear_state_on_fail);
+#endif
 		g_gs_device->Destroy();
 		g_gs_device.reset();
 		Host::ReleaseRenderWindow();
@@ -213,11 +217,19 @@ static bool OpenGSRenderer(GSRendererType renderer, u8* basemem)
 	else if (renderer != GSRendererType::SW)
 	{
 		GSClampUpscaleMultiplier(GSConfig);
+#if !defined(PCSX2_TARGET_IOS)
 		g_gs_renderer = std::make_unique<GSRendererHW>();
+#else
+		g_gs_renderer = std::make_unique<GSRendererNull>();
+#endif
 	}
 	else
 	{
+#if !defined(PCSX2_TARGET_IOS)
 		g_gs_renderer = std::unique_ptr<GSRenderer>(MULTI_ISA_SELECT(makeGSRendererSW)(GSConfig.SWExtraThreads));
+#else
+		g_gs_renderer = std::make_unique<GSRendererNull>();
+#endif
 	}
 
 	g_gs_renderer->SetRegsMem(basemem);
