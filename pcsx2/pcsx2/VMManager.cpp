@@ -208,7 +208,9 @@ static const char* s_discord_presence_large_image_key = "4k-pcsx2";
 static const char* s_discord_presence_large_image_text = "PCSX2 PS2 Emulator";
 
 // Making GSDumpReplayer.h dependent on R5900.h is a no-no, since the GS uses it.
+#if !defined(PCSX2_TARGET_IOS)
 extern R5900cpu GSDumpReplayerCpu;
+#endif
 
 bool VMManager::PerformEarlyHardwareChecks(const char** error)
 {

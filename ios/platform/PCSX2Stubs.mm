@@ -376,48 +376,16 @@ R5900cpu GSDumpReplayerCpu = {
     _gsDumpDummy, _gsDumpDummy, _gsDumpDummy, _gsDumpClear
 };
 
-// ── GSVertexSW::InitStatic ────────────────────────────────────────
-#include "GS/Renderers/SW/GSVertexSW.h"
-void GSVertexSW::InitStatic() {}
-
-// ── GSVertexTrace ──────────────────────────────────────────────────
-#include "GS/Renderers/Common/GSVertexTrace.h"
-GSVertexTrace::GSVertexTrace(const GSState*) {}
-void GSVertexTrace::Update(const void*, const u16*, int, int, GS_PRIM_CLASS) {}
-
-// ── GSCapture (referenced by GS/GS.cpp) ──────────────────────────
-#include "GS/GSCapture.h"
-namespace GSCapture {
-    bool BeginCapture(float, GSVector2i, float, std::string) { return false; }
-    void DeliverVideoFrame(GSTexture*) {}
-    std::string GetNextCaptureFileName() { return {}; }
-    GSVector2i GetSize() { return {}; }
-}
-
-// ── ImGui (stubs for GS/GS.cpp — now guarded for iOS, but stubs keep linker happy) ──
-namespace ImGui {
-    void EndFrame() {}
-    void Render() {}
-    ImDrawData* GetDrawData() { return nullptr; }
-    ImPlatformIO& GetPlatformIO() { static ImPlatformIO p; return p; }
-}
-
 // ── SPU2 ──────────────────────────────────────────────────────────
+#include "pcsx2/SPU2/spu2.h"
 namespace SPU2 {
     void CheckForConfigChanges(const Pcsx2Config&) {}
 }
 
 // ── USB ──────────────────────────────────────────────────────────
+#include "pcsx2/USB/USB.h"
 namespace USB {
     void CheckForConfigChanges(const Pcsx2Config&) {}
-}
-
-// ── Multitap ──────────────────────────────────────────────────────
-MultitapProtocol _g_MultitapArr[2];
-namespace MultitapProtocol {
-    int GetPadSlot() { return 0; }
-    int GetMemcardSlot() { return 0; }
-    void SendToMultitap() {}
 }
 
 // ── dVifUnpack / dVifReset (from guarded Vif_Dynarec) ────────────
