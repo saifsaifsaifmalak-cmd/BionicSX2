@@ -280,7 +280,7 @@ set(PCSX2_CORE_SOURCES
     # ARM64 VU/VIF (replaces x86 dynarec) — requires vixl, guarded for recompiler-disabled builds
     # pcsx2/pcsx2/arm64/Vif_Dynarec.cpp
     # pcsx2/pcsx2/arm64/Vif_UnpackNEON.cpp
-    pcsx2/pcsx2/arm64/AsmHelpers.cpp
+    # pcsx2/pcsx2/arm64/AsmHelpers.cpp  # uses vixl — JIT disabled
 
     # PS2 hardware access (pgif, VU, etc.)
     pcsx2/pcsx2/ps2/pgif.cpp

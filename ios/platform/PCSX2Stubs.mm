@@ -431,4 +431,38 @@ template void dVifUnpack<0>(const u8*, bool);
 template void dVifUnpack<1>(const u8*, bool);
 void dVifReset(int) {}
 
+// ── GSCodeReserve (referenced from GSDrawScanline.cpp) ────────────
+namespace GSCodeReserve {
+    void ResetMemory() {}
+    size_t GetMemoryUsed() { return 0; }
+    u8* ReserveMemory(size_t) { return nullptr; }
+    void CommitMemory(size_t) {}
+}
+
+// ── GSDrawScanlineCodeGenerator / GSSetupPrimCodeGenerator (SW renderer — not used) ──
+struct GSDrawScanlineCodeGenerator {
+    GSDrawScanlineCodeGenerator(u64, void*, size_t) {}
+    void Generate() {}
+};
+struct GSSetupPrimCodeGenerator {
+    GSSetupPrimCodeGenerator(u64, void*, size_t) {}
+    void Generate() {}
+};
+
+// ── GSRingHeap (from GSRingHeap.cpp — not compiled) ──────────────
+namespace GSRingHeap {
+    void free_internal(void*, size_t) {}
+}
+
+// ── GSVertexSW::s_cvb ──────────────────────────────────────────
+#include "GS/Renderers/SW/GSVertexSW.h"
+int GSVertexSW::s_cvb = 0;
+
+// ── MultiISAFunctions — keep old-style stubs since GSXXH.cpp uses MULTI_ISA_DEF ──
+namespace MultiISAFunctions {
+    u64 GSXXH3_64_Digest() { return 0; }
+    u64 GSXXH3_64_Long(const void*, size_t) { return 0; }
+    u64 GSXXH3_64_Update(const void*, size_t) { return 0; }
+}
+
 // ── Pad base class ─────────────────────────────────────────────────
