@@ -531,7 +531,9 @@ bool GSRenderer::BeginPresentFrame(bool frame_skip)
 	{
 		// If we're skipping a frame, we need to reset imgui's state, since
 		// we won't be calling EndPresentFrame().
+#if !defined(PCSX2_TARGET_IOS)
 		ImGuiManager::SkipFrame();
+#endif
 		return false;
 	}
 	else if (res == GSDevice::PresentResult::OK)
@@ -572,9 +574,13 @@ void GSRenderer::EndPresentFrame()
 		GSDumpReplayer::RenderUI();
 
 	FullscreenUI::Render();
+#if !defined(PCSX2_TARGET_IOS)
 	ImGuiManager::RenderOSD();
+#endif
 	g_gs_device->EndPresent();
+#if !defined(PCSX2_TARGET_IOS)
 	ImGuiManager::NewFrame();
+#endif
 }
 
 void GSRenderer::VSync(u32 field, bool registers_written, bool idle_frame)

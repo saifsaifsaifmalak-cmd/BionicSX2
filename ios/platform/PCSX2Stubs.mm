@@ -158,13 +158,14 @@ namespace FullscreenUI {
 }
 
 // ── GSCapture ───────────────────────────────────────────────────────
+#include "GS/GSVector.h"
 namespace GSCapture {
     void EndCapture() {}
     bool IsCapturing() { return false; }
     bool IsCapturingVideo() { return false; }
-    bool BeginCapture(float, int, float, std::string) { return false; }
-    void DeliverVideoFrame(void*) {}
-    int GetSize() { return 0; }
+    bool BeginCapture(float, GSVector2i, float, std::string) { return false; }
+    void DeliverVideoFrame(GSTexture*) {}
+    GSVector2i GetSize() { return {}; }
     std::string GetNextCaptureFileName() { return {}; }
 }
 
@@ -174,7 +175,7 @@ namespace GSTextureReplacements {
     void ReloadReplacementMap() {}
     void Shutdown() {}
     void UpdateConfig(void*) {}
-    void UpdateConfig(const void*) {}
+    void UpdateConfig(Pcsx2Config::GSOptions&) {}
 }
 
 // ── SaveStateSelectorUI ─────────────────────────────────────────────
