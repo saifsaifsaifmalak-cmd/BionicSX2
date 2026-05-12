@@ -76,7 +76,23 @@
 }
 
 - (void)drawMTKView:(MTKView*)view {
-    // Frame loop deferred — requires full subsystem stubs (SPU2, DEV9, USB, GS...)
+    // Minimal Metal frame: acquire drawable, clear to black, present.
+    // MTKView requires the delegate to complete the render cycle — a stub
+    // crashes CoreAnimation with an exception during CA::Transaction::commit.
+    @autoreleasepool {
+        id<MTLCommandBuffer> cmdBuf = [self.commandQueue commandBuffer];
+        MTLRenderPassDescriptor* desc = view.currentRenderPassDescriptor;
+        if (desc) {
+            id<MTLRenderCommandEncoder> enc =
+                [cmdBuf renderCommandEncoderWithDescriptor:desc];
+            [enc endEncoding];
+
+            [cmdBuf presentDrawable:view.currentDrawable];
+            [cmdBuf commit];
+        }
+    }
+
+    // When PCSX2 GS is active, this will be replaced with EmulatorBridge_RunFrame()
 }
 
 - (void)mtkView:(MTKView*)view drawableSizeDidChange:(CGSize)size {
