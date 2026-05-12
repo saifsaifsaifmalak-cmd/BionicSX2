@@ -543,19 +543,18 @@ set(IOS_UI_SOURCES
     ios/ui/LogViewerController.mm
 )
 
-# ─── iOS Metal Shader Compilation ──────────────────────────────────────
-# Compile .metal files manually for iOS ARM64 (not via Xcode's built-in
-# Metal compilation) to ensure:
-#   - Correct target triple (arm64-apple-ios14.2)
-#   - Metal 2.3 language standard (__METAL_VERSION__ >= 230)
-#   - FBFETCH_SUPPORT enabled (raster_order_group attributes in tfx.metal)
-#   - metal_version_23 marker function present for shader version detection
-#
-# Xcode's built-in Metal compilation on CMake-generated Xcode projects may
-# use a default __METAL_VERSION__ too low for framebuffer fetch detection,
-# causing GSMTLDeviceInfo to disable framebuffer fetch at runtime.
+# ─── Main Executable ───────────────────────────────────────────────────────
+# Metal shaders are compiled by Xcode's built-in Metal compiler.
+# XCODE_ATTRIBUTE_MTL_LANGUAGE_REVISION forces Metal 2.3 language standard
+# so that __METAL_VERSION__ >= 230, enabling:
+#   - FBFETCH_SUPPORT (raster_order_group attributes for framebuffer fetch)
+#   - metal_version_23 marker function for shader version detection
+add_executable(BionicSX2
+    ios/main.mm
+    ${IOS_UI_SOURCES}
+    ${IOS_PLATFORM_SOURCES}
 
-set(PCSX2_METAL_SHADERS
+    # Metal shaders (compiled to default.metallib by Xcode)
     pcsx2/pcsx2/GS/Renderers/Metal/cas.metal
     pcsx2/pcsx2/GS/Renderers/Metal/convert.metal
     pcsx2/pcsx2/GS/Renderers/Metal/present.metal
@@ -565,41 +564,6 @@ set(PCSX2_METAL_SHADERS
     pcsx2/pcsx2/GS/Renderers/Metal/tfx.metal
     pcsx2/pcsx2/GS/Renderers/Metal/fxaa.metal
 )
-
-set(pcsx2GSMetalShaderOut)
-foreach(shader IN LISTS PCSX2_METAL_SHADERS)
-    set(shaderOut ${CMAKE_CURRENT_BINARY_DIR}/ios_metal/${shader}.air)
-    list(APPEND pcsx2GSMetalShaderOut ${shaderOut})
-    get_filename_component(shaderDir ${shaderOut} DIRECTORY)
-    add_custom_command(OUTPUT ${shaderOut}
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${shaderDir}
-        COMMAND xcrun metal -ffast-math -std=ios-metal2.3 -target arm64-apple-ios14.2 -o ${shaderOut} -c ${CMAKE_SOURCE_DIR}/${shader}
-        DEPENDS ${CMAKE_SOURCE_DIR}/${shader}
-            ${CMAKE_SOURCE_DIR}/pcsx2/pcsx2/GS/Renderers/Metal/GSMTLSharedHeader.h
-            ${CMAKE_SOURCE_DIR}/pcsx2/pcsx2/GS/Renderers/Metal/GSMTLShaderCommon.h
-    )
-endforeach()
-
-set(metallib_default ${CMAKE_CURRENT_BINARY_DIR}/default.metallib)
-add_custom_command(OUTPUT ${metallib_default}
-    COMMAND xcrun metallib -o ${metallib_default} ${pcsx2GSMetalShaderOut}
-    DEPENDS ${pcsx2GSMetalShaderOut}
-)
-
-# ─── Main Executable (no .metal sources — compiled manually above) ──────
-add_executable(BionicSX2
-    ios/main.mm
-    ${IOS_UI_SOURCES}
-    ${IOS_PLATFORM_SOURCES}
-)
-
-# Add compiled metallib as a bundle resource (GENERATED ensures CMake
-# knows it doesn't exist yet at configure time)
-set_source_files_properties(${metallib_default} PROPERTIES
-    MACOSX_PACKAGE_LOCATION Resources
-    GENERATED TRUE
-)
-target_sources(BionicSX2 PRIVATE ${metallib_default})
 
 target_include_directories(BionicSX2 PRIVATE
     ${CMAKE_SOURCE_DIR}/src
@@ -635,6 +599,9 @@ set_target_properties(BionicSX2 PROPERTIES
     XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "14.2"
     XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS
         "${CMAKE_SOURCE_DIR}/ios/entitlements/BionicSX2.entitlements"
+    # Force Metal 2.3 language standard so __METAL_VERSION__ >= 230
+    # Required for framebuffer fetch (raster_order_group) + metal_version_23 marker
+    XCODE_ATTRIBUTE_MTL_LANGUAGE_REVISION "2.3"
 )
 
 message(STATUS "✓ BionicSX2 iOS build configured")
