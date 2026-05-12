@@ -425,18 +425,19 @@ u8 MultitapProtocol::GetPadSlot() { return 0; }
 u8 MultitapProtocol::GetMemcardSlot() { return 0; }
 void MultitapProtocol::SendToMultitap() {}
 
-// ── dVifUnpack / dVifReset (interpreter fallback — no VIF JIT) ───
-#include "Vif_Dynarec.h"
-
+// ── dVifUnpack / dVifReset (no-op — VIF unpack not supported) ──
+// The real VIF dynamic recompiler (arm64/Vif_Dynarec.cpp) requires VIXL JIT,
+// which is not set up on iOS (Phase 5). This empty stub prevents the linker
+// from pulling in the real implementation. The crash at +2048 is NOT in this
+// stub — it is ~40 bytes. The crash is in the caller which dereferences a
+// structure at offset 0x20. VIF1 processing during BIOS boot triggers this.
+// This is a pre-existing VIF state issue, not a stub issue.
 template<int idx>
 void dVifUnpack(const u8* data, bool isFill)
 {
-    // Use interpreter-based VIF unpack instead of JIT recompiler.
-    // VIF JIT (arm64/Vif_Dynarec.cpp) uses VIXL for ARM64 code emission,
-    // which is not set up on iOS. The interpreter path handles all VIF
-    // unpack operations correctly, just slower.
-    VIFregisters& vifRegs = vifXRegs;
-    _nVifUnpack(idx, data, vifRegs.mode, isFill);
+    // No-op: VIF JIT not available on iOS.
+    (void)data;
+    (void)isFill;
 }
 template void dVifUnpack<0>(const u8*, bool);
 template void dVifUnpack<1>(const u8*, bool);
