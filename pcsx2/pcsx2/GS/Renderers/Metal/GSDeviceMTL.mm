@@ -2095,9 +2095,9 @@ static void textureBarrier(id<MTLRenderCommandEncoder> enc)
 	                afterStages:MTLRenderStageFragment
 	               beforeStages:MTLRenderStageFragment];
 #else
-	// iOS: memoryBarrierWithScope:MTLBarrierScopeRenderTargets not available.
-	// Use textureBarrier instead for tile-based deferred renderers.
-	[enc textureBarrier];
+	// iOS: tile-based deferred renderers don't need render-target barriers.
+	// Texture barrier and MTLBarrierScopeRenderTargets are both unavailable on iOS.
+	// The tile memory model ensures framebuffer attachment coherency automatically.
 #endif
 }
 
