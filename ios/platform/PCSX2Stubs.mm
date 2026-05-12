@@ -288,12 +288,12 @@ namespace HostSys {
     void BeginCodeWrite() {}
     void EndCodeWrite() {}
     void FlushInstructionCache(void*, u32) {}
-    bool MemProtect(void*, size_t, const PageProtectionMode&) { return true; }
+    void MemProtect(void*, size_t, const PageProtectionMode&) {}
 }
 u64 GetAvailablePhysicalMemory() { return 512ULL * 1024 * 1024; }
 
 // ── ShortSpin ──────────────────────────────────────────────────────
-void ShortSpin() {}
+u32 ShortSpin() { return 0; }
 
 // ── SPU2 ──────────────────────────────────────────────────────────
 namespace SPU2 {
