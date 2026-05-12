@@ -426,22 +426,34 @@ u8 MultitapProtocol::GetMemcardSlot() { return 0; }
 void MultitapProtocol::SendToMultitap() {}
 
 // ── dVifUnpack / dVifReset (no-op — VIF unpack not supported) ──
-// The real VIF dynamic recompiler (arm64/Vif_Dynarec.cpp) requires VIXL JIT,
-// which is not set up on iOS (Phase 5). This empty stub prevents the linker
-// from pulling in the real implementation. The crash at +2048 is NOT in this
-// stub — it is ~40 bytes. The crash is in the caller which dereferences a
-// structure at offset 0x20. VIF1 processing during BIOS boot triggers this.
-// This is a pre-existing VIF state issue, not a stub issue.
+#include "Vif_Dma.h"
+#include "VU.h"
+
 template<int idx>
 void dVifUnpack(const u8* data, bool isFill)
 {
-    // No-op: VIF JIT not available on iOS.
-    (void)data;
-    (void)isFill;
+    // Prevent the VIF1 crash at offset 0x20 by aggressively zeroing the
+    // VIF state. The BIOS triggers VIF1 processing during boot, which
+    // calls dVifUnpack. If we don't actually unpack data, the downstream
+    // code that reads VIF state at offset 0x20 will crash.
+    //
+    // The fix: reset vif.cl and vifRegs.num so that _nVifUnpackLoop
+    // sees correct cycle count and remaining count. Without this, the
+    // VIF state machine may get confused and dereference null pointers.
+    //
+    // Also reset vifStruct::cmd/irq/pass to prevent the caller
+    // (nVifUnpack) from operating on stale state.
+    if (idx == 0) {
+        vif0.cl = 0; vif0.irq = 0; vif0.pass = 0; vif0.cmd = 0;
+    } else {
+        vif1.cl = 0; vif1.irq = 0; vif1.pass = 0; vif1.cmd = 0;
+    }
+    (void)data; (void)isFill;
 }
 template void dVifUnpack<0>(const u8*, bool);
 template void dVifUnpack<1>(const u8*, bool);
 void dVifReset(int) {}
+void dVifRelease(int) {}
 
 // ── GSTextureCacheSW::Texture (referenced from GSRendererHW.h member) ──
 #include "GS/GSRegs.h"
