@@ -3,15 +3,16 @@
 #import "ui/AppDelegate.h"
 #include "BionicLogger.hpp"
 
+static void BionicObjCExceptionHandler(NSException* exc) {
+    BionicLogger::instance().log("FATAL", "UI   ",
+        [[NSString stringWithFormat:@"ObjC exception: %@\n  Reason: %@",
+            exc.name, exc.reason] UTF8String]);
+    BionicLogger::instance().flush();
+}
+
 int main(int argc, char* argv[]) {
     @autoreleasepool {
-        // Capture Objective-C exception reason before abort
-        NSSetUncaughtExceptionHandler(^(NSException* exc) {
-            BionicLogger::instance().log("FATAL", "UI   ",
-                [[NSString stringWithFormat:@"ObjC exception: %@\n  Reason: %@\n  Stack: %@",
-                    exc.name, exc.reason, exc.callStackSymbols] UTF8String]);
-            BionicLogger::instance().flush();
-        });
+        NSSetUncaughtExceptionHandler(&BionicObjCExceptionHandler);
 
         return UIApplicationMain(
             argc, argv,
