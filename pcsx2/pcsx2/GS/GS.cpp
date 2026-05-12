@@ -969,6 +969,77 @@ void GSFreeWrappedMemory(void* ptr, size_t size, size_t repeat)
 	s_fh = NULL;
 }
 
+#elif defined(PCSX2_TARGET_IOS)
+
+#include <mach/mach.h>
+
+static vm_address_t s_gs_phys_base = 0;
+
+void* GSAllocateWrappedMemory(size_t size, size_t repeat)
+{
+	// iOS: Use Mach VM calls to create wrapped (aliased) memory.
+	// shm_open is unreliable in iOS app sandboxes. Instead, allocate
+	// one physical 4MB page and vm_remap it repeatedly at contiguous
+	// virtual addresses to create the "wrapped" GS local memory.
+
+	// Step 1: Allocate the physical backing memory (one copy of size)
+	vm_address_t phys_addr = 0;
+	kern_return_t kr = vm_allocate(mach_task_self(), &phys_addr, size, VM_FLAGS_ANYWHERE);
+	if (kr != KERN_SUCCESS)
+	{
+		fprintf(stderr, "GSAllocateWrappedMemory: vm_allocate(size=%zu) failed: %d\n", size, kr);
+		return nullptr;
+	}
+	s_gs_phys_base = phys_addr;
+
+	// Step 2: Reserve the full virtual address space for all repeats
+	vm_address_t virt_addr = 0;
+	kr = vm_allocate(mach_task_self(), &virt_addr, size * repeat, VM_FLAGS_ANYWHERE);
+	if (kr != KERN_SUCCESS)
+	{
+		fprintf(stderr, "GSAllocateWrappedMemory: vm_allocate(virt=%zu) failed: %d\n", size * repeat, kr);
+		vm_deallocate(mach_task_self(), phys_addr, size);
+		return nullptr;
+	}
+
+	// Step 3: Deallocate the virtual reservation (we need the space but will remap into it)
+	vm_deallocate(mach_task_self(), virt_addr, size * repeat);
+
+	// Step 4: Remap the physical page at each repeat position
+	for (size_t i = 0; i < repeat; i++)
+	{
+		vm_address_t dest = virt_addr + i * size;
+		vm_prot_t cur_prot, max_prot;
+		kr = vm_remap(mach_task_self(),
+			&dest,                    // destination address
+			size,                     // size
+			0,                        // mask
+			0,                        // anywhere (0 = fixed)
+			mach_task_self(),         // target task (self)
+			phys_addr,                // source address
+			FALSE,                    // no copy
+			&cur_prot, &max_prot,     // protection
+			VM_INHERIT_SHARE);        // inheritance
+		if (kr != KERN_SUCCESS)
+		{
+			fprintf(stderr, "GSAllocateWrappedMemory: vm_remap repeat %zu failed: %d\n", i, kr);
+			vm_deallocate(mach_task_self(), phys_addr, size);
+			return nullptr;
+		}
+	}
+
+	return reinterpret_cast<void*>(virt_addr);
+}
+
+void GSFreeWrappedMemory(void* ptr, size_t size, size_t repeat)
+{
+	if (ptr)
+		vm_deallocate(mach_task_self(), reinterpret_cast<vm_address_t>(ptr), size * repeat);
+	if (s_gs_phys_base)
+		vm_deallocate(mach_task_self(), s_gs_phys_base, size);
+	s_gs_phys_base = 0;
+}
+
 #else
 
 #include <sys/mman.h>
