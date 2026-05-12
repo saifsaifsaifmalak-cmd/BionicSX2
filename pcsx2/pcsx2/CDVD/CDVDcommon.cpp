@@ -20,6 +20,8 @@
 #include <array>
 #include <ctype.h>
 #include <exception>
+#include <cstring>
+#include <unistd.h>
 #include <memory>
 #include <mutex>
 #include <time.h>
@@ -228,8 +230,6 @@ static int FindDiskType(int mType)
 }
 
 // TEMP: CDVDcommon raw bypass for crash isolation
-#include <unistd.h>
-#include <cstring>
 #define RAW(x) do { if (x) write(STDERR_FILENO, x, strlen(x)); } while(0)
 
 static void DetectDiskType()
