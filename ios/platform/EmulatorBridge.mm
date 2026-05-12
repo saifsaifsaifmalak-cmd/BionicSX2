@@ -7,6 +7,7 @@
 #include "common/Error.h"
 #include "iOSVMManager.h"
 #include "Watchdog.hpp"
+#include "CrashHandler.hpp"
 #include "BionicLogger.hpp"
 #include "PCSX2LogRedirect.h"
 #include "PCSX2FatalExit.h"
@@ -84,6 +85,17 @@ bool EmulatorBridge_BootGame(const char* isoPath) {
 
     // stderr redirect disabled temporarily for crash isolation
     // StderrRedirect_Start();
+
+    // Set up crash recovery longjmp so signal handler returns here instead of killing the app
+    jmp_buf crash_recovery;
+    CrashHandler_SetJumpBuf(&crash_recovery);
+    int crash_sig = setjmp(crash_recovery);
+    if (crash_sig) {
+        BIONIC_WARN(CORE, "Recovered from signal %d via crash handler longjmp. Emulation aborted.", crash_sig);
+        Watchdog_Stop();
+        BionicLogger::instance().flush();
+        return false;
+    }
 
     try {
         Watchdog_Start();

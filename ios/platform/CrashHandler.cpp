@@ -4,11 +4,20 @@
 #include <unistd.h>
 #include <cstdio>
 #include <cstring>
+#include <setjmp.h>
 
 // Saved at install time — avoids calling BionicLogger::instance() from signal handler
 static int          s_crash_log_fd   = -1;
 static const char*  s_crash_ring_buf = nullptr;
 static size_t       s_crash_buf_size = 0;
+
+// Longjmp target for crash recovery — allows returning to main loop
+// instead of killing the process. Set by EmulatorBridge before emulation starts.
+static jmp_buf* s_crash_jmp = nullptr;
+
+void CrashHandler_SetJumpBuf(jmp_buf* jmp) {
+    s_crash_jmp = jmp;
+}
 
 static const char* SignalName(int sig) {
     switch(sig) {
@@ -74,8 +83,13 @@ static void CrashHandler(int sig, siginfo_t* info, void* /*ctx*/) {
     if (s_crash_log_fd >= 0 && s_crash_log_fd != STDERR_FILENO)
         fsync(s_crash_log_fd);
 
-    signal(sig, SIG_DFL);
-    raise(sig);
+    // Attempt to recover via longjmp back to main loop instead of killing process.
+    // If no longjmp target is set, fall back to _exit (no cleanup, but safe).
+    if (s_crash_jmp) {
+        longjmp(*s_crash_jmp, sig);
+    } else {
+        _exit(1);
+    }
 }
 
 void CrashHandler_Install() {
