@@ -339,4 +339,30 @@ int _g_MultitapArr = 0;
 #include "MemoryTypes.h"
 alignas(16) u8 g_RealGSMem[Ps2MemSize::GSregs] = {};
 
+// ── CDVDapi_Disc (physical disc — not used on iOS, but linked by CDVDcommon.cpp switch) ──
+#include "CDVD/CDVDcommon.h"
+const CDVD_API CDVDapi_Disc = {};
+
+// ── GSDumpReplayerCpu (referenced by VMManager.cpp extern) ─────────
+#include "R5900.h"
+static void _gsDumpDummy() {}
+static void _gsDumpClear(u32, u32) {}
+R5900cpu GSDumpReplayerCpu = {
+    _gsDumpDummy, _gsDumpDummy, _gsDumpDummy, _gsDumpDummy,
+    _gsDumpDummy, _gsDumpDummy, _gsDumpDummy, _gsDumpClear
+};
+
+// ── GSVertexSW::InitStatic ────────────────────────────────────────
+#include "GS/Renderers/SW/GSVertexSW.h"
+void GSVertexSW::InitStatic() {}
+
+// ── GSRendererHW constructor stub ─────────────────────────────────
+class GSRendererHW { public: GSRendererHW() {} };
+
+// ── dVifUnpack / dVifReset (from guarded Vif_Dynarec) ────────────
+template<int idx> void dVifUnpack(const u8* data, bool isFill) {}
+template void dVifUnpack<0>(const u8*, bool);
+template void dVifUnpack<1>(const u8*, bool);
+void dVifReset(int) {}
+
 // ── Pad base class ─────────────────────────────────────────────────
