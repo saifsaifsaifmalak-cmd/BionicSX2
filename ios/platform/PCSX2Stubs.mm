@@ -435,10 +435,13 @@ void dVifReset(int) {}
 #include "GS/GSRegs.h"
 namespace GSTextureCacheSW {
     struct Texture {
-        Texture(u32, const GIFRegTEX0&, const GIFRegTEXA&) {}
-        void Reset(u32, const GIFRegTEX0&, const GIFRegTEXA&) {}
-        void Update(const GSVector4i&) {}
+        Texture(u32, const GIFRegTEX0&, const GIFRegTEXA&);
+        void Reset(u32, const GIFRegTEX0&, const GIFRegTEXA&);
+        void Update(const GSVector4i&);
     };
+    Texture::Texture(u32, const GIFRegTEX0&, const GIFRegTEXA&) {}
+    void Texture::Reset(u32, const GIFRegTEX0&, const GIFRegTEXA&) {}
+    void Texture::Update(const GSVector4i&) {}
 }
 
 // ── GSRasterizer (SW renderer — not used with Metal, stubs for linker) ──
@@ -446,9 +449,11 @@ namespace isa_native {
     struct GSRasterizerData { static int s_counter; };
     int GSRasterizerData::s_counter = 0;
     struct GSSingleRasterizer {
-        GSSingleRasterizer() {}
-        void Draw(isa_native::GSRasterizerData&) {}
+        GSSingleRasterizer();
+        void Draw(isa_native::GSRasterizerData&);
     };
+    GSSingleRasterizer::GSSingleRasterizer() {}
+    void GSSingleRasterizer::Draw(isa_native::GSRasterizerData&) {}
 }
 
 // ── GSTextureReplacements::GetLoader / SavePNGImage ───────────────
