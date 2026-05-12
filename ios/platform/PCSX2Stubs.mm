@@ -284,18 +284,15 @@ void gsPostVsyncStart() {}
 u32 gsNonMirroredRead(u32) { return 0; }
 
 // ── GSVector static members ─────────────────────────────────────────
+// Real definitions in GSVector.cpp — provide matching symbols with correct const/array types
 #include "GS/GSVector.h"
-GSVector4 GSVector4::m_max;
-GSVector4 GSVector4::m_one;
-GSVector4i GSVector4i::m_x0f;
+const GSVector4 GSVector4::m_one = {};
+const GSVector4 GSVector4::m_max = {};
+const GSVector4i GSVector4i::m_x0f[17] = {};
 
 // ── GSVertexSW ──────────────────────────────────────────────────────
+#include "GS/Renderers/SW/GSVertexSW.h"
 void GSVertexSW::InitStatic() {}
-
-// ── GSVertexTrace ──────────────────────────────────────────────────
-#include "GS/GSVertexTrace.h"
-GSVertexTrace::GSVertexTrace(const GSState*) {}
-void GSVertexTrace::Update(const void*, const u16*, int, int, GS_PRIM_CLASS) {}
 
 // ── GSLocalMemory (via isa_native for single-ISA) ──────────────────
 namespace isa_native {
