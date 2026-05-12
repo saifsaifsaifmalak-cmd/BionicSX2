@@ -425,35 +425,31 @@ u8 MultitapProtocol::GetPadSlot() { return 0; }
 u8 MultitapProtocol::GetMemcardSlot() { return 0; }
 void MultitapProtocol::SendToMultitap() {}
 
-// ── dVifUnpack / dVifReset (no-op — VIF unpack not supported) ──
-#include "Vif_Dma.h"
-#include "VU.h"
+// ── dVifUnpack — safe VIF interpreter fallback ──────────────────────
+#include "Vif_Dynarec.h"
 
 template<int idx>
 void dVifUnpack(const u8* data, bool isFill)
 {
-    // Prevent the VIF1 crash at offset 0x20 by aggressively zeroing the
-    // VIF state. The BIOS triggers VIF1 processing during boot, which
-    // calls dVifUnpack. If we don't actually unpack data, the downstream
-    // code that reads VIF state at offset 0x20 will crash.
+    // Use _nVifUnpack (interpreted C unpack) instead of the VIF JIT
+    // recompiler. The JIT is not available on iOS (requires VIXL).
     //
-    // The fix: reset vif.cl and vifRegs.num so that _nVifUnpackLoop
-    // sees correct cycle count and remaining count. Without this, the
-    // VIF state machine may get confused and dereference null pointers.
+    // Key issue: _nVifUnpackLoop accesses VIFfuncTable[idx][mode][...]
+    // where mode = vifRegs.mode. If mode > 3, the table access is
+    // out-of-bounds (VIFfuncTable[2][4][64]), reading garbage pointers
+    // and causing a null dereference at offset 0x20.
     //
-    // Also reset vifStruct::cmd/irq/pass to prevent the caller
-    // (nVifUnpack) from operating on stale state.
-    if (idx == 0) {
-        vif0.cl = 0; vif0.irq = 0; vif0.pass = 0; vif0.cmd = 0;
-    } else {
-        vif1.cl = 0; vif1.irq = 0; vif1.pass = 0; vif1.cmd = 0;
-    }
-    (void)data; (void)isFill;
+    // Fix: clamp vifRegs.mode to 0-3 before calling _nVifUnpack.
+    auto& vifRegs = vifXRegs;
+    if (vifRegs.mode > 3)
+        vifRegs.mode = 0;
+    _nVifUnpack(idx, data, vifRegs.mode, isFill);
 }
 template void dVifUnpack<0>(const u8*, bool);
 template void dVifUnpack<1>(const u8*, bool);
 void dVifReset(int) {}
 void dVifRelease(int) {}
+void VifUnpackSSE_Init() {}
 
 // ── GSTextureCacheSW::Texture (referenced from GSRendererHW.h member) ──
 #include "GS/GSRegs.h"
