@@ -270,7 +270,7 @@ namespace GameDatabaseSchema {
 // ── GS functions ──────────────────────────────────────────────────
 void gsPostVsyncStart() {}
 #include "GS.h"
-u128 gsNonMirroredRead(u32) { return u128::zero(); }
+u128 gsNonMirroredRead(u32 mem) { u128 r; r.lo = 0; r.hi = 0; return r; }
 
 // ── GSLocalMemory (via isa_native for single-ISA) ──────────────────
 #include "GS/GSLocalMemory.h"
@@ -287,7 +287,7 @@ namespace isa_native {
 namespace HostSys {
     void BeginCodeWrite() {}
     void EndCodeWrite() {}
-    void FlushInstructionCache(void*, size_t) {}
+    void FlushInstructionCache(void*, u32) {}
     bool MemProtect(void*, size_t, const PageProtectionMode&) { return true; }
 }
 u64 GetAvailablePhysicalMemory() { return 512ULL * 1024 * 1024; }
