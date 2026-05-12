@@ -234,8 +234,13 @@ u32 GSMTLDevice::GetMaxTextureSize(id<MTLDevice> dev)
 		if ([dev supportsFamily:MTLGPUFamilyApple3])
 			return 16384;
 	}
+#if TARGET_OS_OSX
 	if ([dev supportsFeatureSet:MTLFeatureSet_macOS_GPUFamily1_v1])
 		return 16384;
+#else
+	if ([dev supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily1_v1])
+		return 16384;
+#endif
 	return 8192;
 }
 
