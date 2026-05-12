@@ -455,7 +455,7 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/GS/Renderers/HW/GSHwHack.cpp
     pcsx2/pcsx2/GS/Renderers/HW/GSRendererHWMultiISA.cpp
     pcsx2/pcsx2/GS/Renderers/Common/GSDirtyRect.cpp
-    pcsx2/pcsx2/GS/GSXXH.cpp
+    # pcsx2/pcsx2/GS/GSXXH.cpp  # stubs in PCSX2Stubs.mm
 
     # GS Null Renderer (fallback)
     pcsx2/pcsx2/GS/Renderers/Null/GSRendererNull.cpp

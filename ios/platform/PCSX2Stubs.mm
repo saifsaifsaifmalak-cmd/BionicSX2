@@ -456,13 +456,13 @@ namespace GSRingHeap {
 
 // ── GSVertexSW::s_cvb ──────────────────────────────────────────
 #include "GS/Renderers/SW/GSVertexSW.h"
-int GSVertexSW::s_cvb = 0;
+GSVertexSW::ConvertVertexBufferPtr GSVertexSW::s_cvb[4][2][2][2] = {};
 
-// ── MultiISAFunctions — keep old-style stubs since GSXXH.cpp uses MULTI_ISA_DEF ──
+// ── MultiISAFunctions — GSXXH3_64 function references ────────────
 namespace MultiISAFunctions {
-    u64 GSXXH3_64_Digest() { return 0; }
     u64 GSXXH3_64_Long(const void*, size_t) { return 0; }
-    u64 GSXXH3_64_Update(const void*, size_t) { return 0; }
+    u32 GSXXH3_64_Update(void*, const void*, size_t) { return 0; }
+    u64 GSXXH3_64_Digest(void*) { return 0; }
 }
 
 // ── Pad base class ─────────────────────────────────────────────────
