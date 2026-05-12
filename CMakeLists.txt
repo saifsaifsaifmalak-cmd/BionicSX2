@@ -277,9 +277,9 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/Vif1_Dma.cpp
     pcsx2/pcsx2/Vif1_MFIFO.cpp
 
-    # ARM64 VU/VIF (replaces x86 dynarec)
-    pcsx2/pcsx2/arm64/Vif_Dynarec.cpp
-    pcsx2/pcsx2/arm64/Vif_UnpackNEON.cpp
+    # ARM64 VU/VIF (replaces x86 dynarec) — requires vixl, guarded for recompiler-disabled builds
+    # pcsx2/pcsx2/arm64/Vif_Dynarec.cpp
+    # pcsx2/pcsx2/arm64/Vif_UnpackNEON.cpp
     pcsx2/pcsx2/arm64/AsmHelpers.cpp
 
     # PS2 hardware access (pgif, VU, etc.)
@@ -426,8 +426,8 @@ set(PCSX2_CORE_SOURCES
     # PS2 subsystem
     pcsx2/pcsx2/ps2/BiosTools.cpp
 
-    # GSDump Replayer
-    pcsx2/pcsx2/GSDumpReplayer.cpp
+    # GSDump Replayer — pulls in GSDumpBase dependencies, guarded for iOS
+    # pcsx2/pcsx2/GSDumpReplayer.cpp
 
     # GS Core (no Vulkan, no OpenGL, no DX)
     pcsx2/pcsx2/GS/GS.cpp

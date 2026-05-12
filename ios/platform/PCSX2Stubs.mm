@@ -116,6 +116,9 @@ namespace Threading {
 // ── FullscreenUI ───────────────────────────────────────────────────
 namespace FullscreenUI {
     __attribute__((weak_import)) void OnVMDestroyed() {}
+    void CheckForConfigChanges(const Pcsx2Config&) {}
+    void OnVMStarted() {}
+    bool Render() { return false; }
 }
 
 // Note: Achievements, SPU2, USB namespaces are now provided by their headers
@@ -125,6 +128,9 @@ namespace FullscreenUI {
 namespace Achievements {
     void GameChanged(unsigned int, unsigned int) {}
     bool IsHardcoreModeActive() { return false; }
+    void FrameUpdate() {}
+    void OnVMPaused(bool) {}
+    void UpdateSettings(const Pcsx2Config::AchievementsOptions&) {}
 }
 
 // ── SPU2 stubs (required by VMManager) ────────────────────────────────
@@ -153,6 +159,11 @@ namespace FullscreenUI {
 namespace GSCapture {
     void EndCapture() {}
     bool IsCapturing() { return false; }
+    bool BeginCapture(float, GSVector2i, float, std::string) { return false; }
+    void DeliverVideoFrame(GSTexture*) {}
+    std::string GetNextCaptureFileName() { return {}; }
+    GSVector2i GetSize() { return {}; }
+    bool IsCapturingVideo() { return false; }
 }
 
 // ── GSTextureReplacements ───────────────────────────────────────────
@@ -161,6 +172,7 @@ namespace GSTextureReplacements {
     void ReloadReplacementMap() {}
     void Shutdown() {}
     void UpdateConfig(void*) {}
+    void UpdateConfig(Pcsx2Config::GSOptions&) {}
 }
 
 // ── SaveStateSelectorUI ─────────────────────────────────────────────
@@ -216,15 +228,18 @@ class GSDrawingContext {
 public:
     void Dump(const std::string&) const {}
     void UpdateScissor() {}
+    void Reset() {}
 };
 class GSDrawingEnvironment {
 public:
     void Dump(const std::string&) const {}
+    void Reset() {}
 };
 
 // ── GSPng ──────────────────────────────────────────────────────────
 namespace GSPng {
-    bool Save(int, const std::string&, const u8*, int, int, int, int, bool) { return false; }
+    enum class Format : u8 { PNG = 0 };
+    bool Save(GSPng::Format, const std::string&, const u8*, int, int, int, int, bool) { return false; }
 }
 
 // ── InputManager stubs ───────────────────────────────────────────────
@@ -234,6 +249,8 @@ namespace InputManager {
     void ReloadSources(SettingsInterface&, std::unique_lock<std::mutex>&) {}
     void ReloadBindings(SettingsInterface&, SettingsInterface&, SettingsInterface&, bool, bool) {}
     void SetPadVibrationIntensity(u32 port, float large, float small) {}
+    void PauseVibration() {}
+    void PollSources() {}
 }
 
 // ── SaveState stubs ────────────────────────────────────────────────
@@ -245,7 +262,11 @@ std::unique_ptr<SaveStateScreenshotData> SaveState_SaveScreenshot() { return nul
 namespace Host {
     void OnGameChanged(const std::string& title, const std::string& elf_override, const std::string& disc_path, const std::string& disc_serial, u32 disc_crc, u32 crc) {}
     void OnVMDestroyed() {}
-    void OnSaveStateSaved(std::string_view path) {}
+    void OnSaveStateSaved(std::string_view) {}
+    void OnVMStarted() {}
+    void OnVMPaused() {}
+    void OnVMResumed() {}
+    void CheckForSettingsChanges(const Pcsx2Config&) {}
 }
 
 // ── GameDatabaseSchema::GameEntry ───────────────────────────────────
@@ -257,15 +278,103 @@ namespace GameDatabaseSchema {
     };
 }
 
+// ── GS functions ──────────────────────────────────────────────────
+void gsPostVsyncStart() {}
+u32 gsNonMirroredRead(u32) { return 0; }
+
+// ── GSVector static members ─────────────────────────────────────────
+#include "GSVector.h"
+GSVector4 GSVector4::m_max;
+GSVector4 GSVector4::m_one;
+GSVector4i GSVector4i::m_x0f;
+
+// ── GSVertexSW ──────────────────────────────────────────────────────
+void GSVertexSW::InitStatic() {}
+
+// ── GSVertexTrace ──────────────────────────────────────────────────
+GSVertexTrace::GSVertexTrace(const GSState*) {}
+void GSVertexTrace::Update(const void*, const u16*, int, int, GS_PRIM_CLASS) {}
+
+// ── GSLocalMemory ──────────────────────────────────────────────────
+namespace isa_native {
+    void GSLocalMemoryPopulateFunctions(GSLocalMemory&) {}
+    GSRenderer* makeGSRendererSW(int) { return nullptr; }
+}
+
+// ── HostSys stubs ──────────────────────────────────────────────────
+namespace HostSys {
+    void BeginCodeWrite() {}
+    void EndCodeWrite() {}
+    void FlushInstructionCache(void*, size_t) {}
+    bool MemProtect(void*, size_t, const PageProtectionMode&) { return true; }
+}
+u64 GetAvailablePhysicalMemory() { return 512 * 1024 * 1024; } // 512 MB
+
+// ── ShortSpin ──────────────────────────────────────────────────────
+void ShortSpin() {}
+
+// ── SPU2 ──────────────────────────────────────────────────────────
+namespace SPU2 {
+    void CheckForConfigChanges(const Pcsx2Config&) {}
+    void OnTargetSpeedChanged() {}
+    void Reset(bool) {}
+    void SetOutputPaused(bool) {}
+}
+u16 SPU2read(u32) { return 0; }
+void SPU2write(u32, u16) {}
+void SPU2async() {}
+
+// ── DEV9 async ─────────────────────────────────────────────────────
+void DEV9async(u32) {}
+
+// ── USB async ──────────────────────────────────────────────────────
+void USBasync(u32) {}
+
+// ── USB config check ──────────────────────────────────────────────
+namespace USB {
+    void CheckForConfigChanges(const Pcsx2Config&) {}
+}
+
+// ── Achievements / FullscreenUI config check ──────────────────────
+// (additional stubs not needed — already in namespace stubs above)
+
+// ── PerformanceMetrics ───────────────────────────────────────────
+namespace PerformanceMetrics {
+    void Reset() {}
+    void Update(bool, bool, bool) {}
+    void OnGPUPresent(float) {}
+    int GetInternalFPSMethod() { return 0; }
+}
+
+// ── Perf ─────────────────────────────────────────────────────────
+namespace Perf {
+    namespace Group {
+        void RegisterPC(const void*, size_t, u32) {}
+    }
+    Group vif;
+}
+
+// ── _Clocks ────────────────────────────────────────────────────────
+u64 _lClocks = 0;
+
+// ── Multitap ──────────────────────────────────────────────────────
+#include "SIO/Memcard/MemoryCardFile.h"
+MultitapProtocol _g_MultitapArr[2];
+namespace MultitapProtocol {
+    int GetMemcardSlot() { return 0; }
+    int GetPadSlot() { return 0; }
+    void SendToMultitap() {}
+}
+
+// ── ImGui / ImGuiManager stubs (minimal) ─────────────────────────
+// ImGui stubs are already provided by the ImGuiManager class above.
+// Additional ImGui symbols needed by GSDumpReplayer (now guarded).
+// If any remain, they will be caught in the next build.
+
 // ── _g_RealGSMem ───────────────────────────────────────────────────
 // Real declaration: alignas(16) extern u8 g_RealGSMem[Ps2MemSize::GSregs];
 // Must be an array, not a pointer — MTGS.cpp writes to PS2MEM_GS[i] = g_RealGSMem[i]
 #include "MemoryTypes.h"
 alignas(16) u8 g_RealGSMem[Ps2MemSize::GSregs] = {};
-
-// ── CDVDapi_Disc ────────────────────────────────────────────────────
-// Physical disc drive — not available on iOS. Referenced by CDVDcommon.cpp switch.
-#include "CDVD/CDVDcommon.h"
-const CDVD_API CDVDapi_Disc = {};
 
 // ── Pad base class ─────────────────────────────────────────────────

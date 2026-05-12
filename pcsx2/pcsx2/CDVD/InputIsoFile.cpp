@@ -41,11 +41,13 @@ static std::unique_ptr<ThreadedFileReader> GetFileReader(const std::string& path
 {
 	const std::string_view extension = Path::GetExtension(path);
 
+#ifndef PCSX2_TARGET_IOS
 	if (StringUtil::compareNoCase(extension, "chd"))
 		return std::make_unique<ChdFileReader>();
 
 	if (StringUtil::compareNoCase(extension, "cso") || StringUtil::compareNoCase(extension, "zso"))
 		return std::make_unique<CsoFileReader>();
+#endif
 
 	if (StringUtil::compareNoCase(extension, "gz"))
 		return std::make_unique<GzippedFileReader>();
