@@ -434,6 +434,8 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/GS/GSBlock.cpp
     pcsx2/pcsx2/GS/GSClut.cpp
     pcsx2/pcsx2/GS/GSLocalMemory.cpp
+    pcsx2/pcsx2/GS/GSDrawingContext.cpp
+    pcsx2/pcsx2/GS/GSDrawingEnvironment.cpp
     pcsx2/pcsx2/GS/GSPerfMon.cpp
     pcsx2/pcsx2/GS/GSState.cpp
     pcsx2/pcsx2/GS/GSTables.cpp

@@ -149,6 +149,7 @@ namespace USB {
     std::string GetConfigSection(int) { return ""; }
     const char* DeviceTypeIndexToName(s32) { return nullptr; }
     s32 DeviceTypeNameToIndex(std::string_view) { return 0; }
+    void CheckForConfigChanges(const void*) {}
 }
 
 // ── FullscreenUI::GameChanged stub ───────────────────────────────────
@@ -292,30 +293,32 @@ GSVector4i GSVector4i::m_x0f;
 void GSVertexSW::InitStatic() {}
 
 // ── GSVertexTrace ──────────────────────────────────────────────────
+#include "GS/GSVertexTrace.h"
 GSVertexTrace::GSVertexTrace(const GSState*) {}
 void GSVertexTrace::Update(const void*, const u16*, int, int, GS_PRIM_CLASS) {}
 
-// ── GSLocalMemory ──────────────────────────────────────────────────
+// ── GSLocalMemory (via isa_native for single-ISA) ──────────────────
 namespace isa_native {
-    void GSLocalMemoryPopulateFunctions(GSLocalMemory&) {}
-    GSRenderer* makeGSRendererSW(int) { return nullptr; }
+    void GSLocalMemoryPopulateFunctions(void*) {}
+    void* makeGSRendererSW(int) { return nullptr; }
 }
 
 // ── HostSys stubs ──────────────────────────────────────────────────
+#include "common/HostSys.h"
 namespace HostSys {
     void BeginCodeWrite() {}
     void EndCodeWrite() {}
     void FlushInstructionCache(void*, size_t) {}
     bool MemProtect(void*, size_t, const PageProtectionMode&) { return true; }
 }
-u64 GetAvailablePhysicalMemory() { return 512 * 1024 * 1024; } // 512 MB
+u64 GetAvailablePhysicalMemory() { return 512ULL * 1024 * 1024; }
 
 // ── ShortSpin ──────────────────────────────────────────────────────
 void ShortSpin() {}
 
 // ── SPU2 ──────────────────────────────────────────────────────────
 namespace SPU2 {
-    void CheckForConfigChanges(const Pcsx2Config&) {}
+    void CheckForConfigChanges(const void*) {}
     void OnTargetSpeedChanged() {}
     void Reset(bool) {}
     void SetOutputPaused(bool) {}
@@ -329,15 +332,6 @@ void DEV9async(u32) {}
 
 // ── USB async ──────────────────────────────────────────────────────
 void USBasync(u32) {}
-
-// ── USB config check ──────────────────────────────────────────────
-namespace USB {
-    void CheckForConfigChanges(const Pcsx2Config&) {}
-}
-
-// ── Achievements / FullscreenUI config check ──────────────────────
-// (additional stubs not needed — already in namespace stubs above)
-
 // ── PerformanceMetrics ───────────────────────────────────────────
 namespace PerformanceMetrics {
     void Reset() {}
@@ -349,27 +343,16 @@ namespace PerformanceMetrics {
 // ── Perf ─────────────────────────────────────────────────────────
 namespace Perf {
     namespace Group {
-        void RegisterPC(const void*, size_t, u32) {}
+        void RegisterPC(const void*, unsigned long, unsigned int) {}
     }
-    Group vif;
+    int vif = 0;
 }
 
 // ── _Clocks ────────────────────────────────────────────────────────
 u64 _lClocks = 0;
 
 // ── Multitap ──────────────────────────────────────────────────────
-#include "SIO/Memcard/MemoryCardFile.h"
-MultitapProtocol _g_MultitapArr[2];
-namespace MultitapProtocol {
-    int GetMemcardSlot() { return 0; }
-    int GetPadSlot() { return 0; }
-    void SendToMultitap() {}
-}
-
-// ── ImGui / ImGuiManager stubs (minimal) ─────────────────────────
-// ImGui stubs are already provided by the ImGuiManager class above.
-// Additional ImGui symbols needed by GSDumpReplayer (now guarded).
-// If any remain, they will be caught in the next build.
+int _g_MultitapArr = 0;
 
 // ── _g_RealGSMem ───────────────────────────────────────────────────
 // Real declaration: alignas(16) extern u8 g_RealGSMem[Ps2MemSize::GSregs];
