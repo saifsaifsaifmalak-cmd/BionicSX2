@@ -445,18 +445,20 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/GS/Renderers/Common/GSRenderer.cpp
     pcsx2/pcsx2/GS/Renderers/Common/GSTexture.cpp
     pcsx2/pcsx2/GS/Renderers/Common/GSVertexTraceFMM.cpp
-    pcsx2/pcsx2/GS/Renderers/SW/GSDrawScanline.cpp
-    pcsx2/pcsx2/GS/Renderers/SW/GSRasterizer.cpp
-    pcsx2/pcsx2/GS/Renderers/SW/GSTextureCacheSW.cpp
+    # SW renderer — not used on iOS (Metal HW renderer)
+    # pcsx2/pcsx2/GS/Renderers/SW/GSDrawScanline.cpp
+    # pcsx2/pcsx2/GS/Renderers/SW/GSRasterizer.cpp
+    # pcsx2/pcsx2/GS/Renderers/SW/GSTextureCacheSW.cpp
 
     # GS HW Renderer (Metal backend — BIOS screen output)
     pcsx2/pcsx2/GS/Renderers/HW/GSRendererHW.cpp
     pcsx2/pcsx2/GS/Renderers/HW/GSTextureCache.cpp
     pcsx2/pcsx2/GS/Renderers/HW/GSHwHack.cpp
     pcsx2/pcsx2/GS/Renderers/HW/GSRendererHWMultiISA.cpp
+    pcsx2/pcsx2/GS/Renderers/HW/GSTextureReplacements.cpp
     pcsx2/pcsx2/GS/Renderers/Common/GSDirtyRect.cpp
-    pcsx2/pcsx2/GS/MultiISA.cpp  # Multi-ISA dispatch (sets up MultiISAFunctions refs)
-    # pcsx2/pcsx2/GS/GSXXH.cpp  # stubs in PCSX2Stubs.mm
+    pcsx2/pcsx2/GS/MultiISA.cpp  # Multi-ISA dispatch
+    pcsx2/pcsx2/GS/GSXXH.cpp  # XXH3-64 hash (used by GSTextureCache)
 
     # GS Null Renderer (fallback)
     pcsx2/pcsx2/GS/Renderers/Null/GSRendererNull.cpp
