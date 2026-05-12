@@ -2723,6 +2723,7 @@ void VMManager::ShutdownCPUProviders()
 
 void VMManager::UpdateCPUImplementations()
 {
+#if !defined(PCSX2_TARGET_IOS)
 	if (GSDumpReplayer::IsReplayingDump())
 	{
 		Cpu = &GSDumpReplayerCpu;
@@ -2731,6 +2732,7 @@ void VMManager::UpdateCPUImplementations()
 		CpuVU1 = &CpuIntVU1;
 		return;
 	}
+#endif
 
 #ifdef _M_X86 // TODO(Stenzek): Remove me once EE/VU/IOP recs are added.
 	Cpu = CHECK_EEREC ? &recCpu : &intCpu;
