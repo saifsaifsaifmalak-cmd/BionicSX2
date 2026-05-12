@@ -458,11 +458,6 @@ namespace GSRingHeap {
 #include "GS/Renderers/SW/GSVertexSW.h"
 GSVertexSW::ConvertVertexBufferPtr GSVertexSW::s_cvb[4][2][2][2] = {};
 
-// ── MultiISAFunctions — GSXXH3_64 function references ────────────
-namespace MultiISAFunctions {
-    u64 GSXXH3_64_Long(const void*, size_t) { return 0; }
-    u32 GSXXH3_64_Update(void*, const void*, size_t) { return 0; }
-    u64 GSXXH3_64_Digest(void*) { return 0; }
-}
+// MultiISAFunctions now provided by compiled MultiISA.cpp
 
 // ── Pad base class ─────────────────────────────────────────────────
