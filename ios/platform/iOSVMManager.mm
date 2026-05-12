@@ -4,7 +4,8 @@
 #import <Foundation/Foundation.h>
 
 #include "VMManager.h"
-#include "Vif_Unpack.h"
+#include "Vif.h"
+#include "Vif_Dynarec.h"
 #include "CDVD/CDVD.h"
 #include "CDVD/CDVDcommon.h"
 #include "Config.h"
