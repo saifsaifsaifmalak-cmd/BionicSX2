@@ -28,6 +28,7 @@ typedef int s32;
 
 // Forward declarations
 class GSDevice;
+class GSTexture;
 class SettingsInterface;
 class Error;
 class ArchiveEntryList;
@@ -159,10 +160,10 @@ namespace FullscreenUI {
 namespace GSCapture {
     void EndCapture() {}
     bool IsCapturing() { return false; }
-    bool BeginCapture(float, GSVector2i, float, std::string) { return false; }
-    void DeliverVideoFrame(GSTexture*) {}
+    bool BeginCapture(float, int, float, std::string) { return false; }
+    void DeliverVideoFrame(void*) {}
     std::string GetNextCaptureFileName() { return {}; }
-    GSVector2i GetSize() { return {}; }
+    int GetSize() { return 0; }
     bool IsCapturingVideo() { return false; }
 }
 
@@ -172,7 +173,6 @@ namespace GSTextureReplacements {
     void ReloadReplacementMap() {}
     void Shutdown() {}
     void UpdateConfig(void*) {}
-    void UpdateConfig(Pcsx2Config::GSOptions&) {}
 }
 
 // ── SaveStateSelectorUI ─────────────────────────────────────────────
@@ -283,7 +283,7 @@ void gsPostVsyncStart() {}
 u32 gsNonMirroredRead(u32) { return 0; }
 
 // ── GSVector static members ─────────────────────────────────────────
-#include "GSVector.h"
+#include "GS/GSVector.h"
 GSVector4 GSVector4::m_max;
 GSVector4 GSVector4::m_one;
 GSVector4i GSVector4i::m_x0f;
