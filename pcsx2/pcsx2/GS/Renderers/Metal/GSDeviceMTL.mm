@@ -30,6 +30,7 @@ GSDevice* MakeGSDeviceMTL()
 std::vector<GSAdapterInfo> GetMetalAdapterList()
 { @autoreleasepool {
 	std::vector<GSAdapterInfo> list;
+#if TARGET_OS_OSX
 	auto devs = MRCTransfer(MTLCopyAllDevices());
 	for (id<MTLDevice> dev in devs.Get())
 	{
@@ -39,6 +40,19 @@ std::vector<GSAdapterInfo> GetMetalAdapterList()
 		ai.max_upscale_multiplier = GSGetMaxUpscaleMultiplier(ai.max_texture_size);
 		list.push_back(std::move(ai));
 	}
+#else
+	// iOS: single GPU, use default device
+	id<MTLDevice> dev = MTLCreateSystemDefaultDevice();
+	if (dev)
+	{
+		GSAdapterInfo ai;
+		ai.name = [[dev name] UTF8String];
+		ai.max_texture_size = GSMTLDevice::GetMaxTextureSize(dev);
+		ai.max_upscale_multiplier = GSGetMaxUpscaleMultiplier(ai.max_texture_size);
+		list.push_back(std::move(ai));
+		[dev release];
+	}
+#endif
 	return list;
 }}
 
@@ -902,6 +916,7 @@ bool GSDeviceMTL::Create(GSVSyncMode vsync_mode, bool allow_present_throttle)
 	if (!GSDevice::Create(vsync_mode, allow_present_throttle))
 		return false;
 
+#if TARGET_OS_OSX
 	NSString* ns_adapter_name = [NSString stringWithUTF8String:GSConfig.Adapter.c_str()];
 	auto devs = MRCTransfer(MTLCopyAllDevices());
 	for (id<MTLDevice> dev in devs.Get())
@@ -909,12 +924,15 @@ bool GSDeviceMTL::Create(GSVSyncMode vsync_mode, bool allow_present_throttle)
 		if ([[dev name] isEqualToString:ns_adapter_name])
 			m_dev = GSMTLDevice(MRCRetain(dev));
 	}
+#endif
 	if (!m_dev.dev)
 	{
+#if TARGET_OS_OSX
 		if (GSConfig.Adapter == GetDefaultAdapter())
 			Console.WriteLn("Metal: Using default adapter");
 		else if (!GSConfig.Adapter.empty())
 			Console.Warning("Metal: Couldn't find adapter %s, using default", GSConfig.Adapter.c_str());
+#endif
 		m_dev = GSMTLDevice(MRCTransfer(MTLCreateSystemDefaultDevice()));
 		if (!m_dev.dev)
 			Host::ReportErrorAsync(TRANSLATE_SV("GSDeviceMTL", "No Metal Devices Available"), TRANSLATE_SV("GSDeviceMTL", "No Metal-supporting GPUs were found.  PCSX2 requires a Metal GPU (available on all Macs from 2012 onwards)."));
@@ -1438,8 +1456,10 @@ void GSDeviceMTL::EndPresent()
 				{
 					[[MTLCaptureManager sharedCaptureManager] stopCapture];
 					Console.WriteLn("Metal Trace Capture to /tmp/PCSX2MTLCapture.gputrace finished");
+#if TARGET_OS_OSX
 					[[NSWorkspace sharedWorkspace] selectFile:path
 					                 inFileViewerRootedAtPath:@"/tmp/"];
+#endif
 				}
 			}
 			else if (s_capture_next)
@@ -2070,9 +2090,15 @@ void GSDeviceMTL::MRESetSampler(SamplerSelector sel)
 
 static void textureBarrier(id<MTLRenderCommandEncoder> enc)
 {
+#if TARGET_OS_OSX
 	[enc memoryBarrierWithScope:MTLBarrierScopeRenderTargets
 	                afterStages:MTLRenderStageFragment
 	               beforeStages:MTLRenderStageFragment];
+#else
+	// iOS: memoryBarrierWithScope:MTLBarrierScopeRenderTargets not available.
+	// Use textureBarrier instead for tile-based deferred renderers.
+	[enc textureBarrier];
+#endif
 }
 
 void GSDeviceMTL::MRESetTexture(GSTexture* tex, int pos)
