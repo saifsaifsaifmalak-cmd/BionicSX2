@@ -398,26 +398,15 @@ void GSVertexSW::InitStatic() {}
 GSVertexTrace::GSVertexTrace(const GSState*) {}
 void GSVertexTrace::Update(const void*, const u16*, int, int, GS_PRIM_CLASS) {}
 
-// ── GSCapture (from GSRenderer.cpp) ──────────────────────────────
-namespace GSCapture {
-    bool BeginCapture(float, int, float, std::string) { return false; }
-    void DeliverVideoFrame(void*) {}
-    int GetSize() { return 0; }
-    void EndCapture() {}
-    bool IsCapturing() { return false; }
-    bool IsCapturingVideo() { return false; }
-    std::string GetNextCaptureFileName() { return {}; }
-}
-
 // ── ImGui (from GSDeviceMTL.mm — used for overlay) ───────────────
 // Only needed for GSDeviceMTL.mm which is compiled. ImGui types not available,
-// so provide minimal stubs with int/void*/reference return types.
+// so provide minimal stubs with void* return types matching ARM64 pointer size.
 namespace ImGui {
     void EndFrame() {}
     void Render() {}
-    int GetDrawData() { return 0; }
+    void* GetDrawData() { return nullptr; }
     int GetPlatformIO() { return 0; }
-    int GetBackgroundDrawList() { return 0; }
+    void* GetBackgroundDrawList() { return nullptr; }
 }
 
 // ── MultitapProtocol (from Sio2.cpp) ──────────────────────────────
@@ -428,11 +417,6 @@ std::array<MultitapProtocol, SIO::PORTS> g_MultitapArr;
 u8 MultitapProtocol::GetPadSlot() { return 0; }
 u8 MultitapProtocol::GetMemcardSlot() { return 0; }
 void MultitapProtocol::SendToMultitap() {}
-
-// ── GSTextureReplacements::UpdateConfig (from GSRendererHW.cpp) ──
-namespace GSTextureReplacements {
-    void UpdateConfig(const void*) {}
-}
 
 // ── dVifUnpack / dVifReset (from guarded Vif_Dynarec) ────────────
 template<int idx> void dVifUnpack(const u8* data, bool isFill) {}
