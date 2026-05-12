@@ -180,7 +180,9 @@ static void CloseGSDevice(bool clear_state)
 	if (!g_gs_device)
 		return;
 
+#if !defined(PCSX2_TARGET_IOS)
 	ImGuiManager::Shutdown(clear_state);
+#endif
 	g_gs_device->Destroy();
 	g_gs_device.reset();
 }

@@ -176,6 +176,12 @@ namespace GSTextureReplacements {
     void Shutdown() {}
     void UpdateConfig(void*) {}
     void UpdateConfig(Pcsx2Config::GSOptions&) {}
+    bool HasAnyReplacementTextures() { return false; }
+    void Initialize() {}
+    void ProcessAsyncLoadedTextures() {}
+    void DumpTexture(const void*, const void*, const void*, const void*, void*, u32) {}
+    bool HasReplacementTextureWithOtherPalette(const void*) { return false; }
+    void* LookupReplacementTexture(const void*, bool, bool*, void*) { return nullptr; }
 }
 
 // ── SaveStateSelectorUI ─────────────────────────────────────────────

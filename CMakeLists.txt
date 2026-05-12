@@ -452,6 +452,10 @@ set(PCSX2_CORE_SOURCES
     # GS HW Renderer (Metal backend — BIOS screen output)
     pcsx2/pcsx2/GS/Renderers/HW/GSRendererHW.cpp
     pcsx2/pcsx2/GS/Renderers/HW/GSTextureCache.cpp
+    pcsx2/pcsx2/GS/Renderers/HW/GSHwHack.cpp
+    pcsx2/pcsx2/GS/Renderers/HW/GSRendererHWMultiISA.cpp
+    pcsx2/pcsx2/GS/Renderers/Common/GSDirtyRect.cpp
+    pcsx2/pcsx2/GS/GSXXH.cpp
 
     # GS Null Renderer (fallback)
     pcsx2/pcsx2/GS/Renderers/Null/GSRendererNull.cpp
