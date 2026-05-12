@@ -9,6 +9,7 @@
 #include "Watchdog.hpp"
 #include "CrashHandler.hpp"
 #include "BionicLogger.hpp"
+#include <atomic>
 #include "PCSX2LogRedirect.h"
 #include "PCSX2FatalExit.h"
 
@@ -53,7 +54,16 @@ void EmulatorBridge_Shutdown(void) {
     Watchdog_Stop();
 }
 
+// Prevent emulator restart loop after crash — set by crash handler
+static std::atomic<bool> s_emulator_crashed{false};
+
 bool EmulatorBridge_BootGame(const char* isoPath) {
+    if (s_emulator_crashed.load()) {
+        NSLog(@"[BionicSX2] Crash previously detected — refusing restart");
+        BIONIC_WARN(CORE, "Emulator previously crashed. Restart blocked.");
+        return false;
+    }
+
     NSLog(@"[BionicSX2] EmulatorBridge_BootGame: %s", isoPath ? isoPath : "(null)");
 
     BionicLogger::instance().log("INFO ", "CORE ", "EmulatorBridge_BootGame: starting VMManager");
@@ -92,6 +102,8 @@ bool EmulatorBridge_BootGame(const char* isoPath) {
     int crash_sig = setjmp(crash_recovery);
     if (crash_sig) {
         BIONIC_WARN(CORE, "Recovered from signal %d via crash handler longjmp. Emulation aborted.", crash_sig);
+        s_emulator_crashed.store(true);
+        CrashHandler_SetJumpBuf(nullptr);
         Watchdog_Stop();
         BionicLogger::instance().flush();
         return false;
@@ -118,11 +130,13 @@ bool EmulatorBridge_BootGame(const char* isoPath) {
         return result;
     } catch (const std::exception& e) {
         BIONIC_FATAL(CORE, "Boot exception: %s", e.what());
+        s_emulator_crashed.store(true);
         BionicLogger::instance().flush();
         Watchdog_Stop();
         return false;
     } catch (...) {
         BIONIC_FATAL(CORE, "Boot exception: unknown");
+        s_emulator_crashed.store(true);
         BionicLogger::instance().flush();
         Watchdog_Stop();
         return false;

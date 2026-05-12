@@ -425,25 +425,25 @@ u8 MultitapProtocol::GetPadSlot() { return 0; }
 u8 MultitapProtocol::GetMemcardSlot() { return 0; }
 void MultitapProtocol::SendToMultitap() {}
 
-// ── dVifUnpack — safe VIF interpreter fallback ──────────────────────
-#include "Vif_Dynarec.h"
-
+// ── dVifUnpack — ABSOLUTE NO-OP ON iOS ──────────────────────────────
+// VIF DMA unpack is not available on iOS (requires VIXL JIT).
+// The real function is in arm64/Vif_Dynarec.cpp (not compiled for iOS).
+// This stub MUST be a no-op because:
+//   - The interpreter fallback (_nVifUnpack) accesses uninitialized
+//     nVifUpk[] (only filled by VifUnpackSSE_Init, which is a stub)
+//   - VIFfuncTable out-of-bounds if mode > 3 (even with clamping)
+//   - The crash at sIGSEGV 0x20 is a cascade from these uninit tables
+//
+// The callers (Vif_Unpack.cpp, MTVU.cpp) are already guarded with
+// PCSX2_TARGET_IOS to call _nVifUnpack directly, but this stub must
+// also be safe in case any other code path calls it.
 template<int idx>
-void dVifUnpack(const u8* data, bool isFill)
+__attribute__((used)) void dVifUnpack(const u8* data, bool isFill)
 {
-    // Use _nVifUnpack (interpreted C unpack) instead of the VIF JIT
-    // recompiler. The JIT is not available on iOS (requires VIXL).
-    //
-    // Key issue: _nVifUnpackLoop accesses VIFfuncTable[idx][mode][...]
-    // where mode = vifRegs.mode. If mode > 3, the table access is
-    // out-of-bounds (VIFfuncTable[2][4][64]), reading garbage pointers
-    // and causing a null dereference at offset 0x20.
-    //
-    // Fix: clamp vifRegs.mode to 0-3 before calling _nVifUnpack.
-    auto& vifRegs = vifXRegs;
-    if (vifRegs.mode > 3)
-        vifRegs.mode = 0;
-    _nVifUnpack(idx, data, vifRegs.mode, isFill);
+    // ABSOLUTE NO-OP: VIF unpack not implemented on iOS.
+    // Do NOT call _nVifUnpack or any VIF state — they crash.
+    (void)data;
+    (void)isFill;
 }
 template void dVifUnpack<0>(const u8*, bool);
 template void dVifUnpack<1>(const u8*, bool);
