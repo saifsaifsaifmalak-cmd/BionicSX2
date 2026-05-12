@@ -431,6 +431,32 @@ template void dVifUnpack<0>(const u8*, bool);
 template void dVifUnpack<1>(const u8*, bool);
 void dVifReset(int) {}
 
+// ── GSTextureCacheSW::Texture (referenced from GSRendererHW.h member) ──
+#include "GS/GSRegs.h"
+namespace GSTextureCacheSW {
+    struct Texture {
+        Texture(u32, const GIFRegTEX0&, const GIFRegTEXA&) {}
+        void Reset(u32, const GIFRegTEX0&, const GIFRegTEXA&) {}
+        void Update(const GSVector4i&) {}
+    };
+}
+
+// ── GSRasterizer (SW renderer — not used with Metal, stubs for linker) ──
+namespace isa_native {
+    struct GSRasterizerData { static int s_counter; };
+    int GSRasterizerData::s_counter = 0;
+    struct GSSingleRasterizer {
+        GSSingleRasterizer() {}
+        void Draw(isa_native::GSRasterizerData&) {}
+    };
+}
+
+// ── GSTextureReplacements::GetLoader / SavePNGImage ───────────────
+namespace GSTextureReplacements {
+    void* GetLoader(std::string_view) { return nullptr; }
+    bool SavePNGImage(const std::string&, u32, u32, const u8*, u32) { return false; }
+}
+
 // ── GSCodeReserve (referenced from GSDrawScanline.cpp) ────────────
 namespace GSCodeReserve {
     void ResetMemory() {}
