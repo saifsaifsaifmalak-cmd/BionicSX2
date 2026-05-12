@@ -42,7 +42,7 @@ bool iOSVM_Initialize(const char* isoPath) {
     USBinit();
     DEV9init();
     SPU2::Open();
-    GSopen(EmuConfig.GS, EmuConfig.GS.Renderer, SysMemory::GetEEMem(), GSVSyncMode::GSVSyncMode_SyncToHost, true);
+    GSopen(EmuConfig.GS, EmuConfig.GS.Renderer, SysMemory::GetEEMem(), GSVSyncMode::Disabled, true);
     Console.WriteLn("[BionicSX2] Subsystems initialized (stub)");
     BionicLogger::instance().flush();
 
