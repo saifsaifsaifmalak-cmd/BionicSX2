@@ -425,8 +425,20 @@ u8 MultitapProtocol::GetPadSlot() { return 0; }
 u8 MultitapProtocol::GetMemcardSlot() { return 0; }
 void MultitapProtocol::SendToMultitap() {}
 
-// ── dVifUnpack / dVifReset (from guarded Vif_Dynarec) ────────────
-template<int idx> void dVifUnpack(const u8* data, bool isFill) {}
+// ── dVifUnpack / dVifReset (interpreter fallback — no VIF JIT) ───
+#include "Vif_Dynarec.h"
+
+template<int idx>
+void dVifUnpack(const u8* data, bool isFill)
+{
+    // Use interpreter-based VIF unpack instead of JIT recompiler.
+    // VIF JIT (arm64/Vif_Dynarec.cpp) uses VIXL for ARM64 code emission,
+    // which is not set up on iOS. The interpreter path handles all VIF
+    // unpack operations correctly, just slower.
+    // Using vifXRegs instead of MTVU_VifXRegs because THREAD_VU1=false on iOS.
+    VIFregisters& vifRegs = vifXRegs;
+    _nVifUnpack(idx, data, vifRegs.mode, isFill);
+}
 template void dVifUnpack<0>(const u8*, bool);
 template void dVifUnpack<1>(const u8*, bool);
 void dVifReset(int) {}
