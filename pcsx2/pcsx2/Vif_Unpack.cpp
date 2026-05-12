@@ -355,18 +355,10 @@ _vifT int nVifUnpack(const u8* data)
 
 		if (!idx || !THREAD_VU1)
 		{
-#if defined(PCSX2_TARGET_IOS)
-			// iOS: VIF JIT (dVifUnpack) requires VIXL/JIT which is not
-			// available. Use interpreter fallback. Clamp mode to 0-3
-			// to prevent VIFfuncTable out-of-bounds access.
-			vifRegs.mode &= 3;
-			_nVifUnpack(idx, data, vifRegs.mode, isFill);
-#else
 			if (newVifDynaRec)
 				dVifUnpack<idx>(data, isFill);
 			else
 				_nVifUnpack(idx, data, vifRegs.mode, isFill);
-#endif
 		}
 		else
 			vu1Thread.VifUnpack(vif, vifRegs, (u8*)data, (size + 4) & ~0x3);

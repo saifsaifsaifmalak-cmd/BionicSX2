@@ -4,6 +4,7 @@
 #import <Foundation/Foundation.h>
 
 #include "VMManager.h"
+#include "Vif_Unpack.h"
 #include "CDVD/CDVD.h"
 #include "CDVD/CDVDcommon.h"
 #include "Config.h"
@@ -96,6 +97,9 @@ bool iOSVM_Initialize(const char* isoPath) {
     GSopen(EmuConfig.GS, EmuConfig.GS.Renderer, SysMemory::GetEEMem(), GSVSyncMode::Disabled, true);
     Console.WriteLn("[BionicSX2] Subsystems initialized");
     BionicLogger::instance().flush();
+
+    resetNewVif(0);
+    resetNewVif(1);
 
     VMManager::SetState(VMState::Paused);
     Host::OnVMStarted();
