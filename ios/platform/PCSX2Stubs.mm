@@ -339,6 +339,16 @@ int _g_MultitapArr = 0;
 #include "MemoryTypes.h"
 alignas(16) u8 g_RealGSMem[Ps2MemSize::GSregs] = {};
 
+// ── GSDumpBase (referenced by GSRenderer.cpp VSync — 7zCrc dependency unavailable on iOS) ──
+#include "GS/GSDump.h"
+std::unique_ptr<GSDumpBase> GSDumpBase::CreateUncompressedDump(
+    const std::string&, const std::string&, u32, u32, u32, const u32*, const freezeData&, const GSPrivRegSet*) { return nullptr; }
+std::unique_ptr<GSDumpBase> GSDumpBase::CreateXzDump(
+    const std::string&, const std::string&, u32, u32, u32, const u32*, const freezeData&, const GSPrivRegSet*) { return nullptr; }
+std::unique_ptr<GSDumpBase> GSDumpBase::CreateZstDump(
+    const std::string&, const std::string&, u32, u32, u32, const u32*, const freezeData&, const GSPrivRegSet*) { return nullptr; }
+bool GSDumpBase::VSync(int, bool, const GSPrivRegSet*) { return false; }
+
 // ── CDVDapi_Disc (physical disc — not used on iOS, but linked by CDVDcommon.cpp switch) ──
 #include "CDVD/CDVDcommon.h"
 const CDVD_API CDVDapi_Disc = {};
