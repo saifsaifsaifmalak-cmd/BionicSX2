@@ -445,6 +445,14 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/GS/Renderers/SW/GSDrawScanline.cpp
     pcsx2/pcsx2/GS/Renderers/SW/GSRasterizer.cpp
     pcsx2/pcsx2/GS/Renderers/SW/GSTextureCacheSW.cpp
+
+    # GS Null Renderer (required for BIOS-safe GS without HW renderer stack)
+    pcsx2/pcsx2/GS/Renderers/Null/GSRendererNull.cpp
+
+    # GS Metal Renderer (required for iOS Metal GS device)
+    pcsx2/pcsx2/GS/Renderers/Metal/GSDeviceMTL.mm
+    pcsx2/pcsx2/GS/Renderers/Metal/GSTextureMTL.mm
+    pcsx2/pcsx2/GS/Renderers/Metal/GSMTLDeviceInfo.mm
 )
 
 add_library(pcsx2_core STATIC ${PCSX2_CORE_SOURCES})
@@ -478,7 +486,6 @@ target_compile_definitions(pcsx2_core PUBLIC
     DISABLE_PCSX2_RECOMPILER=1
     DISABLE_VULKAN=1
     DISABLE_ANDROID=1
-    TARGET_OS_IPHONE=1
     DISABLE_DISCORD_RPC=1
 )
 
@@ -527,6 +534,16 @@ add_executable(BionicSX2
     ios/main.mm
     ${IOS_UI_SOURCES}
     ${IOS_PLATFORM_SOURCES}
+
+    # Metal shaders (compiled to default.metallib by Xcode)
+    pcsx2/pcsx2/GS/Renderers/Metal/cas.metal
+    pcsx2/pcsx2/GS/Renderers/Metal/convert.metal
+    pcsx2/pcsx2/GS/Renderers/Metal/present.metal
+    pcsx2/pcsx2/GS/Renderers/Metal/merge.metal
+    pcsx2/pcsx2/GS/Renderers/Metal/misc.metal
+    pcsx2/pcsx2/GS/Renderers/Metal/interlace.metal
+    pcsx2/pcsx2/GS/Renderers/Metal/tfx.metal
+    pcsx2/pcsx2/GS/Renderers/Metal/fxaa.metal
 )
 
 target_include_directories(BionicSX2 PRIVATE

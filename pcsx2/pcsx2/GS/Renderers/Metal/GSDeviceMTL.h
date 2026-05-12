@@ -17,7 +17,12 @@
 #include "GS/GS.h"
 #include "GSMTLDeviceInfo.h"
 #include "GSMTLSharedHeader.h"
+#include <TargetConditionals.h>
+#if TARGET_OS_OSX
 #include <AppKit/AppKit.h>
+#else
+#include <UIKit/UIKit.h>
+#endif
 #include <Metal/Metal.h>
 #include <QuartzCore/QuartzCore.h>
 #include <atomic>
@@ -224,7 +229,11 @@ public:
 	MTLResourceOptions m_resource_options_shared_wc;
 
 	// Previously in MetalHostDisplay.
+#if TARGET_OS_OSX
 	MRCOwned<NSView*> m_view;
+#else
+	MRCOwned<UIView*> m_view;
+#endif
 	MRCOwned<CAMetalLayer*> m_layer;
 	MRCOwned<id<CAMetalDrawable>> m_current_drawable;
 	MRCOwned<MTLRenderPassDescriptor*> m_pass_desc;

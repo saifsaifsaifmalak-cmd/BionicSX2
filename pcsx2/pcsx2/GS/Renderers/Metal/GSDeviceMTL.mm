@@ -789,19 +789,29 @@ bool GSDeviceMTL::HasSurface()  const { return static_cast<bool>(m_layer);}
 void GSDeviceMTL::AttachSurfaceOnMainThread()
 {
 	pxAssert([NSThread isMainThread]);
+#if TARGET_OS_OSX
 	m_layer = MRCRetain([CAMetalLayer layer]);
 	[m_layer setDrawableSize:CGSizeMake(m_window_info.surface_width, m_window_info.surface_height)];
 	[m_layer setDevice:m_dev.dev];
 	m_view = MRCRetain((__bridge NSView*)m_window_info.window_handle);
 	[m_view setWantsLayer:YES];
 	[m_view setLayer:m_layer];
+#else
+	// On iOS, use the existing CAMetalLayer registered from MetalViewController
+	m_layer = MRCRetain((__bridge CAMetalLayer*)m_window_info.surface_handle);
+	m_view = MRCRetain((__bridge UIView*)m_window_info.window_handle);
+#endif
 }
 
 void GSDeviceMTL::DetachSurfaceOnMainThread()
 {
 	pxAssert([NSThread isMainThread]);
+#if TARGET_OS_OSX
 	[m_view setLayer:nullptr];
 	[m_view setWantsLayer:NO];
+#else
+	// On iOS, the layer is managed by MTKView — just clear our references
+#endif
 	m_view = nullptr;
 	m_layer = nullptr;
 }
@@ -920,9 +930,9 @@ bool GSDeviceMTL::Create(GSVSyncMode vsync_mode, bool allow_present_throttle)
 
 	if (char* env = getenv("MTL_USE_PRESENT_DRAWABLE"))
 		m_use_present_drawable = static_cast<UsePresentDrawable>(atoi(env));
-	else if (@available(macOS 13.0, *))
+	else if (@available(macOS 13.0, iOS 13.0, *))
 		m_use_present_drawable = UsePresentDrawable::Always;
-	else // Before Ventura, presentDrawable acts like vsync is on when windowed
+	else // Before Ventura (or older iOS), presentDrawable acts like vsync is on when windowed
 		m_use_present_drawable = UsePresentDrawable::IfVsync;
 
 	m_capture_start_frame = 0;

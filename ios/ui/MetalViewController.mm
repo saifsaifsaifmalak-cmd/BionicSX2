@@ -28,9 +28,10 @@
 
     [self.view insertSubview:self.metalView atIndex:0];
 
-    // Register the Metal layer for the GS device
+    // Register the Metal layer, device, and view for the GS device
     CAMetalLayer* layer = (CAMetalLayer*)self.metalView.layer;
     BionicSX2_SetMetalLayer(layer, self.device);
+    BionicSX2_SetMetalView(self.metalView);
 
     [self initializeEmulator];
 }

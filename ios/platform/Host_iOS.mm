@@ -19,12 +19,18 @@
 
 static CAMetalLayer* s_metal_layer = nullptr;
 static id<MTLDevice> s_metal_device = nullptr;
+static UIView* s_metal_view = nullptr;
 static std::string s_currentIso;
 
 extern "C" void BionicSX2_SetMetalLayer(CAMetalLayer* layer, id<MTLDevice> device) {
     s_metal_layer = layer;
     s_metal_device = device;
     NSLog(@"[BionicSX2] Metal layer registered");
+}
+
+extern "C" void BionicSX2_SetMetalView(UIView* view) {
+    s_metal_view = view;
+    NSLog(@"[BionicSX2] Metal view registered");
 }
 
 namespace Host {
@@ -255,6 +261,7 @@ std::optional<WindowInfo> AcquireRenderWindow(bool recreate_window) {
     WindowInfo wi;
     wi.type = WindowInfo::Type::MacOS;
     wi.surface_handle = (__bridge void*)s_metal_layer;
+    wi.window_handle = (__bridge void*)s_metal_view;
     u32 w = (u32)(s_metal_layer.bounds.size.width * s_metal_layer.contentsScale);
     u32 h = (u32)(s_metal_layer.bounds.size.height * s_metal_layer.contentsScale);
     wi.surface_width = (w > 0) ? w : 640;

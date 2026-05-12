@@ -62,17 +62,11 @@ void AbortWithMessage(const char* msg) {
     abort();
 }
 
-// ── GSopen stub (required by VMManager) ────────────────────────────
-bool GSopen(const Pcsx2Config::GSOptions&, GSRendererType, u8*, GSVSyncMode, bool) { return true; }
-
 // ── DEV9init stub ──────────────────────────────────────────────
 s32 DEV9init() { return 0; }
 
 // ── USBinit stub ──────────────────────────────────────────────
 void USBinit() {}
-
-// ── MakeGSDeviceMTL ───────────────────────────────────────────────
-GSDevice* MakeGSDeviceMTL() { return nullptr; }
 
 // ── Threading ────────────────────────────────────────────────────────
 namespace Threading {
@@ -194,8 +188,6 @@ public:
 };
 ImGuiManager* g_imGuiManager = nullptr;
 
-class GSRendererHW { public: GSRendererHW() {} };
-class GSRendererNull { public: GSRendererNull() {} };
 class GSDrawingContext {
 public:
     void Dump(const std::string&) const {}
