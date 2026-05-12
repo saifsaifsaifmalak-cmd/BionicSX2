@@ -234,6 +234,15 @@ static int FindDiskType(int mType)
 
 static void DetectDiskType()
 {
+	// CDVD is null on iOS when CDVDsys_ChangeSource() hasn't been called.
+	// pxAssertMsg(CDVD) doesn't fire in Release builds, causing SIGSEGV at 0x50.
+	if (!CDVD)
+	{
+		RAW("[RAW-CDVD] DetectDiskType: CDVD is null, NODISC\n");
+		diskTypeCached = CDVD_TYPE_NODISC;
+		return;
+	}
+
 	RAW("[RAW-CDVD] DetectDiskType: calling getTrayStatus\n");
 	if (CDVD->getTrayStatus() == CDVD_TRAY_OPEN)
 	{
