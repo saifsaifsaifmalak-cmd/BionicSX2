@@ -75,7 +75,7 @@
     EmulatorBridge_Shutdown();
 }
 
-- (void)drawMTKView:(MTKView*)view {
+- (void)drawInMTKView:(MTKView*)view {
     // Minimal Metal frame: acquire drawable, clear to black, present.
     // MTKView requires the delegate to complete the render cycle — a stub
     // crashes CoreAnimation with an exception during CA::Transaction::commit.
