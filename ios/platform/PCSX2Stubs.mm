@@ -425,24 +425,19 @@ u8 MultitapProtocol::GetPadSlot() { return 0; }
 u8 MultitapProtocol::GetMemcardSlot() { return 0; }
 void MultitapProtocol::SendToMultitap() {}
 
-// ── dVifUnpack — EXPLICIT SPECIALIZATIONS (no-op on iOS) ───────────
-// VIF JIT recompiler not available without VIXL (Phase 5).
-// These explicit template<> specializations force the linker to use
-// our stubs regardless of any other definitions in the project.
-// The caller (nVifUnpack in Vif_Unpack.cpp) handles VIF state cleanup
-// after dVifUnpack returns, so a no-op is safe for BIOS boot.
-template<>
-__attribute__((used)) void dVifUnpack<0>(const u8* data, bool isFill)
+// ── dVifUnpack — ABSOLUTE NO-OP (VIF JIT not available on iOS) ───
+// The real dVifUnpack is in arm64/Vif_Dynarec.cpp (not compiled).
+// nVif[] is initialized by resetNewVif() in iOSVMManager.
+// dVifUnpack is called from nVifUnpack in Vif_Unpack.cpp.
+// A no-op is safe — nVifUnpack handles state cleanup after return.
+template<int idx>
+__attribute__((used)) void dVifUnpack(const u8* data, bool isFill)
 {
-    // Safe no-op: VIF JIT not available on iOS.
+    // Safe no-op: VIF JIT not available without VIXL.
     (void)data; (void)isFill;
 }
-template<>
-__attribute__((used)) void dVifUnpack<1>(const u8* data, bool isFill)
-{
-    // Safe no-op: VIF JIT not available on iOS.
-    (void)data; (void)isFill;
-}
+template void dVifUnpack<0>(const u8*, bool);
+template void dVifUnpack<1>(const u8*, bool);
 void dVifReset(int) {}
 void dVifRelease(int) {}
 void VifUnpackSSE_Init() {}
