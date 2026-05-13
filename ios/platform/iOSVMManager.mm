@@ -22,11 +22,9 @@
 #include <thread>
 #include <signal.h>
 
-extern "C" {
-
-// resetNewVif is defined in Vif_Unpack.cpp (part of pcsx2_core)
-// Must be called before EE thread starts to init nVif[] structs
 extern void resetNewVif(int idx);
+
+extern "C" {
 
 static bool s_iOSVM_initialized = false;
 static std::thread s_ee_thread;
