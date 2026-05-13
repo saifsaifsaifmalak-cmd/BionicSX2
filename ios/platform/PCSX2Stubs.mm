@@ -425,28 +425,24 @@ u8 MultitapProtocol::GetPadSlot() { return 0; }
 u8 MultitapProtocol::GetMemcardSlot() { return 0; }
 void MultitapProtocol::SendToMultitap() {}
 
-// ── dVifUnpack — ABSOLUTE NO-OP ON iOS ──────────────────────────────
-// VIF DMA unpack is not available on iOS (requires VIXL JIT).
-// The real function is in arm64/Vif_Dynarec.cpp (not compiled for iOS).
-// This stub MUST be a no-op because:
-//   - The interpreter fallback (_nVifUnpack) accesses uninitialized
-//     nVifUpk[] (only filled by VifUnpackSSE_Init, which is a stub)
-//   - VIFfuncTable out-of-bounds if mode > 3 (even with clamping)
-//   - The crash at sIGSEGV 0x20 is a cascade from these uninit tables
-//
-// The callers (Vif_Unpack.cpp, MTVU.cpp) are already guarded with
-// PCSX2_TARGET_IOS to call _nVifUnpack directly, but this stub must
-// also be safe in case any other code path calls it.
-template<int idx>
-__attribute__((used)) void dVifUnpack(const u8* data, bool isFill)
+// ── dVifUnpack — EXPLICIT SPECIALIZATIONS (no-op on iOS) ───────────
+// VIF JIT recompiler not available without VIXL (Phase 5).
+// These explicit template<> specializations force the linker to use
+// our stubs regardless of any other definitions in the project.
+// The caller (nVifUnpack in Vif_Unpack.cpp) handles VIF state cleanup
+// after dVifUnpack returns, so a no-op is safe for BIOS boot.
+template<>
+__attribute__((used)) void dVifUnpack<0>(const u8* data, bool isFill)
 {
-    // ABSOLUTE NO-OP: VIF unpack not implemented on iOS.
-    // Do NOT call _nVifUnpack or any VIF state — they crash.
-    (void)data;
-    (void)isFill;
+    // Safe no-op: VIF JIT not available on iOS.
+    (void)data; (void)isFill;
 }
-template void dVifUnpack<0>(const u8*, bool);
-template void dVifUnpack<1>(const u8*, bool);
+template<>
+__attribute__((used)) void dVifUnpack<1>(const u8* data, bool isFill)
+{
+    // Safe no-op: VIF JIT not available on iOS.
+    (void)data; (void)isFill;
+}
 void dVifReset(int) {}
 void dVifRelease(int) {}
 void VifUnpackSSE_Init() {}
