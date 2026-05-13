@@ -24,6 +24,10 @@
 
 extern "C" {
 
+// resetNewVif is defined in Vif_Unpack.cpp (part of pcsx2_core)
+// Must be called before EE thread starts to init nVif[] structs
+extern void resetNewVif(int idx);
+
 static bool s_iOSVM_initialized = false;
 static std::thread s_ee_thread;
 static bool s_ee_thread_running = false;
@@ -100,9 +104,8 @@ bool iOSVM_Initialize(const char* isoPath) {
     resetNewVif(0);
     resetNewVif(1);
 
-    // Initialize VIF state before starting EE thread
-    // nVif[0/1] must be initialized or dVifUnpack crashes on uninit vifBlocks
-    extern void resetNewVif(int idx);
+    // Initialize VIF nVif[] structs before starting EE thread
+    // Prevents dVifUnpack crash on uninitialized vifBlocks
     resetNewVif(0);
     resetNewVif(1);
 
