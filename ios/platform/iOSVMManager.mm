@@ -101,9 +101,6 @@ bool iOSVM_Initialize(const char* isoPath) {
     Console.WriteLn("[BionicSX2] Subsystems initialized");
     BionicLogger::instance().flush();
 
-    resetNewVif(0);
-    resetNewVif(1);
-
     // Initialize VIF nVif[] structs before starting EE thread
     // Prevents dVifUnpack crash on uninitialized vifBlocks
     resetNewVif(0);
