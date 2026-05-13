@@ -355,10 +355,16 @@ _vifT int nVifUnpack(const u8* data)
 
 		if (!idx || !THREAD_VU1)
 		{
+#if defined(PCSX2_TARGET_IOS)
+			// iOS: Force doMode=true (non-zero mode) to use constexpr VIFfuncTable
+			// instead of nVifUpk (uninitialized — needs VifUnpackSSE_Init).
+			_nVifUnpack(idx, data, vifRegs.mode | 1, isFill);
+#else
 			if (newVifDynaRec)
 				dVifUnpack<idx>(data, isFill);
 			else
 				_nVifUnpack(idx, data, vifRegs.mode, isFill);
+#endif
 		}
 		else
 			vu1Thread.VifUnpack(vif, vifRegs, (u8*)data, (size + 4) & ~0x3);

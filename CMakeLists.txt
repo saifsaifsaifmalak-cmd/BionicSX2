@@ -469,14 +469,6 @@ set(PCSX2_CORE_SOURCES
     pcsx2/pcsx2/GS/Renderers/Metal/GSMTLDeviceInfo.mm
 )
 
-# iOS: exclude Vif_Unpack.cpp — its dVifUnpack JIT entry point requires VIXL.
-# The nVif[] initialization and interpreter path are handled via stubs.
-# VIF DMA proceeds through nVifUnpack which calls our no-op dVifUnpack stub.
-if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
-    list(REMOVE_ITEM PCSX2_CORE_SOURCES
-        pcsx2/pcsx2/Vif_Unpack.cpp)
-endif()
-
 add_library(pcsx2_core STATIC ${PCSX2_CORE_SOURCES})
 
 target_include_directories(pcsx2_core PUBLIC

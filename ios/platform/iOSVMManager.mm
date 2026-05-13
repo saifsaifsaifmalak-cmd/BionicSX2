@@ -22,8 +22,6 @@
 #include <thread>
 #include <signal.h>
 
-extern void resetNewVif(int idx);
-
 extern "C" {
 
 static bool s_iOSVM_initialized = false;
@@ -98,11 +96,6 @@ bool iOSVM_Initialize(const char* isoPath) {
     GSopen(EmuConfig.GS, EmuConfig.GS.Renderer, SysMemory::GetEEMem(), GSVSyncMode::Disabled, true);
     Console.WriteLn("[BionicSX2] Subsystems initialized");
     BionicLogger::instance().flush();
-
-    // Initialize VIF nVif[] structs before starting EE thread
-    // Prevents dVifUnpack crash on uninitialized vifBlocks
-    resetNewVif(0);
-    resetNewVif(1);
 
     VMManager::SetState(VMState::Paused);
     Host::OnVMStarted();

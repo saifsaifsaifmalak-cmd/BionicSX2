@@ -425,38 +425,10 @@ u8 MultitapProtocol::GetPadSlot() { return 0; }
 u8 MultitapProtocol::GetMemcardSlot() { return 0; }
 void MultitapProtocol::SendToMultitap() {}
 
-// ── dVifUnpack — ABSOLUTE NO-OP (VIF JIT not available on iOS) ───
-// The real dVifUnpack is in arm64/Vif_Dynarec.cpp (not compiled).
-// nVif[] is initialized by resetNewVif() in iOSVMManager.
-// dVifUnpack is called from nVifUnpack in Vif_Unpack.cpp.
-// A no-op is safe — nVifUnpack handles state cleanup after return.
-template<int idx>
-__attribute__((used)) void dVifUnpack(const u8* data, bool isFill)
-{
-    // Safe no-op: VIF JIT not available without VIXL.
-    (void)data; (void)isFill;
-}
-template void dVifUnpack<0>(const u8*, bool);
-template void dVifUnpack<1>(const u8*, bool);
-void dVifReset(int) {}
-void dVifRelease(int) {}
+// ── VifUnpackSSE_Init — stub (no VIF NEON JIT on iOS) ─────────────
+// Fills nVifUpk with NEON-optimized unpack functions on other platforms.
+// On iOS, we use the constexpr VIFfuncTable path (doMode=true) instead.
 void VifUnpackSSE_Init() {}
-
-// ── Vif_Unpack.cpp stubs (excluded from iOS build) ─────────────────
-// VIF DMA unpack dispatch — called from Vif_Codes.cpp
-// Returns 0 (no bytes consumed) which tells the DMA handler to stop.
-template<int idx> int nVifUnpack(const u8* data) { return 0; }
-template int nVifUnpack<0>(const u8*);
-template int nVifUnpack<1>(const u8*);
-
-// VIF unpack setup — called from Vif_Codes.cpp during VIF code processing
-template<int idx> void vifUnpackSetup(const u32* data) {}
-template void vifUnpackSetup<0>(const u32*);
-template void vifUnpackSetup<1>(const u32*);
-
-// VIF interpreter fallback — called from MTVU.cpp
-void _nVifUnpack(int idx, const u8* data, uint mode, bool isFill) {}
-void resetNewVif(int idx) { dVifReset(idx); }
 
 // ── GSTextureCacheSW::Texture (referenced from GSRendererHW.h member) ──
 #include "GS/GSRegs.h"

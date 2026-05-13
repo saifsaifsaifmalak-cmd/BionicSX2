@@ -43,4 +43,10 @@ alignas(16) extern nVifStruct nVif[2];
 alignas(16) extern nVifCall nVifUpk[(2 * 2 * 16) * 4]; // ([USN][Masking][Unpack Type]) [curCycle]
 alignas(16) extern u32      nVifMask[3][4][4];         // [MaskNumber][CycleNumber][Vector]
 
+#if defined(PCSX2_TARGET_IOS)
+// iOS: nVif JIT recompiler not available (no MAP_JIT, no VIXL).
+// All VIF DMA uses the interpreter path instead.
+static constexpr bool newVifDynaRec = 0;
+#else
 static constexpr bool newVifDynaRec = 1; // Use code in Vif_Dynarec.inl
+#endif
