@@ -442,6 +442,22 @@ void dVifReset(int) {}
 void dVifRelease(int) {}
 void VifUnpackSSE_Init() {}
 
+// ── Vif_Unpack.cpp stubs (excluded from iOS build) ─────────────────
+// VIF DMA unpack dispatch — called from Vif_Codes.cpp
+// Returns 0 (no bytes consumed) which tells the DMA handler to stop.
+template<int idx> int nVifUnpack(const u8* data) { return 0; }
+template int nVifUnpack<0>(const u8*);
+template int nVifUnpack<1>(const u8*);
+
+// VIF unpack setup — called from Vif_Codes.cpp during VIF code processing
+template<int idx> void vifUnpackSetup(const u32* data) {}
+template void vifUnpackSetup<0>(const u32*);
+template void vifUnpackSetup<1>(const u32*);
+
+// VIF interpreter fallback — called from MTVU.cpp
+void _nVifUnpack(int idx, const u8* data, uint mode, bool isFill) {}
+void resetNewVif(int idx) { dVifReset(idx); }
+
 // ── GSTextureCacheSW::Texture (referenced from GSRendererHW.h member) ──
 #include "GS/GSRegs.h"
 namespace GSTextureCacheSW {
